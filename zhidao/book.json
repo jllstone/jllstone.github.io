@@ -1,0 +1,198 @@
+{
+  "id": "paper-island-demo",
+  "title": "纸岛上的灯",
+  "subtitle": "一本可以翻的立体绘本 · 示例",
+  "hero": "nuo",
+  "editor": true,
+  "edge": 5,
+  "groundSize": [1024, 1200],
+  "theme": {
+    "sky": "#25443d", "table": "#33504a", "accent": "#f0c36d",
+    "paper": "#f4e7c8", "paperEdge": "#fbf2de", "paperBack": "#eadbb8",
+    "cover": "#8d4a35", "coverEdge": "#c98557", "ribbon": "#c0533e"
+  },
+  "map": { "image": "art/map.png", "title": "纸岛地图" },
+  "characters": {
+    "nuo":  { "name": "阿糯", "dir": "art/cast/nuo/",  "parts": ["tail","legL","legR","armL","body","head","eyes","armR"], "h": 1.3 },
+    "lizi": { "name": "栗子", "dir": "art/cast/lizi/", "parts": ["tail","legL","legR","armL","body","head","eyes","armR"], "h": 1.15 }
+  },
+  "chapters": [
+    {
+      "id": "chime", "title": "风铃山口", "place": "晨雾谷", "tag": "出发",
+      "line": "海边的灯塔熄灭了。天黑以前，阿糯要把一盏纸灯送到贝壳湾。",
+      "story": "早上的雾还没散，阿糯背着纸灯来到山口。\n山口挂着一只铜风铃。松鼠邮差栗子说：“风铃响三声，山风就会醒来，帮你把路吹开。”",
+      "note": "试试点一点云、树和花，它们藏着小彩蛋。",
+      "alt": "晨雾谷的山口，石拱门下挂着一只铜风铃，小兔阿糯站在小路上。",
+      "ground": { "spread": "art/ch1-chime/ground.png" },
+      "mapAt": [14, 64],
+      "standees": [
+        { "id": "ridge-l", "src": "art/common/ridge-green.png", "x": -3.1, "z": -3.0, "h": 2.2 },
+        { "id": "ridge-r", "src": "art/common/ridge-blue.png", "x": 3.2, "z": -3.05, "h": 1.9, "flip": true },
+        { "id": "sun", "src": "art/common/sun.png", "x": -4.2, "z": -3.1, "h": 1.05, "y": 2.7, "pivot": [0.5, 0.5], "anim": "spin", "animStrength": 0.25, "tap": "sparkle" },
+        { "id": "cloud-a", "src": "art/common/cloud.png", "x": 2.4, "z": -2.8, "h": 0.65, "y": 2.4, "anim": "drift", "tap": "rain", "say": "下雨啦！" },
+        { "id": "cloud-b", "src": "art/common/cloud.png", "x": -1.4, "z": -2.6, "h": 0.5, "y": 2.8, "anim": "drift", "flip": true, "tap": "rain" },
+        { "id": "gate", "src": "art/ch1-chime/gate.png", "x": 1.6, "z": -0.8, "h": 2.6 },
+        { "id": "chime", "parent": "gate", "src": "art/ch1-chime/chime.png", "x": 0, "y": 1.47, "z": 0.22, "h": 0.72, "pivot": [0.5, 0] },
+        { "id": "kite", "src": "art/ch1-chime/kite.png", "x": 3.6, "z": -1.7, "h": 1.5, "y": 1.5, "hidden": true, "anim": "float", "stick": false, "tap": "confetti" },
+        { "id": "house", "src": "art/common/house.png", "x": -3.3, "z": -1.7, "h": 1.2, "yaw": 0.2 },
+        { "id": "pine-1", "src": "art/common/pine.png", "x": -4.9, "z": -1.9, "h": 1.9, "anim": "sway", "tap": "leaves" },
+        { "id": "pine-2", "src": "art/common/pine-light.png", "x": 4.95, "z": -1.5, "h": 1.6, "anim": "sway", "tap": "leaves" },
+        { "id": "pine-3", "src": "art/common/pine.png", "x": -4.2, "z": -0.5, "h": 1.25, "anim": "sway" },
+        { "id": "tree-1", "src": "art/common/tree-round.png", "x": 4.3, "z": 0.3, "h": 1.4, "anim": "sway", "tap": "leaves" },
+        { "id": "bush-1", "src": "art/common/bush.png", "x": -0.9, "z": 0.7, "h": 0.55 },
+        { "id": "flowers-1", "src": "art/common/flowers.png", "x": -4.6, "z": 1.7, "h": 0.45, "tap": "petals" },
+        { "id": "flowers-2", "src": "art/common/flowers.png", "x": 5.0, "z": 1.3, "h": 0.4, "tap": "petals" },
+        { "id": "grass-1", "src": "art/common/grass.png", "x": 3.3, "z": 2.2, "h": 0.4 },
+        { "id": "grass-2", "src": "art/common/grass.png", "x": -2.6, "z": 2.5, "h": 0.35 },
+        { "id": "sign", "src": "art/ch1-chime/sign.png", "x": 4.2, "z": 2.0, "h": 1.0, "yaw": -0.25 }
+      ],
+      "cast": [
+        { "who": "nuo", "x": -1.8, "z": 1.3, "h": 1.35, "idle": "walk", "walk": 0.7, "say": ["我叫阿糯！", "这盏灯要送到海边去。"], "tap": "hearts" },
+        { "who": "lizi", "x": 3.3, "z": 0.95, "h": 1.15, "idle": "wave", "flip": true, "say": ["风铃要响三声哦。", "我是邮差栗子！"] }
+      ],
+      "interaction": {
+        "type": "tap", "target": "chime", "count": 3, "react": "swing",
+        "hint": "轻点拱门下的铜风铃。", "activeHint": "再摇几下，把山风叫醒！",
+        "button": "摇响风铃", "task": "风铃要响三声，山风才会醒来。",
+        "effect": "notes", "stamp": "叫醒山风",
+        "solved": "叮——叮——叮！山风醒了，一只风筝从山后飞起来，为阿糯指路。"
+      }
+    },
+    {
+      "id": "bridge", "title": "蘑菇桥", "place": "叮咚河", "tag": "过河",
+      "line": "昨夜涨水，叮咚河上的木桥只剩两根桥柱。",
+      "story": "河水叮叮咚咚地流。桥板被冲走了，只剩两边的桥柱。\n岸边垂着一根长长的藤蔓。栗子说：“拉一拉它，桥板就会一块块回来。”",
+      "note": "立体书里常见的“拉条”机关：顺着箭头方向拖动它。",
+      "alt": "一条小河从书页中间流过，两边各有一根红顶桥柱，岸边垂着藤蔓。",
+      "ground": { "spread": "art/ch2-bridge/ground.png" },
+      "mapAt": [38, 40],
+      "sky": "#264a46",
+      "standees": [
+        { "id": "ridge", "src": "art/common/ridge-sand.png", "x": -3.0, "z": -3.05, "h": 1.9 },
+        { "id": "ridge-2", "src": "art/common/ridge-green.png", "x": 3.3, "z": -3.1, "h": 1.7, "flip": true },
+        { "id": "sun", "src": "art/common/sun.png", "x": 4.4, "z": -3.1, "h": 0.9, "y": 2.6, "pivot": [0.5, 0.5], "anim": "spin", "animStrength": 0.25 },
+        { "id": "cloud", "src": "art/common/cloud.png", "x": -1.0, "z": -2.7, "h": 0.6, "y": 2.5, "anim": "drift", "tap": "rain" },
+        { "id": "tower-l", "src": "art/ch2-bridge/tower.png", "x": -1.55, "z": -0.15, "h": 1.7 },
+        { "id": "tower-r", "src": "art/ch2-bridge/tower.png", "x": 2.05, "z": -0.15, "h": 1.7, "flip": true },
+        { "id": "plank-1", "src": "art/ch2-bridge/plank-0.png", "x": -1.0, "z": -0.05, "h": 0.62, "y": 0.62, "pivot": [0.5, 0.5], "pitch": -1.5708, "yaw": 1.5708, "tab": false, "stick": false },
+        { "id": "plank-2", "src": "art/ch2-bridge/plank-1.png", "x": -0.4, "z": -0.05, "h": 0.62, "y": 0.66, "pivot": [0.5, 0.5], "pitch": -1.5708, "yaw": 1.5708, "tab": false, "stick": false },
+        { "id": "plank-3", "src": "art/ch2-bridge/plank-2.png", "x": 0.25, "z": -0.05, "h": 0.62, "y": 0.68, "pivot": [0.5, 0.5], "pitch": -1.5708, "yaw": 1.5708, "tab": false, "stick": false },
+        { "id": "plank-4", "src": "art/ch2-bridge/plank-0.png", "x": 0.9, "z": -0.05, "h": 0.62, "y": 0.66, "pivot": [0.5, 0.5], "pitch": -1.5708, "yaw": 1.5708, "tab": false, "stick": false },
+        { "id": "plank-5", "src": "art/ch2-bridge/plank-1.png", "x": 1.5, "z": -0.05, "h": 0.62, "y": 0.62, "pivot": [0.5, 0.5], "pitch": -1.5708, "yaw": 1.5708, "tab": false, "stick": false },
+        { "id": "vine", "src": "art/ch2-bridge/vine.png", "x": -2.4, "z": 1.5, "h": 1.15 },
+        { "id": "duck", "src": "art/ch2-bridge/duck.png", "x": 0.4, "z": 1.7, "h": 0.5, "anim": "bob", "tab": false, "tap": "bubbles", "say": "嘎嘎！" },
+        { "id": "mush-1", "src": "art/ch2-bridge/mushroom.png", "x": -3.9, "z": 0.6, "h": 0.75, "tap": "sparkle" },
+        { "id": "mush-2", "src": "art/ch2-bridge/mushroom-gold.png", "x": -3.4, "z": 1.1, "h": 0.5 },
+        { "id": "mush-3", "src": "art/ch2-bridge/mushroom.png", "x": 4.6, "z": 1.5, "h": 0.6 },
+        { "id": "pine-1", "src": "art/common/pine.png", "x": -4.9, "z": -1.6, "h": 1.8, "anim": "sway", "tap": "leaves" },
+        { "id": "pine-2", "src": "art/common/pine-light.png", "x": 4.9, "z": -1.7, "h": 1.7, "anim": "sway" },
+        { "id": "tree-1", "src": "art/common/tree-round.png", "x": 3.9, "z": -1.0, "h": 1.5, "anim": "sway", "tap": "leaves" },
+        { "id": "grass-1", "src": "art/common/grass.png", "x": -4.7, "z": 2.4, "h": 0.4 },
+        { "id": "grass-2", "src": "art/common/grass.png", "x": 3.0, "z": 2.4, "h": 0.4 },
+        { "id": "sign", "src": "art/ch2-bridge/sign.png", "x": 4.4, "z": 0.3, "h": 0.95, "yaw": -0.25 }
+      ],
+      "cast": [
+        { "who": "nuo", "x": -3.2, "z": 0.2, "h": 1.3, "idle": "look", "say": ["河水好急呀。", "桥板会回来吗？"], "tap": "hearts" },
+        { "who": "lizi", "x": 3.2, "z": 1.0, "h": 1.1, "idle": "hop", "flip": true, "say": "拉藤蔓！往前拉！" }
+      ],
+      "interaction": {
+        "type": "pull", "target": "vine", "dir": [0.35, 1], "distance": 0.9,
+        "hint": "抓住岸边的藤蔓，朝自己这边拉。", "activeHint": "继续拉，桥板一块块回来了。",
+        "button": "拉动藤蔓", "task": "把藤蔓拉到底，五块桥板就会回到桥上。",
+        "drive": [
+          { "target": "plank-1", "prop": "scale", "from": 0, "to": 1, "range": [0.0, 0.25] },
+          { "target": "plank-2", "prop": "scale", "from": 0, "to": 1, "range": [0.15, 0.4] },
+          { "target": "plank-3", "prop": "scale", "from": 0, "to": 1, "range": [0.3, 0.55] },
+          { "target": "plank-4", "prop": "scale", "from": 0, "to": 1, "range": [0.45, 0.7] },
+          { "target": "plank-5", "prop": "scale", "from": 0, "to": 1, "range": [0.6, 0.85] },
+          { "target": "duck", "prop": "x", "from": 0, "to": 1.6, "range": [0.2, 1] }
+        ],
+        "effect": "bubbles", "stamp": "搭桥小能手",
+        "solved": "咔嗒、咔嗒，五块桥板排好了。阿糯踩着桥板，跳到了对岸。"
+      }
+    },
+    {
+      "id": "tree", "title": "树洞信箱", "place": "橡果林", "tag": "找路",
+      "line": "大橡树上有个树洞，是林子里的信箱。",
+      "story": "橡果林里静悄悄的，猫头鹰在树枝上打盹。\n树洞被一片大叶子盖住了。栗子说：“去灯塔的路线，写在树洞里的信上。”",
+      "note": "翻翻看（lift-the-flap）是最经典的绘本机关：掀开盖片，下面藏着东西。",
+      "alt": "一棵大橡树，树干上的树洞被一片橙色大叶子盖住，树枝上停着猫头鹰。",
+      "ground": { "spread": "art/ch3-tree/ground.png" },
+      "mapAt": [59, 46],
+      "sky": "#2a4438",
+      "standees": [
+        { "id": "ridge", "src": "art/common/ridge-sand.png", "x": -3.2, "z": -3.1, "h": 1.8 },
+        { "id": "pine-back", "src": "art/common/pine-light.png", "x": -1.6, "z": -2.7, "h": 2.2, "anim": "sway" },
+        { "id": "tree", "src": "art/ch3-tree/tree.png", "x": 1.7, "z": -0.9, "h": 3.2 },
+        { "id": "letter", "parent": "tree", "src": "art/ch3-tree/letter.png", "x": 0, "y": 1.06, "z": 0.04, "h": 0.32, "pivot": [0.5, 0.5] },
+        { "id": "leaf", "parent": "tree", "src": "art/ch3-tree/leaf-flap.png", "x": 0, "y": 1.5, "z": 0.09, "h": 0.78, "pivot": [0.5, 0] },
+        { "id": "owl", "parent": "tree", "src": "art/ch3-tree/owl.png", "x": 0.72, "y": 2.05, "z": 0.12, "h": 0.6, "tap": "notes", "say": "咕咕，信就在树洞里。" },
+        { "id": "tree-a", "src": "art/common/tree-autumn.png", "x": -4.6, "z": -1.8, "h": 2.0, "anim": "sway", "tap": "leaves" },
+        { "id": "tree-b", "src": "art/common/tree-round.png", "x": 4.8, "z": -2.2, "h": 2.0, "anim": "sway", "tap": "leaves" },
+        { "id": "tree-c", "src": "art/common/tree-autumn.png", "x": 4.4, "z": -0.4, "h": 1.4, "anim": "sway", "tap": "leaves" },
+        { "id": "fence", "src": "art/ch3-tree/fence.png", "x": -3.2, "z": -0.6, "h": 0.75, "yaw": 0.15 },
+        { "id": "mush", "src": "art/ch2-bridge/mushroom.png", "x": -4.4, "z": 1.6, "h": 0.45, "tap": "sparkle" },
+        { "id": "bush", "src": "art/common/bush.png", "x": 3.9, "z": 1.5, "h": 0.6 },
+        { "id": "flowers", "src": "art/common/flowers.png", "x": -1.0, "z": 2.4, "h": 0.4, "tap": "petals" },
+        { "id": "sign", "src": "art/ch3-tree/sign.png", "x": -4.8, "z": 0.5, "h": 0.95, "yaw": 0.25 }
+      ],
+      "cast": [
+        { "who": "nuo", "x": -1.6, "z": 1.1, "h": 1.3, "idle": "look", "say": ["树洞里有什么？", "叶子好大呀。"], "tap": "hearts" },
+        { "who": "lizi", "x": 3.6, "z": 0.7, "h": 1.1, "idle": "wave", "flip": true, "say": "掀开叶子看看！" }
+      ],
+      "interaction": {
+        "type": "flap", "target": "leaf", "angle": 1.7,
+        "hint": "掀开盖住树洞的大叶子。", "activeHint": "往上拖动叶子，看看下面。",
+        "button": "掀开叶子", "task": "叶子下面藏着一封信。",
+        "question": "信上写着：“去灯塔，要沿着哪条路走？”",
+        "choices": [
+          { "text": "一直往山顶爬", "reply": "山顶看不见海哦，再想想？" },
+          { "text": "顺着河水往下游走", "correct": true },
+          { "text": "先在树洞里睡一觉", "reply": "天黑前要把灯送到呀！" }
+        ],
+        "effect": "leaves", "stamp": "树洞读信人",
+        "solved": "河水总会流到海里。阿糯谢过猫头鹰，顺着河往下游走去。"
+      }
+    },
+    {
+      "id": "lighthouse", "title": "海边灯塔", "place": "贝壳湾", "tag": "点灯",
+      "line": "天快黑了。远处有条小船，正等着灯塔亮起来。",
+      "story": "太阳落进海里，贝壳湾变成了蓝色。\n阿糯爬上灯塔，把纸灯放进灯罩。灯罩要转一整圈，光才会照到海上。",
+      "note": "转盘（wheel）机关：拖着灯罩绕圈转。",
+      "alt": "黄昏的海湾，一座红白条纹的灯塔立在礁石上，海上有一艘小帆船。",
+      "ground": { "spread": "art/ch4-lighthouse/ground.png" },
+      "mapAt": [80, 55],
+      "sky": "#223449", "table": "#3d4f66",
+      "standees": [
+        { "id": "moon", "src": "art/common/moon.png", "x": -3.6, "z": -3.1, "h": 1.0, "y": 2.6, "pivot": [0.5, 0.5], "anim": "float", "tap": "sparkle" },
+        { "id": "ridge", "src": "art/common/ridge-blue.png", "x": -3.0, "z": -3.0, "h": 1.5 },
+        { "id": "cloud", "src": "art/common/cloud.png", "x": -0.6, "z": -2.8, "h": 0.55, "y": 2.6, "anim": "drift" },
+        { "id": "lighthouse", "src": "art/ch4-lighthouse/lighthouse.png", "x": 2.3, "z": -1.0, "h": 3.6 },
+        { "id": "lamp", "parent": "lighthouse", "src": "art/ch4-lighthouse/lamp.png", "x": 0, "y": 2.74, "z": 0.06, "h": 0.55, "pivot": [0.5, 0.5] },
+        { "id": "beam-r", "parent": "lighthouse", "src": "art/ch4-lighthouse/beam.png", "x": 0.15, "y": 2.74, "z": 0.02, "h": 0.75, "pivot": [0, 0.5], "hidden": true, "anim": "pulse" },
+        { "id": "beam-l", "parent": "lighthouse", "src": "art/ch4-lighthouse/beam.png", "x": -0.15, "y": 2.74, "z": 0.02, "h": 0.75, "pivot": [0, 0.5], "flip": true, "hidden": true, "anim": "pulse" },
+        { "id": "rock-1", "src": "art/common/rock.png", "x": 1.6, "z": -0.3, "h": 0.5 },
+        { "id": "rock-2", "src": "art/common/rock.png", "x": 3.1, "z": -0.2, "h": 0.4, "flip": true },
+        { "id": "wave-1", "src": "art/ch4-lighthouse/wave.png", "x": 4.4, "z": -2.3, "h": 0.5, "anim": "bob" },
+        { "id": "wave-2", "src": "art/ch4-lighthouse/wave.png", "x": 3.6, "z": 1.1, "h": 0.42, "anim": "bob" },
+        { "id": "wave-3", "src": "art/ch4-lighthouse/wave.png", "x": 5.0, "z": 2.3, "h": 0.4, "anim": "bob" },
+        { "id": "boat", "src": "art/ch4-lighthouse/boat.png", "x": 4.6, "z": -0.6, "h": 0.95, "anim": "bob", "tap": "bubbles", "say": "看见灯就能回家啦！" },
+        { "id": "house", "src": "art/common/house-teal.png", "x": -3.4, "z": -1.7, "h": 1.1, "yaw": 0.2 },
+        { "id": "grass", "src": "art/common/grass.png", "x": -4.6, "z": 1.5, "h": 0.4 },
+        { "id": "rock-3", "src": "art/common/rock.png", "x": -4.0, "z": 0.2, "h": 0.45 },
+        { "id": "sign", "src": "art/ch4-lighthouse/sign.png", "x": -0.9, "z": 2.2, "h": 0.9, "yaw": 0.15 }
+      ],
+      "cast": [
+        { "who": "nuo", "x": -1.4, "z": 0.9, "h": 1.3, "idle": "look", "say": ["要亮起来呀！", "小船在等我们。"], "tap": "hearts" },
+        { "who": "lizi", "x": -3.7, "z": 1.3, "h": 1.1, "idle": "wave", "say": "转一整圈！" }
+      ],
+      "interaction": {
+        "type": "rotate", "target": "lamp", "turns": 1,
+        "hint": "拖着灯罩转一整圈。", "activeHint": "接着转，光快出来了！",
+        "button": "转动灯罩", "task": "灯罩转满一圈，灯光才会照到海上。",
+        "effect": "sparkle", "stamp": "点灯人",
+        "solved": "灯塔亮了！小船闪了两下灯回应。阿糯把空空的背包折好，踏上回家的路。"
+      }
+    }
+  ]
+}
