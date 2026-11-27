@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#f6ede1">
-<meta name="description" content="成器 — 铜胎掐丝珐琅（景泰蓝）师徒解谜。玉不琢，不成器：一位老师傅和徒弟阿蓝，走过寻矿、制胎、掐丝、点蓝、烧蓝、磨光、镀金，把天上那件空着的器，一道工序一道工序地做成。">
+<meta name="theme-color" content="#1b2238">
+<meta name="description" content="成器 — 铜胎掐丝珐琅（景泰蓝）师徒解谜。玉不琢，不成器：一位老师傅和徒弟阿蓝，俯身走进一只空着的铜胎，走过寻矿、制胎、掐丝、点蓝、烧蓝、磨光、镀金，器成，人也成。">
 <title>成器 · 景泰蓝师徒解谜</title>
 <style>
-:root{--paper:#f6ede1;--gold:#b8862e;--gold-soft:rgba(184,134,46,.45);--ink:#4b4262;--ink-soft:rgba(75,66,98,.45);--ts:0 0 12px rgba(255,250,240,.7);--blue:#3fb6a8;
+:root{--paper:#1b2238;--gold:#d9b45a;--gold-soft:rgba(217,180,90,.5);--ink:#efe8da;--ink-soft:rgba(239,232,218,.45);--ts:0 1px 10px rgba(0,0,0,.45);--tq:#3fb6a8;
   --serif:"Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC","Noto Serif SC","SimSun",serif}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--paper);font-family:var(--serif);color:var(--ink);
@@ -17,101 +17,111 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #fx{touch-action:none;cursor:pointer}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 button:focus-visible{outline:1px solid var(--gold);outline-offset:3px}
+svg{display:block}
 
 #chapter,#hud,#hint,#endline,#who{position:absolute;color:var(--ink);opacity:0;transition:opacity .9s ease;pointer-events:none}
-#chapter{left:max(24px,env(safe-area-inset-left));top:max(22px,env(safe-area-inset-top));display:flex;align-items:center;gap:12px;font-size:14px;font-weight:600;letter-spacing:.42em}
-#chapter i{display:inline-block;width:9px;height:9px;border:1px solid var(--gold);transform:rotate(45deg)}
-#chapter.on{opacity:.82}
-#hud{right:max(16px,env(safe-area-inset-right));top:max(14px,env(safe-area-inset-top));display:flex;gap:10px}
+#chapter{left:max(20px,env(safe-area-inset-left));top:max(20px,env(safe-area-inset-top));display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;letter-spacing:.36em;white-space:nowrap;text-shadow:var(--ts);max-width:calc(100% - 170px);overflow:hidden}
+#chapter i{flex:none;display:inline-block;width:8px;height:8px;border:1px solid var(--gold);transform:rotate(45deg)}
+#chapter.on{opacity:.85}
+/* 右上角：图标按钮（信息密集时不再用文字） */
+#hud{right:max(12px,env(safe-area-inset-right));top:max(12px,env(safe-area-inset-top));display:flex;gap:8px}
 #hud.on{opacity:1;pointer-events:auto}
-#hud button{width:36px;height:36px;border:1px solid var(--ink-soft);font-size:14px;font-weight:600;line-height:34px;text-align:center;opacity:.82;transition:opacity .2s,background .2s}
-#hud button:hover{opacity:1;background:rgba(217,180,90,.1)}
-#bmu.off{text-decoration:line-through;opacity:.45}
-#who{left:50%;top:max(20px,env(safe-area-inset-top));transform:translateX(-50%);display:flex;gap:6px}
+#hud button{width:38px;height:38px;border-radius:50%;border:1px solid var(--ink-soft);display:grid;place-items:center;opacity:.85;transition:opacity .2s,background .2s}
+#hud button:hover{opacity:1;background:rgba(217,180,90,.12)}
+#hud svg{width:18px;height:18px;stroke:var(--ink);fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+#bmu .x{display:none}#bmu.off .x{display:inline}#bmu.off .w{display:none}#bmu.off{opacity:.5}
+/* 左下角：师徒切换（头像图标） */
+#who{left:max(14px,env(safe-area-inset-left));bottom:max(96px,calc(env(safe-area-inset-bottom) + 84px));display:flex;flex-direction:column;gap:10px}
 #who.on{opacity:1;pointer-events:auto}
-#who button{font-size:13px;font-weight:600;letter-spacing:.3em;padding:7px 12px 7px calc(12px + .3em);border:1px solid transparent;opacity:.5;transition:all .3s}
-#who button.sel{border-color:var(--gold);opacity:1;color:var(--gold)}
-#hint{left:50%;bottom:max(34px,env(safe-area-inset-bottom));transform:translateX(-50%);font-size:15px;font-weight:600;letter-spacing:.24em;white-space:nowrap;text-shadow:var(--ts)}
-#hint.on{opacity:.88}
-#endline{left:0;right:0;bottom:max(46px,env(safe-area-inset-bottom));text-align:center;text-shadow:var(--ts)}
+#who button{width:50px;height:50px;border-radius:50%;border:1.5px solid var(--ink-soft);background:rgba(10,12,22,.28);display:grid;place-items:center;opacity:.6;transition:all .3s;position:relative}
+#who button.sel{border-color:var(--gold);opacity:1;box-shadow:0 0 0 3px rgba(217,180,90,.18),0 0 18px rgba(217,180,90,.35)}
+#who button span{position:absolute;left:58px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;letter-spacing:.3em;white-space:nowrap;opacity:0;transition:opacity .3s;text-shadow:var(--ts)}
+#who button.sel span{opacity:.9}
+#who svg{width:34px;height:34px}
+#hint{left:50%;bottom:max(30px,calc(env(safe-area-inset-bottom) + 16px));transform:translateX(-50%);font-size:15px;font-weight:600;letter-spacing:.22em;text-align:center;width:max-content;max-width:calc(100% - 140px);line-height:1.7;text-shadow:var(--ts)}
+#hint.on{opacity:.9}
+#endline{left:0;right:0;bottom:max(56px,calc(env(safe-area-inset-bottom) + 40px));text-align:center;text-shadow:var(--ts)}
 #endline.on{opacity:1}
 #endvase{font-size:13px;font-weight:700;letter-spacing:.6em;padding-left:.6em;color:var(--gold);margin-bottom:14px;opacity:.9}
-#endtext{font-size:clamp(18px,2.6vw,24px);font-weight:400;letter-spacing:.3em;padding-left:.3em}
+#endtext{font-size:clamp(18px,2.6vw,26px);font-weight:400;letter-spacing:.3em;padding:0 1em 0 1.3em}
 #endgo{display:block;margin-top:22px;font-size:12px;font-weight:700;letter-spacing:.5em;opacity:0;transition:opacity .9s;color:var(--gold)}
-#endgo.on{opacity:.7;animation:breath 2.6s ease-in-out infinite}
+#endgo.on{opacity:.75;animation:breath 2.6s ease-in-out infinite}
 
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  opacity:0;visibility:hidden;transition:opacity 1.1s ease,visibility 0s linear 1.1s;padding:72px 32px}
+  opacity:0;visibility:hidden;transition:opacity 1.1s ease,visibility 0s linear 1.1s;padding:72px 28px}
 .screen.on{opacity:1;visibility:visible;transition:opacity .8s ease}
-.solid{background:radial-gradient(120% 90% at 50% 40%,#fbf4ea 0%,#f3e6d6 60%,#ead8c6 100%);color:#4b4262}
-#veil{position:absolute;inset:0;background:var(--paper);opacity:0;pointer-events:none;transition:opacity .7s ease}
+.solid{background:radial-gradient(120% 90% at 50% 40%,#2a3354 0%,#161c33 60%,#0b0f1f 100%);color:#efe8da}
+#veil{position:absolute;inset:0;background:#0b0e1a;opacity:0;pointer-events:none;transition:opacity .7s ease}
 #veil.on{opacity:1;pointer-events:auto}
 
-/* 标题 */
 #title{cursor:pointer}
 .t-row{display:flex;align-items:flex-start;gap:30px}
-.t-name{writing-mode:vertical-rl;font-size:clamp(72px,15vmin,136px);font-weight:300;letter-spacing:.2em;line-height:1;color:var(--ink);text-shadow:0 0 40px rgba(255,250,240,.9)}
+.t-name{writing-mode:vertical-rl;font-size:clamp(72px,15vmin,136px);font-weight:300;letter-spacing:.2em;line-height:1;color:var(--ink);text-shadow:0 0 40px rgba(63,182,168,.35)}
 .t-side{display:flex;flex-direction:column;align-items:center;gap:22px;padding-top:12px}
-.t-gem{width:30px;height:30px;transform:rotate(45deg);border:1.5px solid var(--gold);background:linear-gradient(135deg,#6fd0c2,#3fb6a8 50%,#e0786a 51%,#e0786a);box-shadow:0 0 14px rgba(63,182,168,.5)}
+.t-gem{width:28px;height:28px;transform:rotate(45deg);border:1.5px solid var(--gold);background:linear-gradient(135deg,#6fd0c2,#3fb6a8 50%,#e0786a 51%,#e0786a);box-shadow:0 0 14px rgba(63,182,168,.5)}
 .t-seal{writing-mode:vertical-rl;border:1px solid var(--gold);color:var(--gold);font-size:13px;font-weight:700;letter-spacing:.18em;padding:8px 4px 6px}
-.t-pro{margin-top:56px;font-size:15px;font-weight:500;line-height:2.3;letter-spacing:.2em;text-align:center;opacity:.8}
-.t-go{margin-top:56px;font-size:13px;font-weight:700;letter-spacing:.5em;padding-left:.5em;color:var(--gold);animation:breath 2.6s ease-in-out infinite}
+.t-pro{margin-top:52px;font-size:15px;font-weight:500;line-height:2.3;letter-spacing:.2em;text-align:center;opacity:.82}
+.t-go{margin-top:52px;font-size:13px;font-weight:700;letter-spacing:.5em;padding-left:.5em;color:var(--gold);animation:breath 2.6s ease-in-out infinite}
 .t-en{position:absolute;bottom:max(28px,env(safe-area-inset-bottom));font-size:10px;font-weight:700;letter-spacing:.6em;padding-left:.6em;opacity:.4;font-family:Georgia,"Times New Roman",serif}
 
-/* 章节页 */
-#card .c-no{font-size:13px;font-weight:700;letter-spacing:.6em;padding-left:.6em;color:var(--gold);opacity:.85}
+#card .c-no{font-size:13px;font-weight:700;letter-spacing:.6em;padding-left:.6em;color:var(--gold);opacity:.85;text-shadow:var(--ts)}
 #card .c-name{margin:30px 0 34px;writing-mode:vertical-rl;font-size:clamp(56px,11vmin,100px);font-weight:300;letter-spacing:.2em;line-height:1;text-shadow:var(--ts)}
 #card .c-rule{width:9px;height:9px;border:1px solid var(--gold);transform:rotate(45deg);margin-bottom:30px}
-#card .c-craft{font-size:13px;font-weight:500;letter-spacing:.18em;padding-left:.18em;opacity:.55;text-align:center;max-width:26em;line-height:2;margin-bottom:18px}
-#card .c-poem{font-size:17px;font-weight:500;letter-spacing:.28em;padding-left:.28em;opacity:.9;text-align:center;max-width:22em;line-height:2}
+#card .c-poem{font-size:17px;font-weight:500;letter-spacing:.28em;padding-left:.28em;opacity:.9;text-align:center;max-width:22em;line-height:2;text-shadow:var(--ts)}
 
-/* 选章 */
 #levels{z-index:5}
 #levels h2{font-size:13px;font-weight:700;letter-spacing:.6em;padding-left:.6em;color:var(--gold);margin-bottom:52px}
 #lvlist{display:flex;gap:clamp(10px,3vw,34px);flex-direction:row-reverse;flex-wrap:wrap;justify-content:center}
 .lv{display:flex;flex-direction:column;align-items:center;gap:16px;padding:10px 6px;transition:opacity .2s}
 .lv-no{width:30px;height:30px;line-height:28px;font-size:13px;font-weight:700;text-align:center;border:1px solid var(--gold-soft)}
-.lv.done .lv-no{background:var(--blue);border-color:var(--gold);color:#fff}
+.lv.done .lv-no{background:var(--tq);border-color:var(--gold);color:#fff}
 .lv-name{writing-mode:vertical-rl;font-size:clamp(22px,4.2vmin,30px);font-weight:400;letter-spacing:.3em}
 .lv.locked{opacity:.26;cursor:default}
 .lv:not(.locked):hover .lv-name{color:var(--gold)}
 #lvclose{margin-top:60px;font-size:13px;font-weight:700;letter-spacing:.5em;padding:10px 18px 10px calc(18px + .5em);opacity:.7}
 
-/* 终章 */
-.f-gem{width:clamp(70px,13vmin,110px);aspect-ratio:1;transform:rotate(45deg);border:2px solid var(--gold);background:linear-gradient(135deg,#3a8fe0,#1f5fae 50%,#0f3170);box-shadow:0 0 60px rgba(47,127,208,.55)}
-.f-lines{margin-top:60px;text-align:center;max-width:34em}
-.f-lines p{font-size:clamp(14px,2vw,17px);font-weight:400;letter-spacing:.2em;padding-left:.2em;line-height:2.3;opacity:0}
-.f-lines p.big{font-size:clamp(20px,3vw,26px);letter-spacing:.4em;margin-top:18px;color:var(--gold)}
-#finale.on .f-lines p{animation:rise 1.6s ease forwards}
-#finale.on .f-lines p:nth-child(1){animation-delay:.8s}
-#finale.on .f-lines p:nth-child(2){animation-delay:2.6s}
-#finale.on .f-lines p:nth-child(3){animation-delay:4.4s}
-#finale.on .f-lines p:nth-child(4){animation-delay:6.6s}
-.f-btns{margin-top:48px;display:flex;gap:28px;opacity:0}
-#finale.on .f-btns{animation:rise 1.4s ease 8.4s forwards}
-.f-btns button{font-size:13px;font-weight:700;letter-spacing:.4em;padding:11px 18px 11px calc(18px + .4em);border:1px solid var(--gold-soft)}
-.f-cred{position:absolute;bottom:max(26px,env(safe-area-inset-bottom));font-size:11px;font-weight:600;letter-spacing:.3em;opacity:.4}
+/* 终章：文字落在叠合成形的大器下方，史实退为角标 */
+#finale{justify-content:flex-end;padding-bottom:max(64px,calc(env(safe-area-inset-bottom) + 40px));color:#4a3426}
+.f-big{font-size:clamp(26px,4vw,40px);font-weight:400;letter-spacing:.5em;padding-left:.5em;text-shadow:0 0 18px rgba(255,248,236,.9);opacity:0}
+.f-sub{margin-top:16px;font-size:clamp(14px,2vw,17px);letter-spacing:.4em;padding-left:.4em;color:#8a5f2a;opacity:0;text-shadow:0 0 12px rgba(255,248,236,.9)}
+#finale.on .f-big{animation:rise 1.6s ease .3s forwards}
+#finale.on .f-sub{animation:rise 1.6s ease 1.6s forwards}
+.f-btns{margin-top:34px;display:flex;gap:22px;opacity:0}
+#finale.on .f-btns{animation:rise 1.4s ease 3s forwards}
+.f-btns button{font-size:13px;font-weight:700;letter-spacing:.4em;padding:11px 18px 11px calc(18px + .4em);border:1px solid rgba(74,52,38,.35);background:rgba(255,248,236,.4)}
+.f-cred{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));max-width:min(30em,80%);text-align:right;font-size:10.5px;line-height:1.9;letter-spacing:.12em;opacity:.38}
 
 #nogl{z-index:9;font-size:15px;letter-spacing:.2em;line-height:2.2;text-align:center}
 @keyframes breath{0%,100%{opacity:.35}50%{opacity:.85}}
-@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:.92;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:.95;transform:none}}
 @media (prefers-reduced-motion:reduce){.t-go,#endgo.on{animation:none}}
-@media (max-width:520px){#hint{font-size:13px;letter-spacing:.14em}.t-pro{font-size:14px}}
+@media (max-width:560px){
+  #chapter{font-size:13px;letter-spacing:.18em;gap:8px;left:max(14px,env(safe-area-inset-left));top:max(18px,env(safe-area-inset-top))}
+  #hud{gap:6px}#hud button{width:34px;height:34px}#hud svg{width:16px;height:16px}
+  #hint{font-size:13px;letter-spacing:.12em}
+  #who button{width:44px;height:44px}#who svg{width:30px;height:30px}
+  .t-pro{font-size:14px}
+  .t-en{font-size:9px;letter-spacing:.32em;padding-left:.32em}
+}
 body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
 </style>
 </head>
 <body>
 <div id="app">
   <canvas id="bg"></canvas>
+  <canvas id="vz"></canvas>
   <canvas id="gl"></canvas>
   <canvas id="fx"></canvas>
 
   <div id="chapter"><i></i><span id="chname"></span></div>
-  <div id="who"><button id="w0" class="sel">阿蓝</button><button id="w1">师傅</button></div>
+  <div id="who">
+    <button id="w0" class="sel" aria-label="阿蓝" title="阿蓝（Tab 切换）"><svg viewBox="0 0 34 34"><path d="M10 31 L13.5 15 L20.5 15 L24 31 Z" fill="#4f6fa3"/><rect x="11.2" y="22" width="11.6" height="2.4" fill="#3fb6a8"/><circle cx="17" cy="11" r="4.6" fill="#f2dcc4"/><path d="M12.4 10.4a4.6 4.6 0 0 1 9.2 0z" fill="#29242a"/><circle cx="17" cy="4.6" r="2" fill="#29242a"/><circle cx="25.5" cy="19.5" r="2" fill="#bfe0ff"/></svg><span>阿蓝</span></button>
+    <button id="w1" aria-label="师傅" title="师傅（Tab 切换）"><svg viewBox="0 0 34 34"><path d="M8 31 Q11 19 13.5 16 L20.5 16 Q23 19 26 31 Z" fill="#5a3a2a"/><rect x="14" y="20" width="6" height="9" fill="#3f7f74"/><circle cx="17" cy="11.5" r="4.6" fill="#f2dcc4"/><path d="M12.4 11a4.6 4.6 0 0 1 9.2 0z" fill="#d8d4cc"/><path d="M15 15.5 L17 19 L19 15.5Z" fill="#d8d4cc"/><circle cx="15.3" cy="12" r="1.3" fill="none" stroke="#d9b45a" stroke-width=".8"/><circle cx="18.7" cy="12" r="1.3" fill="none" stroke="#d9b45a" stroke-width=".8"/></svg><span>师傅</span></button>
+  </div>
   <div id="hud">
-    <button id="blv" aria-label="选择章节" title="章节">章</button>
-    <button id="bre" aria-label="重来本章" title="重来 (R)">复</button>
-    <button id="bmu" aria-label="声音开关" title="声音 (M)">音</button>
+    <button id="blv" aria-label="选择章节" title="章节"><svg viewBox="0 0 20 20"><path d="M10 2.5 13.2 5.7 10 8.9 6.8 5.7Z M4.8 7.7 8 10.9 4.8 14.1 1.6 10.9Z M15.2 7.7 18.4 10.9 15.2 14.1 12 10.9Z M10 12.9 13.2 16.1 10 19.3 6.8 16.1Z"/></svg></button>
+    <button id="bre" aria-label="重来本章" title="重来 (R)"><svg viewBox="0 0 20 20"><path d="M16 10.5a6 6 0 1 1-2-4.5"/><path d="M14.6 2.6 14.2 6.4 10.4 6"/></svg></button>
+    <button id="bmu" aria-label="声音开关" title="声音 (M)"><svg viewBox="0 0 20 20"><path d="M3 8h3l4-3.5v11L6 12H3z"/><path class="w" d="M13 7.5a3.5 3.5 0 0 1 0 5M15.2 5.3a6.6 6.6 0 0 1 0 9.4"/><path class="x" d="M13.5 7.5l4 5M17.5 7.5l-4 5"/></svg></button>
   </div>
   <div id="hint" role="status"></div>
   <div id="endline"><p id="endvase"></p><p id="endtext"></p><span id="endgo">轻触继续</span></div>
@@ -120,7 +130,6 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     <div class="c-no" id="cno"></div>
     <h2 class="c-name" id="cname"></h2>
     <div class="c-rule"></div>
-    <p class="c-craft" id="ccraft"></p>
     <p class="c-poem" id="cpoem"></p>
   </section>
 
@@ -129,21 +138,16 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
       <h1 class="t-name">成器</h1>
       <div class="t-side"><div class="t-gem"></div><div class="t-seal">铜胎掐丝珐琅</div></div>
     </div>
-    <p class="t-pro">玉不琢，不成器。<br>窑火将熄的年月，老师傅带着徒弟阿蓝，<br>要把天上那件空着的器，一道一道做成。</p>
+    <p class="t-pro">玉不琢，不成器。<br>窑火将熄的年月，老师傅带着徒弟阿蓝，<br>俯身走进一只还空着的铜胎。</p>
     <p class="t-go" id="tgo">轻触开始</p>
     <p class="t-en">CHENG QI · THE MAKING OF A VESSEL</p>
   </section>
 
-  <section id="finale" class="screen solid">
-    <canvas id="fvase" width="320" height="360" style="position:static;width:200px;height:225px"></canvas>
-    <div class="f-lines">
-      <p>景泰蓝，即铜胎掐丝珐琅，明代景泰年间技艺成熟，因而得名。</p>
-      <p>一九五一年，梁思成、林徽因在清华营建系组织抢救，请回了改行多年的老艺人。</p>
-      <p>二〇〇六年，景泰蓝制作技艺列入第一批国家级非物质文化遗产名录。</p>
-      <p class="big">窑火重燃，一脉接续。</p>
-    </div>
+  <section id="finale" class="screen">
+    <p class="f-big">器，成了。</p>
+    <p class="f-sub">窑火重燃，一脉接续。</p>
     <div class="f-btns"><button id="again">再走一遍</button><button id="pick">选章</button></div>
-    <p class="f-cred">成器 · 画面与声音均由代码实时生成</p>
+    <p class="f-cred">景泰蓝，即铜胎掐丝珐琅，明代景泰年间技艺成熟，因而得名。一九五一年，梁思成、林徽因组织抢救，请回改行多年的老艺人。二〇〇六年，景泰蓝制作技艺列入第一批国家级非物质文化遗产名录。谨以此作，致敬所有守着火的人。</p>
   </section>
 
   <section id="levels" class="screen solid">
@@ -156,45 +160,44 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
   <section id="nogl" class="screen solid"><p>这台设备的浏览器没有开启 WebGL，<br>换一个现代浏览器再来看看这抹蓝吧。</p></section>
 </div>
 <script>
-/* 成器 · levels.js — 八幕关卡（序 + 七道工序）。
+/* 成器 · levels.js — 八幕关卡（序 + 七道工序），第二版。
  *
  * boxes : [x0,y0,z0, x1,y1,z1, 材质键]   实心块（含端点）
- *         材质键：rk 山石 · cu 古铜（带铜绿）· cuL 新铜 · wd 旧木 · au 金 · en 釉（宝石蓝）· en2 釉（孔雀蓝）· rg 氧化渣 · kl 窑砖
- * walk  : [x,y,z] 或区间；'m' 幻砖（视错觉连通）· 'h' 双晕金箔砖 · {goal:1} 阿蓝的门 · {goal2:1} 师傅的门
- *         {plate:{part,to}} 一次性踏板（矿脉/火口）· {hold:'partId'} 托举踏板（有人站着才绷紧）
+ *         材质键：rk 石 · cu 古铜（带铜绿）· cuL 新铜 · wd 旧木 · au 金 · en / en2 釉 · rg 氧化渣 · kl 窑砖
+ * walk  : [x,y,z] 或区间；'m' 幻砖（视错觉连通）· {goal:1} 阿蓝的门 · {goal2:1} 师傅的门
+ *         {plate:{part,to}} 一次性踏板 · {hold:'partId'} 托举踏板（有人站着，对应的路才在）
  * stairs: [x,y,z,'-z']
  * 机关  : kind 'rot' | 'slide'；handles 可拖拽金珠；follow 联动；hold 托举
- *         glaze:{need:[[丝id,状态],...]}  丝格：所需金丝全部合拢才能灌釉；filled:1 为旧釉
- *         rough:1  覆着氧化渣，磨光后才可行走 · onlyA:1 只有阿蓝能走（师傅留在原地）
- *         wire:{len,dir}  可转动的金丝（不可行走，只划定丝格边界）
- * duo   : 'follow' 师傅自动跟随一步之后 · 'ctrl' 两人可分别操控（轻点人物切换）
+ *         glaze:{need:[[丝id,状态],...]}  丝格：金丝合拢才能灌釉；金丝一走，釉就散回空框
+ *         rough:1 氧化渣，磨光后可走 · onlyA:1 只有阿蓝能走 · collapse:{on:[部件...],to} 两人都到了，身后的路就塌
+ *         wire:{len,dir} 转动的金丝 · rail:{len,dir} 沿轨滑动的金丝
+ * deco  : 摆件一律放在不可走的格子上（求解器会检查）
  * 布局守则：越高的结构越靠 -x/-z；视错觉边只发生在“近处更高”的两块幻砖之间。
+ * 情绪弧线：克制微光（序—三）→ 暗场与围困（四—六）→ 窑火重燃（七）。
  */
 (function (root) {
   'use strict';
-  // 全局材质色（各幕可覆盖）
-  // 色彩体系：景泰蓝真实的釉色谱（松石绿、珊瑚红、明黄、青金蓝、翠绿、粉、乳白）+ 金丝；
-  // 天色取《纪念碑谷》式的柔和渐变，每一幕一个时辰、一组主釉色。
+  // 釉色取景泰蓝真实色谱：松石绿、珊瑚红、明黄、青金蓝、宝石蓝、翠绿、粉；金丝勾边
   var BASE = {
-    cu: '#a8714a', cuL: '#d29466', patina: '#5fa596', au: '#d9b45a', auL: '#ffe9b0', en: '#3fb6a8', en2: '#e0786a',
-    rg: '#6a6460', kl: '#c0644a', rk: '#a39ab5', wd: '#a7866c', glow: '#ffd98a', ink: '#4b4262', fire: '#ff8a3c'
+    cu: '#9a6744', cuL: '#c48a5c', patina: '#5fa596', au: '#d9b45a', auL: '#ffe9b0', en: '#3fb6a8', en2: '#e0786a',
+    rg: '#5e5a56', kl: '#a8503a', rk: '#6f7590', wd: '#8a6e58', glow: '#ffd98a', ink: '#efe8da', fire: '#ff8a3c', dark: 1
   };
   function pal(o) { var p = {}, k; for (k in BASE) p[k] = BASE[k]; for (k in o) p[k] = o[k]; return p; }
 
   var LEVELS = [
     // ───────────────────────── 序 · 寻矿 ─────────────────────────
     {
-      name: '寻矿', gift: '色样', vase: '器，有了颜色。', no: '序', craft: '珐琅釉以矿石研磨而成，一色一石，先要找到它', poem: '山里有一种蓝，只肯藏在石头里。', end: '第一块色样，收进了师傅的布包。',
-      start: [6, 0, 6], start2: [6, 0, 5], duo: 'follow',
-      hints: [['轻点地面，阿蓝会走过去', 'walk'], ['踩上发光的矿脉', 'plate'], ['拖动金珠，升起铜台', 'part'], ['把金门里的色样，交给天上那件器', 'time']],
-      pal: pal({ sky: ['#c9c3e6', '#efd3d6', '#f9e2cf'], mist: '#b9b4dc', fog: '#f3dcd2', ink: '#4b4262', key: [0.55, 0.78, 0.3], keyC: '#fff1e0', amb: 0.5, fx: 'mote', en: '#3fb6a8', en2: '#e0786a' }),
+      name: '寻矿', gift: '色样', vase: '器，有了颜色。', no: '序', poem: '空着的地方，才好落第一笔。', end: '他把那点颜色，揣进了怀里。',
+      start: [6, 0, 6], start2: [6, 0, 5], duo: 'follow', band: 0,
+      hints: [['轻点地面，阿蓝会走过去', 'walk'], ['踩上发光的矿脉', 'plate'], ['拖动金珠，升起铜台', 'part']],
+      pal: pal({ sky: ['#232c4a', '#454c70', '#8a7f95'], mist: '#6f7aa0', fog: '#323b5e', key: [0.55, 0.78, 0.3], keyC: '#efe8ff', amb: 0.46, fx: 'mote', stars: 0.3 }),
       music: { ch: 0 },
       parts: [
         { id: 'base',
-          boxes: [[4, -6, 4, 6, 0, 6, 'rk'], [-2, -6, 2, -1, 2, 4, 'rk'], [-2, -6, 1, -2, 3, 1, 'rk']],
+          boxes: [[4, -6, 4, 6, 0, 6, 'rk'], [7, -6, 4, 7, -1, 5, 'rk'], [-2, -6, 2, -1, 2, 4, 'rk'], [-3, -6, 3, -3, 1, 4, 'rk'], [-2, -6, 1, -2, 3, 1, 'rk']],
           walk: [[5, 0, 4, 6, 0, 6], [4, 0, 5, 4, 0, 6], [4, 0, 4, { plate: { part: 'vein', to: 0 } }],
             [-1, 2, 3, -1, 2, 4], [-2, 2, 3, -2, 2, 4], [-1, 2, 2, { plate: { part: 'rise', to: 0 } }], [-2, 3, 1, { goal: 1 }]],
-          deco: [['ore', 4, 0, 4, 'en'], ['ore', -1, 2, 2, 'en2'], ['crystal', 6.3, 0, 4.2], ['crystal', -1.6, 2, 4.4], ['door', -2, 3, 1]] },
+          deco: [['ore', 4, 0, 4, 'en'], ['ore', -1, 2, 2, 'en2'], ['crystal', 7, -1, 4.6], ['crystal', -3, 1, 3.6], ['door', -2, 3, 1]] },
         { id: 'vein', kind: 'slide', axis: 'y', min: -6, max: 0, state: -6, boxes: [[1, -5, 4, 3, 0, 4, 'rk']], walk: [[1, 0, 4, 3, 0, 4]], deco: [['vein', 1, 0, 4, 3]] },
         { id: 'lift', kind: 'slide', axis: 'y', min: 0, max: 2, state: 0, boxes: [[0, -8, 4, 0, 0, 4, 'cu']], walk: [[0, 0, 4]], handles: [[0, 0.1, 4.62]] },
         { id: 'rise', kind: 'slide', axis: 'y', min: -5, max: 0, state: -5, stairs: [[-2, 3, 2, '-z']] }
@@ -202,127 +205,144 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     },
     // ───────────────────────── 一 · 制胎 ─────────────────────────
     {
-      name: '制胎', gift: '铜胎', vase: '器，有了骨。', no: '一', craft: '紫铜片剪裁、锤打、焊接，成为器物的胎骨', poem: '铜要先敲成胎，器才有骨。', end: '铜胎成形。叮当声在空屋里回了很久。',
-      start: [-1, 0, 0], start2: [-1, 0, 1], duo: 'follow',
+      name: '制胎', gift: '铜胎', vase: '器，有了骨。', no: '一', poem: '屋子空了，炉还是冷的。', end: '敲了一夜，师傅没说一句话。',
+      start: [-1, 0, 0], start2: [-1, 0, 1], duo: 'follow', band: 1,
       hints: [['拖动金珠，转动铜胎', 'part'], ['看起来相连的地方，就走得过去', 'time']],
-      pal: pal({ sky: ['#f2e3cf', '#f6d9c0', '#eac3a8'], mist: '#e9c9ab', fog: '#efd2bb', ink: '#5a4232', key: [-0.35, 0.86, 0.38], keyC: '#fff4e2', amb: 0.5, fx: 'dust', skylight: 1, rk: '#b8a089' }),
+      pal: pal({ sky: ['#211d1a', '#3e342c', '#6e5a48'], mist: '#86705a', fog: '#2e2620', key: [-0.35, 0.86, 0.38], keyC: '#e6eeff', amb: 0.42, fx: 'dust', skylight: 1 }),
       music: { ch: 1 },
       parts: [
         { id: 'base',
           boxes: [[-1, -6, -1, 1, 0, 1, 'wd'], [3, -6, 0, 3, -1, 0, 'cu'], [6, -6, 5, 6, 3, 7, 'cu'], [5, -6, 7, 5, 3, 7, 'wd'], [2, -6, 7, 4, 4, 7, 'wd']],
-          walk: [[-1, 0, 0, 1, 0, 1], [0, 0, -1, 1, 0, -1], [6, 3, 5, 'm'], [6, 3, 6], [6, 3, 7], [3, 4, 7, 4, 4, 7], [2, 4, 7, { goal: 1 }]],
+          walk: [[-1, 0, 0, 1, 0, 1], [6, 3, 5, 'm'], [6, 3, 6], [6, 3, 7], [3, 4, 7, 4, 4, 7], [2, 4, 7, { goal: 1 }]],
           stairs: [[5, 4, 7, '-x']],
-          deco: [['scrap', -1, 0, -1], ['anvil', 1, 0, -1], ['door', 2, 4, 7], ['lattice', 6, 1, 6, 'x'], ['lattice', 4, 2, 7, 'z'], ['vase', 0.2, 0, -0.9]] },
+          deco: [['scrap', -1, 0, -1], ['anvil', 1, 0, -1], ['door', 2, 4, 7], ['vase', 0, 0, -1]] },
         { id: 'arm', kind: 'rot', axis: 'y', pivot: [3, 0, 0], state: 1, thin: 1,
           boxes: [[2, 0, 0, 4, 0, 0, 'cuL']], walk: [[2, 0, 0, 'm'], [3, 0, 0], [4, 0, 0, 'm']], handles: [[3, 0.3, 1], [3, 0.3, -1]], deco: [['hub', 3, 0, 0]] }
       ]
     },
     // ───────────────────────── 二 · 掐丝 ─────────────────────────
+    // 一根沿轨滑动的金丝，一次只合得住一个丝格：走过去的釉格会在身后散掉，回程要自己想好。
     {
-      name: '掐丝', gift: '金丝', vase: '器，有了纹。', no: '二', craft: '扁铜丝用镊子掐成纹样，粘在胎上，围出一个个丝格', poem: '丝合拢的地方，才盛得住釉。', end: '纹样是死的，可路终究要阿蓝自己去走。',
-      start: [7, 0, 5], start2: [7, 0, 4], duo: 'follow',
-      hints: [['拖动金丝末端的珠子，让丝格合拢', 'part'], ['丝格合拢后，轻点它灌釉', 'fill']],
-      pal: pal({ sky: ['#cfe5da', '#e8eedb', '#f6ecd2'], mist: '#bcd8c9', fog: '#e6ecd8', ink: '#3e5248', key: [0.45, 0.8, -0.4], keyC: '#fff8e6', amb: 0.5, fx: 'mote', en: '#4a8fd6', en2: '#3fb6a8' }),
+      name: '掐丝', gift: '金丝', vase: '器，有了纹。', no: '二', poem: '师傅的手，比从前慢了。', end: '旧的样子走到头了。剩下的，得自己走。',
+      start: [8, 0, 5], start2: [8, 0, 4], duo: 'follow', band: 2,
+      hints: [['沿着轨道拖动金丝，让丝格合拢', 'part'], ['丝格合拢后，轻点它灌釉', 'fill'], ['金丝一走，身后的釉就散了', 'time']],
+      pal: pal({ sky: ['#122a33', '#204a54', '#4f7d7a'], mist: '#4f8a86', fog: '#183238', key: [0.45, 0.8, -0.4], keyC: '#fff4dc', amb: 0.46, fx: 'mote', en: '#3e8fd6', en2: '#3fb6a8' }),
       music: { ch: 2 },
       parts: [
         { id: 'base',
-          boxes: [[5, -6, 3, 7, 0, 5, 'cu'], [0, -6, 2, 1, 0, 4, 'cu'], [0, -6, -2, 0, 0, -2, 'cu'], [-3, -6, 2, -2, 3, 3, 'cu']],
-          walk: [[5, 0, 3, 7, 0, 5], [0, 0, 2, 1, 0, 4], [0, 0, -2], [-2, 3, 2, -2, 3, 3], [-3, 3, 3], [-3, 3, 2, { goal: 1 }]],
-          deco: [['book', 0, 0, -2], ['door', -3, 3, 2], ['spool', 6.2, 0, 3.2], ['frame', 2, 0, 4, 4, 0, 4]] },
-        { id: 'old', glaze: { need: [], filled: 1 }, boxes: [[0, 0, -1, 0, 0, 1, 'en2']], walk: [[0, 0, -1, 0, 0, 1]] },
-        { id: 'cell', glaze: { need: [['w1', 0], ['w2', 0]] }, boxes: [[2, 0, 4, 4, 0, 4, 'en']], walk: [[2, 0, 4, 4, 0, 4]] },
-        { id: 'w1', kind: 'rot', axis: 'y', pivot: [1.5, 0, 3.5], state: 3, wire: { len: 1, dir: [0, 0, 1] }, handles: [[1.5, 0.3, 4.5]] },
-        { id: 'w2', kind: 'rot', axis: 'y', pivot: [4.5, 0, 4.5], state: 1, wire: { len: 3, dir: [-1, 0, 0] }, handles: [[2.5, 0.3, 4.5]] },
-        { id: 'lift', kind: 'slide', axis: 'y', min: 0, max: 3, state: 0, boxes: [[-1, -9, 3, -1, 0, 3, 'cu']], walk: [[-1, 0, 3]], handles: [[-1, 0.1, 3.62]] }
+          boxes: [[7, -6, 3, 8, 0, 5, 'cu'], [5, -6, 3, 5, 0, 4, 'cu'], [3, -6, 4, 3, 0, 4, 'cu'], [0, -6, 3, 1, 0, 5, 'cu'], [5, -6, 0, 5, 0, 1, 'cu'], [4, -6, -1, 6, 1, -1, 'cu'], [9, -6, 3, 9, 0, 3, 'cu']],
+          walk: [[7, 0, 3, 8, 0, 5], [5, 0, 3, 5, 0, 4], [3, 0, 4], [0, 0, 3, 1, 0, 4], [1, 0, 5], [0, 0, 5, { plate: { part: 'stair', to: 0 } }], [5, 0, 1], [5, 1, -1, { goal: 1 }], [4, 1, -1], [6, 1, -1]],
+          deco: [['door', 5, 1, -1], ['spool', 9, 0, 3]] },
+        { id: 'a', glaze: { need: [['w', 0]] }, boxes: [[6, 0, 4, 6, 0, 4, 'en']], walk: [[6, 0, 4]] },
+        { id: 'b', glaze: { need: [['w', -2]] }, boxes: [[4, 0, 4, 4, 0, 4, 'en']], walk: [[4, 0, 4]] },
+        { id: 'c', glaze: { need: [['w', -4]] }, boxes: [[2, 0, 4, 2, 0, 4, 'en2']], walk: [[2, 0, 4]] },
+        { id: 'd', glaze: { need: [['w2', 0]] }, boxes: [[5, 0, 2, 5, 0, 2, 'en2']], walk: [[5, 0, 2]] },
+        { id: 'w', kind: 'slide', axis: 'x', min: -4, max: 0, state: -2, rail: { from: [1.5, 0, 4.5], to: [6.5, 0, 4.5] }, wire: { len: 1, dir: [-1, 0, 0], at: [6.5, 0, 4.5] }, handles: [[6, 0.3, 4.75]] },
+        { id: 'w2', kind: 'rot', axis: 'y', pivot: [5.5, 0, 1.5], state: 1, wire: { len: 1, dir: [0, 0, 1] }, handles: [[5.5, 0.3, 2.5]] },
+        { id: 'stair', kind: 'slide', axis: 'y', min: -6, max: 0, state: -6, stairs: [[5, 1, 0, '-z']] }
       ]
     },
     // ───────────────────────── 三 · 点蓝 ─────────────────────────
+    // 一根金丝绕着中庭转，三格丝格轮流合拢：先去右边踩亮机关，再折回来换左边。
     {
-      name: '点蓝', gift: '釉', vase: '器，有了蓝。', no: '三', craft: '把研细的釉料一格一格填进丝格，一色一格', poem: '一格一格地点，蓝是慢慢长出来的。', end: '师傅的手抖了一下。阿蓝装作没有看见。',
-      start: [7, 0, 6], start2: [7, 0, 5], duo: 'follow',
-      hints: [['一根金丝，可以围出两个丝格', 'time']],
-      pal: pal({ sky: ['#bfe3e2', '#e2f0e6', '#fbe4d8'], mist: '#a9d6d4', fog: '#e9efe4', ink: '#2f5552', key: [0.5, 0.82, 0.25], keyC: '#fffaf0', amb: 0.5, fx: 'mote', en: '#e0786a', en2: '#3fb6a8' }),
+      name: '点蓝', gift: '釉', vase: '器，有了蓝。', no: '三', poem: '外面又响了一夜。', end: '师傅的手抖了一下。阿蓝装作没看见。',
+      start: [7, 0, 6], start2: [7, 0, 7], duo: 'follow', band: 3,
+      hints: [['一根金丝，围得住三格，却一次只合得住一格', 'time']],
+      pal: pal({ sky: ['#121a30', '#22305a', '#4a5a86'], mist: '#56679a', fog: '#1a2340', key: [0.5, 0.82, 0.25], keyC: '#e6efff', amb: 0.44, fx: 'mote', moon: 1, en: '#3fb6a8', en2: '#e0786a' }),
       music: { ch: 3 },
       parts: [
         { id: 'base',
-          boxes: [[6, -6, 5, 8, 0, 7, 'cu'], [2, -6, 6, 2, 0, 6, 'cu'], [1, -6, 1, 3, 0, 2, 'cu'], [-2, -6, -1, -1, 3, 1, 'cu']],
-          walk: [[6, 0, 5, 8, 0, 7], [2, 0, 6], [1, 0, 1, 3, 0, 2], [-1, 3, -1, -1, 3, 1], [-2, 3, 1], [-2, 3, -1], [-2, 3, 0, { goal: 1 }]],
-          deco: [['door', -2, 3, 0], ['pots', 7.6, 0, 5.4], ['frame', 3, 0, 6, 5, 0, 6], ['frame', 2, 0, 3, 2, 0, 5]] },
-        { id: 'a', glaze: { need: [['w', 0]] }, color: 'en2', boxes: [[3, 0, 6, 5, 0, 6, 'en2']], walk: [[3, 0, 6, 5, 0, 6]] },
-        { id: 'b', glaze: { need: [['w', 1]] }, boxes: [[2, 0, 3, 2, 0, 5, 'en']], walk: [[2, 0, 3, 2, 0, 5]] },
-        { id: 'w', kind: 'rot', axis: 'y', pivot: [2.5, 0, 5.5], state: 2, wire: { len: 3, dir: [1, 0, 0] }, handles: [[5.5, 0.3, 5.5]] },
-        { id: 'lift', kind: 'slide', axis: 'y', min: 0, max: 3, state: 0, boxes: [[0, -9, 1, 0, 0, 1, 'cu']], walk: [[0, 0, 1]], handles: [[0, 0.1, 1.62]] }
+          boxes: [[6, -6, 5, 8, 0, 7, 'cu'], [2, -6, 6, 2, 0, 6, 'cu'], [1, -6, 1, 3, 0, 2, 'cu'], [-2, -6, 5, -1, 0, 6, 'cu'], [-3, -6, 6, -3, 0, 6, 'cu'], [-5, -6, 4, -4, 1, 6, 'cu'], [9, -6, 5, 9, 0, 5, 'cu']],
+          walk: [[6, 0, 5, 8, 0, 7], [2, 0, 6], [1, 0, 1, 3, 0, 1], [1, 0, 2], [3, 0, 2], [2, 0, 2, { plate: { part: 'rise', to: 0 } }], [-2, 0, 5, -1, 0, 6],
+            [-4, 1, 6], [-5, 1, 5, -5, 1, 6], [-4, 1, 5, { goal: 1 }]],
+          deco: [['pots', 9, 0, 5], ['door', -4, 1, 5], ['crystal', -4, 1, 4]] },
+        { id: 'a', glaze: { need: [['w', 0]] }, boxes: [[3, 0, 6, 5, 0, 6, 'en']], walk: [[3, 0, 6, 5, 0, 6]] },
+        { id: 'b', glaze: { need: [['w', 1]] }, boxes: [[2, 0, 3, 2, 0, 5, 'en2']], walk: [[2, 0, 3, 2, 0, 5]] },
+        { id: 'c', glaze: { need: [['w', 2]] }, boxes: [[0, 0, 6, 1, 0, 6, 'en']], walk: [[0, 0, 6, 1, 0, 6]] },
+        { id: 'w', kind: 'rot', axis: 'y', pivot: [2.5, 0, 5.5], state: 3, wire: { len: 3, dir: [1, 0, 0] }, handles: [[5.5, 0.3, 5.5]] },
+        { id: 'rise', kind: 'slide', axis: 'y', min: -6, max: 0, state: -6, stairs: [[-3, 1, 6, '-x']] }
       ]
     },
     // ───────────────────────── 四 · 烧蓝 ─────────────────────────
+    // 两人一到窑前，来路便塌进火里；镜头转成正面剖面：下层窑房里师傅守火，上层冷光里阿蓝独行。
     {
-      name: '烧蓝', gift: '火', vase: '器，经了火。', no: '四', craft: '入窑烧至八百度上下，釉料熔化下沉，再点、再烧，往复数次', poem: '火要有人守着。', end: '师傅没有跟来。窑火映着他的背影。',
-      start: [8, 0, 7], start2: [8, 0, 6], duo: 'ctrl',
-      hints: [['轻点师傅，换他走', 'select'], ['师傅踩住窑口，丝桥才会绷紧', 'hold']],
-      pal: pal({ sky: ['#f6c9a8', '#f0a08c', '#c98a9e'], mist: '#f2b39a', fog: '#e9a99c', ink: '#5a2f2c', key: [-0.6, 0.6, -0.5], keyC: '#ffd9b0', amb: 0.46, fx: 'ember', en: '#3a6fc4', en2: '#f0c24b', kl: '#b5523d' }),
+      name: '烧蓝', gift: '火', vase: '器，经了火。', no: '四', poem: '总得有人留下来。', end: '他没跟来，火还在烧。',
+      start: [7, 0, 5], start2: [6, 0, 5], duo: 'ctrl', band: 4,
+      side: { part: 'path', at: -14, yaw: 0, pitch: 0.2 }, negVase: { part: 'g1', at: 0, l: [-1.5], r: [7.5], y0: -3.2, y1: 7.2 },
+      hints: [['先一起走到窑前', 'walk'], ['轻点人物，切换阿蓝和师傅', 'select'], ['师傅站到哪块炉砖上，哪段路就被金丝吊起来', 'hold']],
+      pal: pal({ sky: ['#0b0d12', '#14161c', '#1e1a1a'], mist: '#2a2c33', fog: '#0e1015', key: [0.55, 0.75, 0.35], keyC: '#dfe8ff', amb: 0.3, fx: 'ember', beams: 1, rk: '#8a8f9c', en: '#3e8fd6', en2: '#f0c24b', kl: '#9a4532' }),
       music: { ch: 4 },
       parts: [
-        { id: 'base',
-          boxes: [[7, -6, 6, 8, 0, 7, 'cu'], [1, -6, 5, 3, 0, 7, 'kl'], [0, -6, 0, 1, 0, 1, 'cu']],
-          walk: [[7, 0, 6, 8, 0, 7], [1, 0, 6, 3, 0, 7], [1, 0, 5], [2, 0, 5], [3, 0, 5, { hold: 'bridge' }], [0, 0, 0, { goal: 1 }], [1, 0, 0], [0, 0, 1, 1, 0, 1]],
-          deco: [['kiln', 1.6, 0, 7.2], ['door', 0, 0, 0], ['tongs', 3.3, 0, 6.6]] },
-        { id: 'path', kind: 'slide', axis: 'y', min: -7, max: 0, state: 0, glaze: { need: [], filled: 1 }, follow: { src: 'bridge', when: 0, on: -7, off: 0 },
-          boxes: [[4, 0, 6, 6, 0, 6, 'en']], walk: [[4, 0, 6, 6, 0, 6]] },
-        { id: 'bridge', kind: 'slide', axis: 'y', min: -9, max: 0, state: -9, hold: { on: 0, off: -9 }, onlyA: 1, glaze: { need: [], filled: 1 },
-          boxes: [[1, 0, 2, 1, 0, 4, 'en2']], walk: [[1, 0, 2, 1, 0, 4]], deco: [['taut', 3, 0, 5, 1, 0, 3]] }
+        { id: 'start', collapse: { on: ['kiln', 'lift', 'upper', 'g1', 'g2'], to: -14 }, kind: 'slide', axis: 'y', min: -14, max: 0, state: 0, boxes: [[6, -6, 4, 7, 0, 5, 'cu']], walk: [[6, 0, 4, 7, 0, 5]] },
+        { id: 'path', collapse: { on: ['kiln', 'lift', 'upper', 'g1', 'g2'], to: -14 }, kind: 'slide', axis: 'y', min: -14, max: 0, state: 0, glaze: { need: [], filled: 1 }, boxes: [[6, 0, 2, 6, 0, 3, 'en']], walk: [[6, 0, 2, 6, 0, 3]] },
+        { id: 'kiln',
+          boxes: [[0, -6, 0, 6, 0, 1, 'kl'], [-1, -6, -2, 2, 0, -1, 'kl']],
+          walk: [[0, 0, 0], [2, 0, 0, 3, 0, 0], [5, 0, 0, 6, 0, 0], [0, 0, 1, 6, 0, 1], [1, 0, 0, { hold: 'g1' }], [4, 0, 0, { hold: 'g2' }]],
+          deco: [['kiln', 0.5, 0, -1.3]] },
+        { id: 'shaft', onlyA: 1, boxes: [[8, -6, 0, 8, 4, 0, 'rk'], [-2, -6, 0, -2, 4, 0, 'rk']], walk: [] },
+        { id: 'lift', onlyA: 1, kind: 'slide', axis: 'y', min: 0, max: 4, state: 0, boxes: [[7, -8, 0, 7, 0, 0, 'cu']], walk: [[7, 0, 0]], handles: [[7.62, 0.1, 0]] },
+        { id: 'upper', onlyA: 1, thin: 1, boxes: [[5, 4, 0, 6, 4, 0, 'rk'], [2, 4, 0, 2, 4, 0, 'rk'], [-1, 4, 0, -1, 4, 0, 'rk']],
+          walk: [[5, 4, 0, 6, 4, 0], [2, 4, 0], [-1, 4, 0, { goal: 1 }]], deco: [['door', -1, 4, 0]] },
+        { id: 'g2', onlyA: 1, kind: 'slide', axis: 'y', min: -14, max: 0, state: -14, hold: { on: 0, off: -14 }, glaze: { need: [], filled: 1 }, boxes: [[3, 4, 0, 4, 4, 0, 'en']], walk: [[3, 4, 0, 4, 4, 0]] },
+        { id: 'g1', onlyA: 1, kind: 'slide', axis: 'y', min: -14, max: 0, state: -14, hold: { on: 0, off: -14 }, glaze: { need: [], filled: 1 }, boxes: [[0, 4, 0, 1, 4, 0, 'en2']], walk: [[0, 4, 0, 1, 4, 0]] }
       ]
     },
     // ───────────────────────── 五 · 磨光 ─────────────────────────
+    // 下沉的深井：四壁冷灰，只有亲手磨亮的台阶透出宝石蓝，一路通向井口那扇暖光的门。
     {
-      name: '磨光', gift: '光', vase: '器，有了光。', no: '五', craft: '用砂石、黄石、木炭逐层打磨，直到釉面与铜丝齐平、透出光来', poem: '粗砺磨去，蓝才肯露出来。', end: '磨了一遍又一遍，阿蓝的手稳了。',
-      start: [0, 0, 2], duo: null,
+      name: '磨光', gift: '光', vase: '器，有了光。', no: '五', poem: '四下都是灰的。', end: '磨到后来，手就不抖了。',
+      start: [4, 0, 4], duo: null, band: 5,
       hints: [['在灰黑的残阶上来回划动，把它磨亮', 'polish']],
-      pal: pal({ sky: ['#d9dbe6', '#eceaea', '#f3efe6'], mist: '#c8cbd9', fog: '#eceae6', ink: '#45474f', key: [0.6, 0.7, 0.4], keyC: '#ffffff', amb: 0.5, fx: 'grit', en: '#6fae7e', en2: '#f2a7a0' }),
+      pal: pal({ sky: ['#16191e', '#23272e', '#353a43'], mist: '#4b515c', fog: '#14161a', key: [0.5, 0.8, 0.33], keyC: '#f4f6ff', amb: 0.34, fx: 'grit', rk: '#6c7079', en: '#1f6fe8', en2: '#2b8af2', rg: '#55524f' }),
       music: { ch: 5 },
       parts: [
-        { id: 'base',
-          boxes: [[0, -6, 0, 2, 0, 2, 'cu'], [5, -6, 1, 5, -1, 1, 'cu'], [7, -6, 0, 9, 0, 2, 'cu'], [7, -6, -2, 9, 1, -2, 'cu'], [7, -6, -1, 9, 0, -1, 'cu'], [3, -6, 1, 3, -1, 1, 'cu']],
-          walk: [[0, 0, 1, 2, 0, 2], [1, 0, 0, 2, 0, 0], [7, 0, 1, 9, 0, 2], [7, 0, 0], [9, 0, 0], [8, 1, -2, { goal: 1 }], [7, 1, -2], [9, 1, -2]],
-          stairs: [[8, 1, 0, '-z']],
-          deco: [['stones', 0, 0, 0], ['door', 8, 1, -2]] },
-        { id: 'r1', rough: 1, boxes: [[3, 0, 1, 3, 0, 1, 'en']], walk: [[3, 0, 1]] },
-        { id: 'bridge', kind: 'rot', axis: 'y', pivot: [5, 0, 1], state: 1, thin: 1, rough: 1,
-          boxes: [[4, 0, 1, 6, 0, 1, 'en2']], walk: [[4, 0, 1, 6, 0, 1]], handles: [[5, 0.3, 2], [5, 0.3, 0]], deco: [['hub', 5, 0, 1]] },
-        { id: 'r2', rough: 1, boxes: [[7, 1, -1, 9, 1, -1, 'en']], walk: [[7, 1, -1, 9, 1, -1]] }
+        { id: 'well',
+          boxes: [[2, -6, 2, 5, 0, 5, 'rk'], [-1, -6, -2, 0, 6, 6, 'rk'], [1, -6, -2, 7, 6, -1, 'rk'], [1, -6, 1, 1, 0, 4, 'rk'], [1, 1, 1, 1, 1, 1, 'rk'],
+            [1, -6, 0, 3, 1, 0, 'rk'], [4, -6, 0, 4, 2, 0, 'rk'], [5, -6, 0, 6, 3, 0, 'rk'], [6, -6, 2, 6, 1, 6, 'rk'], [2, -6, 6, 5, 1, 6, 'rk']],
+          walk: [[3, 0, 3, 5, 0, 5], [5, 3, 0, { goal: 1 }], [6, 3, 0]],
+          stairs: [[2, 1, 4, '-x'], [1, 2, 1, '-z'], [4, 3, 0, '+x']],
+          deco: [['door', 5, 3, 0], ['stones', 2, 0, 2]] },
+        { id: 'r1', rough: 1, boxes: [[1, 1, 2, 1, 1, 4, 'en']], walk: [[1, 1, 2, 1, 1, 4]] },
+        { id: 'r2', rough: 1, boxes: [[1, 2, 0, 3, 2, 0, 'en2']], walk: [[1, 2, 0, 3, 2, 0]] }
       ]
     },
     // ───────────────────────── 六 · 镀金 ─────────────────────────
+    // 两条金路隔着夜色：师傅踩住一块，阿蓝的路才亮；可他自己的路，得等阿蓝去踩亮。
     {
-      name: '镀金', gift: '金', vase: '器，镀了金。', no: '六', craft: '外露的铜丝与铜胎镀上金层，防锈，也让纹样亮起来', poem: '隔着山水，金线也是连着的。', end: '两盏灯，朝着同一个方向。',
-      start: [0, 0, 6], start2: [3, 3, 7], duo: 'ctrl', haloR: 2.3,
-      hints: [['两人的光晕重叠处，金箔会凝成路', 'halo'], ['轻点人物切换，一前一后地走', 'select']],
-      pal: pal({ sky: ['#34356a', '#7a6aa0', '#e7a9a0'], mist: '#8d7fb3', fog: '#c99aa6', ink: '#fbeede', key: [0.4, 0.85, 0.35], keyC: '#ffe6cc', amb: 0.56, fx: 'star', stars: 0.7, lamp: 1, en: '#f2a7a0', en2: '#3fb6a8' }),
+      name: '镀金', gift: '金', vase: '器，镀了金。', no: '六', poem: '隔着山，也知道他在。', end: '两盏灯，朝着同一个方向。',
+      start: [0, 0, 6], start2: [3, 3, 7], duo: 'ctrl', band: 6,
+      hints: [['师傅踩住金砖，阿蓝的路才亮', 'hold'], ['轻点人物切换，一前一后地让路', 'select']],
+      pal: pal({ sky: ['#0a0f26', '#172048', '#3a3c6e'], mist: '#3e4a86', fog: '#0c1330', key: [0.4, 0.85, 0.35], keyC: '#ffe6cc', amb: 0.52, fx: 'star', stars: 0.8, lamp: 1, en: '#f0c24b', en2: '#f0c24b' }),
       music: { ch: 6 },
       parts: [
         { id: 'low', thin: 1,
           boxes: [[0, 0, 6, 2, 0, 6, 'cu'], [5, 0, 6, 5, 0, 6, 'cu'], [8, 0, 6, 9, 0, 6, 'cu']],
-          walk: [[0, 0, 6, 2, 0, 6], [3, 0, 6, 'h'], [4, 0, 6, 'h'], [5, 0, 6], [6, 0, 6, 'h'], [7, 0, 6, 'h'], [8, 0, 6], [9, 0, 6, { goal: 1 }]],
+          walk: [[0, 0, 6, 2, 0, 6], [5, 0, 6, { hold: 'm1' }], [8, 0, 6, { hold: 'm2' }], [9, 0, 6, { goal: 1 }]],
           deco: [['door', 9, 0, 6]] },
         { id: 'high', thin: 1,
-          boxes: [[3, 3, 7, 3, 3, 7, 'cu'], [6, 3, 7, 8, 3, 7, 'cu'], [11, 3, 7, 12, 3, 7, 'cu']],
-          walk: [[3, 3, 7], [4, 3, 7, 'h'], [5, 3, 7, 'h'], [6, 3, 7, 8, 3, 7], [9, 3, 7, 'h'], [10, 3, 7, 'h'], [11, 3, 7], [12, 3, 7, { goal2: 1 }]],
-          deco: [['door', 12, 3, 7]] }
+          boxes: [[3, 3, 7, 4, 3, 7, 'cu'], [7, 3, 7, 7, 3, 7, 'cu'], [10, 3, 7, 12, 3, 7, 'cu']],
+          walk: [[3, 3, 7], [4, 3, 7, { hold: 'a1' }], [7, 3, 7, { hold: 'a2' }], [10, 3, 7, 11, 3, 7], [12, 3, 7, { goal2: 1 }]],
+          deco: [['door', 12, 3, 7]] },
+        { id: 'a1', kind: 'slide', axis: 'y', min: -14, max: 0, state: -14, hold: { on: 0, off: -14 }, glaze: { need: [], filled: 1 }, gilt: 1, thin: 1, boxes: [[3, 0, 6, 4, 0, 6, 'en']], walk: [[3, 0, 6, 4, 0, 6]] },
+        { id: 'a2', kind: 'slide', axis: 'y', min: -14, max: 0, state: -14, hold: { on: 0, off: -14 }, glaze: { need: [], filled: 1 }, gilt: 1, thin: 1, boxes: [[6, 0, 6, 7, 0, 6, 'en']], walk: [[6, 0, 6, 7, 0, 6]] },
+        { id: 'm1', kind: 'slide', axis: 'y', min: -14, max: 0, state: -14, hold: { on: 0, off: -14 }, glaze: { need: [], filled: 1 }, gilt: 1, thin: 1, boxes: [[5, 3, 7, 6, 3, 7, 'en']], walk: [[5, 3, 7, 6, 3, 7]] },
+        { id: 'm2', kind: 'slide', axis: 'y', min: -14, max: 0, state: -14, hold: { on: 0, off: -14 }, glaze: { need: [], filled: 1 }, gilt: 1, thin: 1, boxes: [[8, 3, 7, 9, 3, 7, 'en']], walk: [[8, 3, 7, 9, 3, 7]] }
       ]
     },
     // ───────────────────────── 七 · 复磨 ─────────────────────────
     {
-      name: '复磨', gift: '器', vase: '器，成了。', no: '七', craft: '七道大工序，一器之成。手艺，靠人一代一代接下去', poem: '窑火重燃。', end: '窑火重燃，一脉接续。',
-      start: [1, 1, 6], start2: [7, 1, 2], duo: 'ctrl',
+      name: '复磨', gift: '器', vase: '器，成了。', no: '七', poem: '火，又着了。', end: '器，成了。',
+      start: [1, 1, 6], start2: [7, 1, 2], duo: 'ctrl', band: 7,
       hints: [['这一次，换师傅为阿蓝托住路', 'hold']],
-      pal: pal({ sky: ['#fbe3b8', '#f9cfc0', '#cfe6e0'], mist: '#f6d2b5', fog: '#f2e1cf', ink: '#5a4236', key: [-0.4, 0.8, -0.45], keyC: '#fff0d8', amb: 0.5, fx: 'ember', en: '#3a6fc4', en2: '#3fb6a8', kl: '#c0644a' }),
+      pal: pal({ sky: ['#ffd9a0', '#f7b6a0', '#a9d3d6'], mist: '#f4c7a6', fog: '#f3dcc6', ink: '#4a3426', key: [-0.4, 0.8, -0.45], keyC: '#fff0d8', amb: 0.55, fx: 'ember', dark: 0, en: '#3a6fc4', en2: '#3fb6a8', kl: '#c0644a', cu: '#a8714a', cuL: '#d29466' }),
       music: { ch: 7 },
       parts: [
         { id: 'base',
-          boxes: [[1, -6, 0, 4, 1, 2, 'cu'], [1, -6, 5, 2, 1, 6, 'cu'], [6, -6, 1, 7, 1, 2, 'cu']],
-          walk: [[1, 1, 1, 1, 1, 2], [3, 1, 1, 4, 1, 2], [2, 1, 1], [2, 1, 2, { hold: 'r' }], [1, 1, 0], [4, 1, 0], [2, 1, 0, { goal: 1 }], [3, 1, 0, { goal2: 1 }],
+          boxes: [[1, -6, 0, 4, 1, 2, 'cu'], [1, -6, 5, 2, 1, 6, 'cu'], [6, -6, 1, 7, 1, 2, 'cu'], [1, -6, -2, 4, 1, -1, 'kl']],
+          walk: [[1, 1, 1, 1, 1, 2], [3, 1, 1, 4, 1, 2], [2, 1, 1], [2, 1, 2, { hold: 'r' }], [2, 1, 0, { goal: 1 }], [3, 1, 0, { goal2: 1 }],
             [1, 1, 5, 2, 1, 6], [6, 1, 1, 7, 1, 2]],
-          deco: [['kiln', 2.5, 1, -1.2], ['book', 4, 1, 0], ['pots', 6.4, 1, 1.3]] },
-        { id: 'r', kind: 'slide', axis: 'y', min: -9, max: 0, state: -9, hold: { on: 0, off: -9 }, rough: 1, onlyA: 1, boxes: [[1, 1, 3, 1, 1, 4, 'en']], walk: [[1, 1, 3, 1, 1, 4]] },
+          deco: [['kiln', 2.5, 1, -1.3], ['book', 4, 1, 0], ['pots', 1, 1, 0]] },
+        { id: 'r', kind: 'slide', axis: 'y', min: -14, max: 0, state: -14, hold: { on: 0, off: -14 }, rough: 1, onlyA: 1, boxes: [[1, 1, 3, 1, 1, 4, 'en']], walk: [[1, 1, 3, 1, 1, 4]] },
         { id: 'g', glaze: { need: [['w', 0]] }, boxes: [[5, 1, 1, 5, 1, 2, 'en2']], walk: [[5, 1, 1, 5, 1, 2]] },
         { id: 'w', kind: 'rot', axis: 'y', pivot: [4.5, 1, 0.5], state: 1, wire: { len: 1, dir: [1, 0, 0] }, handles: [[5.5, 1.3, 0.5]] }
       ]
@@ -393,7 +413,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
         id: pd.id, kind: pd.kind || 'static', axis: pd.axis || 'y', pivot: pd.pivot || [0, 0, 0],
         min: pd.min, max: pd.max, state: pd.state || 0, val: pd.state || 0,
         handles: pd.handles || [], follow: pd.follow || null, hold: pd.hold || null,
-        glaze: pd.glaze || null, filled: !!(pd.glaze && pd.glaze.filled), onlyA: !!pd.onlyA, rough: !!pd.rough, polished: false,
+        collapse: pd.collapse || null, glaze: pd.glaze || null, filled: !!(pd.glaze && pd.glaze.filled), onlyA: !!pd.onlyA, rough: !!pd.rough, polished: false,
         def: pd, cells: [], nodes: []
       };
       (pd.boxes || []).forEach(function (b) {
@@ -511,13 +531,32 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
 
   // 竖直面旋转的机关，有人站在上面时不可转
   function locked(W, part) {
+    var i;
+    // 有人站在靠这根金丝合拢的釉格上时，金丝不能动（一动釉就散了）
+    for (i = 0; i < W.parts.length; i++) {
+      var g = W.parts[i]; if (!g.glaze || !g.filled || !anyOn(W, g)) continue;
+      for (var k = 0; k < g.glaze.need.length; k++) if (g.glaze.need[k][0] === part.id) return true;
+    }
     if (part.kind !== 'rot' || part.axis === 'y') return false;
-    for (var i = 0; i < W.chars.length; i++) if (W.chars[i] && W.chars[i].part === part) return true;
+    for (i = 0; i < W.chars.length; i++) if (W.chars[i] && W.chars[i].part === part) return true;
     return false;
+  }
+  function needsMet(W, p) { for (var i = 0; i < p.glaze.need.length; i++) { var nd = p.glaze.need[i]; if (W.byId[nd[0]].state !== nd[1]) return false; } return true; }
+  // 金丝一离开，丝格里的釉就散回空框；返回散掉的丝格
+  function drain(W) {
+    var out = [];
+    W.parts.forEach(function (p) { if (p.glaze && p.filled && p.glaze.need.length && !needsMet(W, p)) { p.filled = false; out.push(p); } });
+    if (out.length) settle(W);
+    return out;
   }
   function anyOn(W, part) { for (var i = 0; i < W.chars.length; i++) if (W.chars[i] && W.chars[i].part === part) return true; return false; }
   // 联动 / 托举机关的目标状态
   function followTarget(W, p) {
+    if (p.collapse) { // 一次性：所有人都到了指定处，身后的路就塌进火里
+      if (p.state === p.collapse.to) return p.collapse.to;
+      for (var j = 0; j < W.chars.length; j++) if (!W.chars[j] || p.collapse.on.indexOf(W.chars[j].part.id) < 0) return p.state;
+      return p.collapse.to;
+    }
     if (p.hold) {
       for (var i = 0; i < W.nodes.length; i++) { var n = W.nodes[i]; if (n.holdOf === p.id && occupied(W, n)) return p.hold.on; }
       return p.hold.off;
@@ -525,13 +564,9 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     var s = W.byId[p.follow.src]; return s.state === p.follow.when ? p.follow.on : p.follow.off;
   }
   // 丝格是否已合拢、可以灌釉
-  function canFill(W, p) {
-    if (!p.glaze || p.filled) return false;
-    for (var i = 0; i < p.glaze.need.length; i++) { var nd = p.glaze.need[i]; if (W.byId[nd[0]].state !== nd[1]) return false; }
-    return true;
-  }
+  function canFill(W, p) { return !!(p.glaze && !p.filled && needsMet(W, p)); }
 
-  var api = { build: build, settle: settle, path: path, edge: edge, locked: locked, anyOn: anyOn, followTarget: followTarget, canFill: canFill,
+  var api = { build: build, settle: settle, path: path, edge: edge, locked: locked, anyOn: anyOn, followTarget: followTarget, canFill: canFill, drain: drain, needsMet: needsMet,
     occupied: occupied, scr: scr, tPoint: tPoint, tCell: tCell, rot90: rot90, AXV: AXV, key: key };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.SY_LOGIC = api;
 })(typeof window !== 'undefined' ? window : this);
@@ -652,24 +687,24 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
 
   // 共享：屏幕投影与光源空间
   var VHEAD = [
-    'attribute vec3 aP,aN,aC;attribute vec2 aE;uniform mat4 uM;uniform vec3 uCen;uniform vec3 uSc;',
+    'attribute vec3 aP,aN,aC;attribute vec2 aE;uniform mat4 uM;uniform vec3 uCen;uniform vec3 uSc;uniform vec3 uCR,uCU,uCF;',
     'uniform vec3 uLX,uLY,uLZ;uniform vec4 uLS;'
   ].join('\n');
   var VS = VHEAD + [
     'varying vec3 vN,vC,vW,vL;varying vec2 vE;',
     'void main(){vec4 w=uM*vec4(aP,1.);vec3 d=w.xyz-uCen;',
-    'float sx=dot(d,vec3(.70710678,0.,-.70710678));float sy=dot(d,vec3(-.40824829,.81649658,-.40824829));float sz=dot(d,vec3(.57735027));',
+    'float sx=dot(d,uCR);float sy=dot(d,uCU);float sz=dot(d,uCF);',
     'gl_Position=vec4(sx*uSc.x,sy*uSc.y+uSc.z,-sz*.02,1.);vN=(uM*vec4(aN,0.)).xyz;vC=aC;vW=w.xyz;vE=aE;',
     'vec3 q=w.xyz-uCen;vL=vec3(dot(q,uLX)*uLS.x,dot(q,uLY)*uLS.x,dot(q,uLZ)*uLS.y)*.5+.5;}'
   ].join('\n');
   var FS = [
-    'precision highp float;varying vec3 vN,vC,vW,vL;varying vec2 vE;',
+    'precision highp float;varying vec3 vN,vC,vW,vL;varying vec2 vE;uniform vec3 uCF;',
     'uniform vec3 uKey,uKeyC,uSky,uGnd,uFogC;uniform vec4 uFog,uOpt,uDis,uTint;uniform vec3 uPL[6],uPC[6];uniform float uPR[6];uniform sampler2D uSM;uniform vec2 uSMs;',
     NOISE,
     'float unpack(vec4 c){return dot(c,vec4(1.,1./255.,1./65025.,1./16581375.));}',
     'float shadow(vec3 n){if(vL.x<0.||vL.x>1.||vL.y<0.||vL.y>1.)return 1.;float b=.0016+.0035*(1.-max(dot(n,uKey),0.));float s=0.;',
     'for(int i=0;i<4;i++){vec2 o=vec2(float(i-(i/2)*2)-.5,float(i/2)-.5)*uSMs.y;s+=step(vL.z-b,unpack(texture2D(uSM,vL.xy+o)));}return s*.25;}',
-    'void main(){vec3 n=normalize(vN);float mat=floor(vE.y+.5);float e=max(vE.x,uOpt.x);vec3 V=vec3(.57735);',
+    'void main(){vec3 n=normalize(vN);float mat=floor(vE.y+.5);float e=max(vE.x,uOpt.x);vec3 V=normalize(uCF);',
     // 溶解：釉液自注入点流开 / 氧化渣被磨去
     'if(uDis.w>.5){float r=distance(vW,uDis.xyz);if(r>uOpt.w*4.+fbm(vW*3.1)*.6-.3)discard;}',
     'if(uDis.w<-.5){if(fbm(vW*3.1)<uOpt.w*1.08-.04)discard;}',
@@ -726,7 +761,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
       us.forEach(function (k) { o.u[k] = gl.getUniformLocation(pr, k); });
       return o;
     };
-    var common = ['uM', 'uCen', 'uSc', 'uLX', 'uLY', 'uLZ', 'uLS'];
+    var common = ['uM', 'uCen', 'uSc', 'uLX', 'uLY', 'uLZ', 'uLS', 'uCR', 'uCU', 'uCF'];
     this.P = mk(VS, FS, common.concat(['uKey', 'uKeyC', 'uSky', 'uGnd', 'uFogC', 'uFog', 'uOpt', 'uDis', 'uTint', 'uPL', 'uPC', 'uPR', 'uSM', 'uSMs']));
     this.SP = mk(SVS, SFS, common);
     // 阴影贴图
@@ -760,6 +795,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     if (a.aC >= 0) { gl.enableVertexAttribArray(a.aC); gl.vertexAttribPointer(a.aC, 3, gl.FLOAT, false, s, 24); }
     if (a.aE >= 0) { gl.enableVertexAttribArray(a.aE); gl.vertexAttribPointer(a.aE, 2, gl.FLOAT, false, s, 36); }
   }
+  var ISO = [[0.70710678, 0, -0.70710678], [-0.40824829, 0.81649658, -0.40824829], [0.57735027, 0.57735027, 0.57735027]];
   function norm(v) { var l = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; }
   function cross(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
   // v: center sx sy offY key keyC sky gnd fogC fog lights[{p,c,r}] time ga ext
@@ -769,6 +805,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     var LY = cross(LZ, LX), ext = v.ext || 16;
     var setCommon = function (P) {
       gl.uniform3fv(P.u.uCen, v.center); gl.uniform3f(P.u.uSc, v.sx, v.sy, v.offY);
+      var cb = v.cam || ISO; if (P.u.uCR) { gl.uniform3fv(P.u.uCR, cb[0]); gl.uniform3fv(P.u.uCU, cb[1]); gl.uniform3fv(P.u.uCF, cb[2]); }
       gl.uniform3fv(P.u.uLX, LX); gl.uniform3fv(P.u.uLY, LY); gl.uniform3fv(P.u.uLZ, LZ); gl.uniform4f(P.u.uLS, 1 / ext, -1 / (ext * 1.6), 0, 0);
     };
     // 阴影通道
@@ -1019,7 +1056,12 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     reignite: function (b, t) { var o = out(b, 1, 0.8); drum(b, t, o, 0.32, 70); drum(b, t + 0.5, o, 0.26, 80); var w = noiseSrc(b, t, 2.6, o, 0.06, 'lowpass', 300, 0.6, 1); w.f.frequency.linearRampToValueAtTime(1400, t + 2.4); pad(b, [43, 50, 55, 59, 62], t + 0.3, 3, o, 0.012); },
     card: function (b, t, ch) { var S = SONGS[ch], o = out(b, 1, 1); qing(b, deg(S.mode, S.root, 5), t, o, 0.1); bell(b, deg(S.mode, S.root - 12, 0), t + 0.05, o, 0.12, 4); },
     finale: function (b, t) { var o = out(b, 1, 1); [0, 2, 4, 5, 7, 9, 10].forEach(function (d, i) { bell(b, deg('gong', 55, d), t + i * 0.42, o, 0.12, 4); qin(b, deg('gong', 43, d), t + i * 0.42, 2, o, 0.16); }); pad(b, [43, 50, 55, 59], t, 6, o, 0.012); },
-    ui: function (b, t) { var o = out(b, 1, 0.4); osc(b, 'sine', 1320, t, 0.12, o, 0.03); }
+    ui: function (b, t) { var o = out(b, 1, 0.4); osc(b, 'sine', 1320, t, 0.12, o, 0.03); },
+    drain: function (b, t) { var o = out(b, 1, 0.5); for (var i = 0; i < 5; i++) { var tt = t + i * 0.07, f = 900 - i * 110; var x = b.ctx.createOscillator(), g = b.ctx.createGain(); x.type = 'sine'; x.frequency.setValueAtTime(f, tt); x.frequency.exponentialRampToValueAtTime(f * 0.55, tt + 0.12); env(g, tt, 0.002, 0.03, 0.14); x.connect(g); g.connect(o); x.start(tt); x.stop(tt + 0.2); } noiseSrc(b, t, 0.5, o, 0.02, 'lowpass', 700, 0.7, 0.05); },
+    dive: function (b, t) { var o = out(b, 1, 0.9); pad(b, [38, 45, 50], t, 3.2, o, 0.01); var w = noiseSrc(b, t + 0.6, 2.2, o, 0.05, 'bandpass', 300, 0.8, 1.6); w.f.frequency.exponentialRampToValueAtTime(120, t + 2.8); bell(b, 50, t + 2.7, o, 0.14, 4.5); qing(b, 74, t + 2.75, o, 0.05); },
+    turn: function (b, t) { var o = out(b, 1, 0.8); var w = noiseSrc(b, t, 2.4, o, 0.04, 'bandpass', 400, 1.2, 1.1); w.f.frequency.exponentialRampToValueAtTime(1600, t + 2.2); pad(b, [40, 47, 52, 59], t + 0.2, 2.4, o, 0.008); bell(b, 52, t + 2.3, o, 0.12, 4); },
+    negVase: function (b, t) { var o = out(b, 1, 1); [0, 2, 4, 7].forEach(function (d, i) { bell(b, deg('yu', 64, d), t + i * 0.12, o, 0.05, 2.6); }); },
+    slice: function (b, t, k) { var o = out(b, 1, 0.9); bell(b, deg('gong', 43, k), t, o, 0.16, 3.6); qing(b, deg('gong', 67, k), t + 0.02, o, 0.04); drum(b, t, o, 0.12, 70 + k * 6); }
   };
 
   // ───────── 实时 ─────────
@@ -1108,7 +1150,16 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
   var L = window.SY_LOGIC, G = window.SY_GFX, AU = window.SY_AUDIO, LEVELS = window.SY_LEVELS, M = G.M;
   var CAP = !!window.__CAPTURE;
   var $ = function (id) { return document.getElementById(id); };
-  var RX = [0.70710678, 0, -0.70710678], UY = [-0.40824829, 0.81649658, -0.40824829];
+  var RX = [0.70710678, 0, -0.70710678], UY = [-0.40824829, 0.81649658, -0.40824829], VZ = [0.57735027, 0.57735027, 0.57735027];
+  var ISO_YAW = Math.PI / 4, ISO_PITCH = Math.asin(1 / Math.sqrt(3)), CAMA = { yaw: ISO_YAW, pitch: ISO_PITCH };
+  function setCam(yaw, pitch) { // 相机朝向：yaw 绕竖轴，pitch 俯角；等距视角为 (45°, 35.26°)
+    CAMA.yaw = yaw; CAMA.pitch = pitch;
+    var f = [Math.cos(pitch) * Math.sin(yaw), Math.sin(pitch), Math.cos(pitch) * Math.cos(yaw)];
+    var r = [f[2], 0, -f[0]], rl = Math.hypot(r[0], r[2]) || 1; r = [r[0] / rl, 0, r[2] / rl];
+    var u = [f[1] * r[2] - f[2] * r[1], f[2] * r[0] - f[0] * r[2], f[0] * r[1] - f[1] * r[0]];
+    RX = r; UY = u; VZ = f;
+  }
+  function isIso() { return Math.abs(CAMA.yaw - ISO_YAW) < 1e-3 && Math.abs(CAMA.pitch - ISO_PITCH) < 1e-3; }
   var s2 = function (v) { return [v[0] * RX[0] + v[2] * RX[2], v[0] * UY[0] + v[1] * UY[1] + v[2] * UY[2]]; };
   var hex = function (h) { return [1, 3, 5].map(function (i) { return parseInt(h.substr(i, 2), 16) / 255; }); };
   var mulc = function (c, k) { return [Math.min(1, c[0] * k), Math.min(1, c[1] * k), Math.min(1, c[2] * k)]; };
@@ -1120,7 +1171,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
   var MAT = { rk: 0, wd: 0, kl: 0, cu: 1, cuL: 1, au: 2, en: 3, en2: 3, rg: 4 };
   var GOLD = hex('#d9b45a'), GOLDL = hex('#ffe7a3');
 
-  var bgc = $('bg'), glc = $('gl'), fxc = $('fx'), bg = bgc.getContext('2d'), fx = fxc.getContext('2d');
+  var bgc = $('bg'), vzc = $('vz'), glc = $('gl'), fxc = $('fx'), bg = bgc.getContext('2d'), vzx = vzc.getContext('2d'), fx = fxc.getContext('2d');
   var R;
   try { R = new G.Renderer(glc); } catch (e) { $('nogl').classList.add('on'); console.error(e); return; }
 
@@ -1132,7 +1183,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
 
   var S = { mode: 'title', idx: 0, t: 0, world: null, def: null, pal: null, pc: {}, seq: [], cam: { c: [0, 0, 0], ppu: 60, base: 0, intro: 0 }, ga: 1, ext: 14,
     ptr: null, drag: null, scrub: null, pendingTap: null, ripples: [], dust: [], parts: [], pulses: [], fills: [], spills: [], halos: [],
-    hintI: 0, hintT: 0, did: {}, beat: 0, vase: { st: 0, anim: null }, orb: null, tokenTaken: false, sel: 0, duo: null, won: false, canContinue: false, flash: 0, fire: 0, kilnLit: 1, stepN: 0 };
+    hintI: 0, hintT: 0, did: {}, beat: 0, vase: { st: 0, anim: null }, orb: null, tokenTaken: false, drains: [], camAnim: null, negVase: null, vz: { flash: 0, band: 0 }, sel: 0, duo: null, won: false, canContinue: false, flash: 0, fire: 0, kilnLit: 1, stepN: 0 };
   function mkChar(i) { return { i: i, node: null, pos: [0, 0, 0], path: [], step: null, face: 0.8, faceT: 0.8, ref: 0, idle: 0, hop: 0, cheer: 0, vis: 1, fade: null, on: false, prev: null, wave: 0 }; }
   var C = [mkChar(0), mkChar(1)];
   var CM = [{}, {}];
@@ -1160,10 +1211,10 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
         p.nodes.forEach(function (n) { add(L.tPoint(p, st, [n.c[0], n.c[1] + 2.0, n.c[2]])); add(L.tPoint(p, st, [n.c[0], n.c[1] - 0.6, n.c[2]])); });
       });
     });
-    var top = CAP ? 70 : 84, bot = CAP ? 250 : 100, side = 32, rr = vaseBox().res;
+    var top = CAP ? 70 : 76, bot = CAP ? 250 : 110, side = 24, rr = 0;
     var ppu = Math.max(6, Math.min((W - side * 2 - rr) / (mx[0] - mn[0]), (H - top - bot) / (mx[1] - mn[1]), 80 * Math.max(1, Math.min(W, H) / 720)));
     var cu = (mn[0] + mx[0]) / 2 + rr / 2 / ppu, cv = (mn[1] + mx[1]) / 2;
-    S.cam.c = [RX[0] * cu + UY[0] * cv, UY[1] * cv, RX[2] * cu + UY[2] * cv];
+    S.cam.c = [RX[0] * cu + UY[0] * cv, RX[1] * cu + UY[1] * cv, RX[2] * cu + UY[2] * cv];
     S.cam.ppu = ppu; S.cam.base = (top - bot) / 2;
     S.ext = Math.max(hi[0] - lo[0], hi[1] - lo[1] + 4, hi[2] - lo[2]) * 0.95 + 3;
   }
@@ -1233,17 +1284,17 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     g.m = 0; void glow;
   }
   // 珐琅丝格：灌满后的釉板（含表面金丝）；未灌时只有镂空金丝骨架
-  function enamelCell(g, q, col, thick, motif) {
+  function enamelCell(g, q, col, thick, motif, kind) {
     var y1 = q[1] + 0.5, y0 = thick ? q[1] - 0.5 : q[1] + 0.12, cy = (y0 + y1) / 2, hy = (y1 - y0) / 2;
-    g.m = 3; g.box(q[0], cy, q[2], 0.47, hy, 0.47, col);
-    g.m = 2; var r = 0.022, y = y1 + 0.006;
+    g.m = kind === 'gilt' ? 2 : 3; if (kind === 'gem') g.e = 0.22; g.box(q[0], cy, q[2], 0.47, hy, 0.47, col); g.e = kind === 'gem' ? 0.35 : 0;
+    g.m = 2; var r = kind === 'gem' ? 0.014 : 0.022, y = y1 + 0.006;
     g.box(q[0], y, q[2] - 0.47, 0.49, r, r, S.pc.au); g.box(q[0], y, q[2] + 0.47, 0.49, r, r, S.pc.au); g.box(q[0] - 0.47, y, q[2], r, r, 0.49, S.pc.au); g.box(q[0] + 0.47, y, q[2], r, r, 0.49, S.pc.au);
     // 掐丝纹：如意云头的折线 + 小圆点
     var rr = 0.011;
     if (motif % 2 === 0) { g.bar([q[0] - 0.28, y, q[2] - 0.12], [q[0] + 0.05, y, q[2] - 0.12], rr, S.pc.au); g.bar([q[0] + 0.05, y, q[2] - 0.12], [q[0] + 0.05, y, q[2] + 0.2], rr, S.pc.au); g.bar([q[0] - 0.12, y, q[2] + 0.2], [q[0] + 0.28, y, q[2] + 0.2], rr, S.pc.au); }
     else { g.bar([q[0] - 0.2, y, q[2] - 0.24], [q[0] - 0.2, y, q[2] + 0.1], rr, S.pc.au); g.bar([q[0] - 0.2, y, q[2] + 0.1], [q[0] + 0.22, y, q[2] + 0.1], rr, S.pc.au); g.bar([q[0] + 0.22, y, q[2] - 0.2], [q[0] + 0.22, y, q[2] + 0.1], rr, S.pc.au); }
     g.sphere(q[0] + 0.26, y, q[2] - 0.28, 0.035, 0.012, 0.035, S.pc.au, 8);
-    g.m = 0;
+    g.m = 0; g.e = 0;
     return [y0, y1];
   }
   function skeleton(g, q, y0, y1) {
@@ -1280,7 +1331,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
       }
       if (n.halo) return;
       if (special) {
-        var col = colOf((d.boxes && d.boxes[0] && d.boxes[0][6]) || 'en'), yy = enamelCell(ge, q, col, !d.thin && !p.glaze && !(p.kind === 'slide'), mi++);
+        var col = colOf((d.boxes && d.boxes[0] && d.boxes[0][6]) || 'en'), yy = enamelCell(ge, q, col, !d.thin && !p.glaze && !(p.kind === 'slide'), mi++, d.gilt ? 'gilt' : p.rough ? 'gem' : '');
         if (p.glaze) skeleton(gw, q, yy[0], yy[1]);
         if (p.rough) { gr.m = 4; gr.box(q[0], (yy[0] + yy[1]) / 2 + 0.02, q[2], 0.5, (yy[1] - yy[0]) / 2 + 0.03, 0.5, c.rg); for (var k = 0; k < 5; k++) gr.sphere(q[0] + Math.sin(k * 2.3 + q[0]) * 0.3, yy[1] + 0.03, q[2] + Math.cos(k * 1.7 + q[2]) * 0.3, 0.12, 0.05, 0.1, mulc(c.rg, 0.85 + k * 0.06), 8); }
         if (n.goal) goalMark(ge, q);
@@ -1293,11 +1344,12 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
       if (n.holdOf) { g.m = 2; g.box(q[0], q[1] + 0.52, q[2], 0.34, 0.02, 0.34, c.au); g.m = 6; g.e = 1; g.box(q[0], q[1] + 0.53, q[2], 0.22, 0.008, 0.22, c.fire); g.e = 0; g.m = 0; }
     });
     if (d.wire) { // 可转动的金丝：一根贴地的扁丝，末端一颗金珠
-      g.m = 2; var pv = p.pivot, dv = d.wire.dir, ln = d.wire.len, y = pv[1] + 0.56;
+      g.m = 2; var pv = d.wire.at || p.pivot, dv = d.wire.dir, ln = d.wire.len, y = pv[1] + 0.56;
       g.bar([pv[0], y, pv[2]], [pv[0] + dv[0] * ln, y, pv[2] + dv[2] * ln], 0.03, c.au);
       g.box(pv[0] + dv[0] * ln / 2, y - 0.04, pv[2] + dv[2] * ln / 2, Math.abs(dv[0]) * ln / 2 + 0.012, 0.05, Math.abs(dv[2]) * ln / 2 + 0.012, c.au);
-      g.cyl(pv[0], y - 0.08, pv[2], 0.07, 0.07, 0.14, c.au, 12);
+      if (!d.wire.at) g.cyl(pv[0], y - 0.08, pv[2], 0.07, 0.07, 0.14, c.au, 12);
       g.sphere(pv[0] + dv[0] * ln, y + 0.04, pv[2] + dv[2] * ln, 0.1, c.auL, 12);
+      if (d.wire.at) g.sphere(pv[0], y + 0.04, pv[2], 0.08, c.auL, 10);
       g.m = 0;
     }
     (d.deco || []).forEach(function (x) { deco(g, p, x); });
@@ -1403,6 +1455,9 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     S.seq = []; S.doors = []; S.doorPanels = []; S.kiln = null;
     S.world = L.build(def);
     S.world.parts.forEach(function (p) { p.anim = null; p.shake = 0; p.polish = 0; p.fillK = p.filled ? 1 : 0; var ms = buildPart(p); ms.part = p; S.parts.push(ms); });
+    if (CM.rail) R.free(CM.rail); var grl = new G.Geo(); grl.m = 2;
+    S.world.parts.forEach(function (p) { var rl = p.def.rail; if (!rl) return; var y = rl.from[1] + 0.515, z = rl.from[2] + 0.13; grl.bar([rl.from[0], y, z], [rl.to[0], y, z], 0.01, S.pc.au); for (var x = Math.ceil(rl.from[0]); x <= rl.to[0]; x += 2) grl.box(x, y, z, 0.02, 0.025, 0.04, S.pc.au); });
+    CM.rail = R.mesh(grl);
     if (CM.door) R.free(CM.door); var gd = new G.Geo(); gd.m = 6; gd.e = 1;
     S.doorPanels.forEach(function (d) { gd.box(d[0], d[1] + d[4] / 2, d[2], d[3] - 0.03, d[4] / 2 - 0.02, 0.006, [1, 0.86, 0.6]); gd.box(d[0], d[1] + d[4] * 0.4, d[2] + 0.005, d[3] * 0.6, d[4] * 0.36, 0.006, [1, 0.97, 0.88]); });
     CM.door = R.mesh(gd);
@@ -1414,9 +1469,9 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     C[0].on = true; setNode(C[0], S.world.start);
     if (S.duo && S.world.start2) { C[1].on = true; setNode(C[1], S.world.start2); C[1].face = C[1].faceT = 0.8; }
     S.sel = 0; S.won = false; S.canContinue = false; S.drag = null; S.scrub = null; S.ptr = null; S.pendingTap = null; S.ripples = []; S.pulses = []; S.fills = []; S.spills = [];
-    S.hintI = 0; S.hintT = 0; S.did = {}; S.beat = 0; S.flash = 0; S.vase = { st: i, anim: null }; S.orb = null; S.tokenTaken = false; buildToken(i); S.kilnLit = i === 7 ? 0.25 : 1;
+    S.hintI = 0; S.hintT = 0; S.did = {}; S.beat = 0; S.flash = 0; S.vase = { st: i, anim: null }; S.orb = null; S.tokenTaken = false; buildToken(i); S.drains = []; S.camAnim = null; S.sideOn = 0; S.negVase = null; S.negDone = 0; S.collapsed = 0; S.vz = { flash: 0, band: def.band || i, lit: 0 }; setCam(ISO_YAW, ISO_PITCH); S.kilnLit = i === 7 ? 0.25 : 1;
     initDust(); drawBG();
-    var rs = document.documentElement.style; rs.setProperty('--ink', def.pal.ink); rs.setProperty('--ink-soft', rgba(def.pal.ink, 0.45)); rs.setProperty('--ts', def.pal.stars ? '0 1px 10px rgba(0,0,0,.45)' : '0 0 12px rgba(255,250,240,.7)');
+    var rs = document.documentElement.style; rs.setProperty('--ink', def.pal.ink); rs.setProperty('--ink-soft', rgba(def.pal.ink, 0.45)); rs.setProperty('--ts', def.pal.dark ? '0 1px 10px rgba(0,0,0,.55)' : '0 0 12px rgba(255,250,240,.8)'); rs.setProperty('--gold', def.pal.dark ? '#d9b45a' : '#9a6d22'); rs.setProperty('--paper', def.pal.sky[0]);
     $('chname').textContent = (def.no === '序' ? '序' : '第' + def.no + '道') + ' · ' + def.name;
     $('endline').classList.remove('on'); $('endgo').classList.remove('on'); setHint('');
     $('who').classList.toggle('on', S.duo === 'ctrl'); updWho();
@@ -1439,7 +1494,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
   function veil(on, cb) { var v = $('veil'); v.classList.toggle('on', on); if (cb) { if (CAP) cb(); else setTimeout(cb, on ? 750 : 60); } }
   function showCard() {
     S.mode = 'card'; S.ga = 0; S.cam.intro = 90; var d = S.def;
-    $('cno').textContent = d.no === '序' ? '序 章' : '第 ' + d.no + ' 道 工 序'; $('cname').textContent = d.name; $('ccraft').textContent = d.craft; $('cpoem').textContent = d.poem;
+    $('cno').textContent = d.no === '序' ? '序 章' : '第 ' + d.no + ' 道 工 序'; $('cname').textContent = d.name; $('cpoem').textContent = d.poem;
     $('card').classList.add('on'); AU.card(S.idx);
     after(3.6, beginIntro);
   }
@@ -1447,15 +1502,24 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     if (S.mode !== 'card' && S.mode !== 'load') return;
     $('card').classList.remove('on'); S.mode = 'intro'; S.introT = 0; S.seq = [];
   }
-  function start(i, withCard) {
+  function start(i, withCard, dive) {
     S.mode = 'load';
     veil(true, function () {
       ['title', 'levels', 'finale'].forEach(function (id) { $(id).classList.remove('on'); });
-      $('hud').classList.add('on'); $('chapter').classList.add('on');
       loadLevel(i);
-      if (withCard) showCard(); else { S.ga = 0; S.cam.intro = 90; beginIntro(); }
+      if (dive) { var tt = $('title'); tt.style.transition = 'none'; tt.classList.remove('on'); setTimeout(function () { tt.style.transition = ''; }, 50); S.mode = 'dive'; S.diveT = 0; S.ga = 0; AU.dive(); $('hud').classList.remove('on'); $('chapter').classList.remove('on'); $('who').classList.remove('on'); }
+      else { $('hud').classList.add('on'); $('chapter').classList.add('on'); if (withCard) showCard(); else { S.ga = 0; S.cam.intro = 90; beginIntro(); } }
       veil(false);
     });
+  }
+  function endDive() { S.mode = 'load'; $('hud').classList.add('on'); $('chapter').classList.add('on'); $('who').classList.toggle('on', S.duo === 'ctrl'); showCard(); }
+  function startStack() {
+    S.mode = 'stack'; S.stackT = 0; S.seq = []; buildStack(); setHint('');
+    ['hud', 'chapter', 'who'].forEach(function (id) { $(id).classList.remove('on'); }); $('endline').classList.remove('on'); $('endgo').classList.remove('on');
+    BANDS.forEach(function (r, k) { after(0.6 + k * 0.62 + 1.2, function () { AU.slice(k); }); });
+    after(5.4, function () { S.flash = 0.8; AU.vase(); });
+    after(6.2, function () { $('endvase').textContent = ''; $('endtext').textContent = '器，成了。'; $('endline').classList.add('on'); });
+    after(10.0, function () { $('endline').classList.remove('on'); $('finale').classList.add('on'); S.mode = 'final'; AU.finale(); });
   }
 
   // ───────────── 背景：深靛水彩 + 矿物颗粒 + 铜锈暖褐 + 哑金细线 ─────────────
@@ -1463,8 +1527,11 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
   var grain = null;
   function makeGrain() {
     var c = document.createElement('canvas'); c.width = c.height = 256; var x = c.getContext('2d'), d = x.createImageData(256, 256), r = rnd(7);
-    for (var i = 0; i < d.data.length; i += 4) { var v = r(); var on = v > 0.86; d.data[i] = on ? 230 : 0; d.data[i + 1] = on ? 215 : 0; d.data[i + 2] = on ? 170 : 0; d.data[i + 3] = on ? (r() * 34) | 0 : (r() * 22) | 0; }
-    x.putImageData(d, 0, 0); grain = c;
+    for (var i = 0; i < d.data.length; i += 4) { var v = r(); var on = v > 0.84, cu = v > 0.995; d.data[i] = cu ? 168 : on ? 236 : 0; d.data[i + 1] = cu ? 120 : on ? 220 : 0; d.data[i + 2] = cu ? 80 : on ? 176 : 0; d.data[i + 3] = cu ? 120 : on ? (r() * 44) | 0 : (r() * 30) | 0; }
+    x.putImageData(d, 0, 0);
+    x.globalAlpha = 0.07; x.strokeStyle = '#f0e6d0'; x.lineWidth = 0.6; // 宣纸纤维
+    for (i = 0; i < 70; i++) { var px = r() * 256, py = r() * 256, a = r() * 6.28, l = 6 + r() * 22; x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo(px + Math.cos(a + 0.6) * l * 0.5, py + Math.sin(a + 0.6) * l * 0.5, px + Math.cos(a) * l, py + Math.sin(a) * l); x.stroke(); }
+    grain = c;
   }
   function drawBG() {
     var pal = S.pal, g, i, k, r = rnd(S.idx * 13 + 5);
@@ -1497,6 +1564,16 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
       bg.fillStyle = g; bg.fill();
       if (k < 2) { bg.strokeStyle = 'rgba(190,150,70,' + (0.3 + 0.15 * k) + ')'; bg.lineWidth = 0.9; bg.beginPath(); pts.forEach(function (p, j) { if (j) bg.lineTo(p[0], p[1] + 0.5); else bg.moveTo(p[0], p[1] + 0.5); }); bg.stroke(); }
     }
+    if (pal.moon) { var mx2 = W * 0.8, my2 = H * 0.16, mr = Math.min(W, H) * 0.045; g = bg.createRadialGradient(mx2, my2, mr * 0.8, mx2, my2, mr * 4); g.addColorStop(0, 'rgba(230,236,255,0.22)'); g.addColorStop(1, 'rgba(230,236,255,0)'); bg.fillStyle = g; bg.fillRect(mx2 - mr * 4, my2 - mr * 4, mr * 8, mr * 8);
+      bg.fillStyle = 'rgba(236,240,255,0.9)'; bg.beginPath(); bg.arc(mx2, my2, mr, 0, 6.2832); bg.fill(); bg.fillStyle = rgba(pal.sky[0], 1); bg.beginPath(); bg.arc(mx2 + mr * 0.45, my2 - mr * 0.2, mr * 0.92, 0, 6.2832); bg.fill(); }
+    if (pal.beams) { // 暗场里的冷暖斜光：左下窑光，右上冷白硬光
+      bg.save(); bg.globalCompositeOperation = 'lighter';
+      g = bg.createLinearGradient(0, H, W * 0.55, H * 0.2); g.addColorStop(0, 'rgba(255,120,50,0.34)'); g.addColorStop(0.5, 'rgba(255,120,50,0.1)'); g.addColorStop(1, 'rgba(255,120,50,0)');
+      bg.fillStyle = g; bg.beginPath(); bg.moveTo(0, H * 0.62); bg.lineTo(W * 0.22, H); bg.lineTo(W * 0.78, H * 0.18); bg.lineTo(W * 0.5, H * 0.05); bg.closePath(); bg.fill();
+      g = bg.createLinearGradient(W, 0, W * 0.45, H * 0.7); g.addColorStop(0, 'rgba(220,232,255,0.3)'); g.addColorStop(0.6, 'rgba(220,232,255,0.06)'); g.addColorStop(1, 'rgba(220,232,255,0)');
+      bg.fillStyle = g; bg.beginPath(); bg.moveTo(W * 0.72, 0); bg.lineTo(W, 0); bg.lineTo(W * 0.62, H * 0.8); bg.lineTo(W * 0.45, H * 0.7); bg.closePath(); bg.fill();
+      bg.restore();
+    }
     if (pal.lamp) { var lx = W * 0.12, ly = H * 0.62; g = bg.createRadialGradient(lx, ly, 0, lx, ly, 40); g.addColorStop(0, 'rgba(255,190,110,0.8)'); g.addColorStop(0.15, 'rgba(255,170,90,0.35)'); g.addColorStop(1, 'rgba(255,170,90,0)'); bg.fillStyle = g; bg.fillRect(lx - 40, ly - 40, 80, 80); }
     // 雾
     g = bg.createLinearGradient(0, H * 0.7, 0, H); g.addColorStop(0, rgba(pal.fog, 0)); g.addColorStop(1, rgba(pal.fog, 0.8));
@@ -1504,7 +1581,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     if (!grain) makeGrain();
     bg.fillStyle = bg.createPattern(grain, 'repeat'); bg.fillRect(0, 0, W, H);
     // 纸边暗角
-    g = bg.createRadialGradient(W / 2, H * 0.45, Math.min(W, H) * 0.35, W / 2, H / 2, Math.max(W, H) * 0.75); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, pal.stars ? 'rgba(8,8,30,0.45)' : rgba(pal.ink, 0.16));
+    g = bg.createRadialGradient(W / 2, H * 0.45, Math.min(W, H) * 0.35, W / 2, H / 2, Math.max(W, H) * 0.75); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, pal.dark ? 'rgba(4,5,12,0.5)' : rgba(pal.ink, 0.16));
     bg.fillStyle = g; bg.fillRect(0, 0, W, H);
   }
 
@@ -1529,7 +1606,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     c.save();
     if (k(8) > 0) { var g0 = c.createRadialGradient(cx, cy, h * 0.1, cx, cy, h * 0.6); g0.addColorStop(0, 'rgba(255,226,160,' + 0.5 * k(8) + ')'); g0.addColorStop(1, 'rgba(255,226,160,0)'); c.fillStyle = g0; c.fillRect(cx - h * 0.6, cy - h * 0.6, h * 1.2, h * 1.2); }
     // 空器：虚线金轮廓
-    vasePath(c, cx, cy, h); c.setLineDash([3, 5]); c.lineWidth = 1; c.strokeStyle = S.pal && S.pal.stars ? 'rgba(255,226,150,' + (0.6 * (1 - k(2)) + 0.05) + ')' : 'rgba(176,128,40,' + (0.7 * (1 - k(2)) + 0.05) + ')'; c.stroke(); c.setLineDash([]);
+    vasePath(c, cx, cy, h); c.setLineDash([3, 5]); c.lineWidth = 1; c.strokeStyle = S.pal && S.pal.dark ? 'rgba(255,226,150,' + (0.6 * (1 - k(2)) + 0.05) + ')' : 'rgba(176,128,40,' + (0.7 * (1 - k(2)) + 0.05) + ')'; c.stroke(); c.setLineDash([]);
     // 一 色样：几粒蓝矿在器旁浮着
     if (k(1) > 0) for (i = 0; i < 5; i++) { var a = t * 0.4 + i * 1.26, rx = cx + Math.cos(a) * h * 0.38, ry = cy + Math.sin(a * 1.3) * h * 0.12 + h * 0.05; var gg = c.createRadialGradient(rx, ry, 0, rx, ry, 7); gg.addColorStop(0, 'rgba(110,190,255,' + 0.9 * k(1) * (1 - k(4)) + ')'); gg.addColorStop(1, 'rgba(110,190,255,0)'); c.fillStyle = gg; c.fillRect(rx - 7, ry - 7, 14, 14); }
     c.save(); vasePath(c, cx, cy, h); c.clip();
@@ -1566,6 +1643,116 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     c.restore();
   }
 
+
+  // ───────────── 器即空间（一）：背景水雾里的淡墨瓶影 ─────────────
+  // 平时几乎隐身；完成一道工序的瞬间，对应的那一圈像宣纸吸墨般亮起，随后沉回去。
+  var BANDS = [[0, 0.1], [0.1, 0.3], [0.3, 0.46], [0.46, 0.6], [0.6, 0.74], [0.74, 0.86], [0.86, 1]];
+  var BANDC = ['#3fb6a8', '#b5794b', '#e8c46a', '#e0786a', '#ff8a3c', '#2b7cf0', '#f0c860', '#ffe0a0'];
+  function inkBox() { var h = Math.min(H * 0.9, W * 1.7); return { cx: W / 2, h: h, cy: H * 0.965 - h / 2 }; }
+  function bandPoint(k) { var b = inkBox(), r = BANDS[Math.min(k, 6)]; return [b.cx, b.cy + b.h / 2 - (r[0] + r[1]) / 2 * b.h]; }
+  function drawInkVase(c, t) {
+    c.clearRect(0, 0, W, H);
+    if (!S.pal || S.mode === 'stack' || S.mode === 'final' || S.mode === 'dive') return;
+    var b = inkBox(), cx = b.cx, h = b.h, cy = b.cy, y0 = cy + h / 2, dark = !!S.pal.dark, ink = dark ? [0.92, 0.88, 0.8] : [0.25, 0.2, 0.3], k, i;
+    var Y = function (y) { return y0 - y * h; };
+    c.save(); vasePath(c, cx, cy, h);
+    var g = c.createLinearGradient(cx - h * 0.3, 0, cx + h * 0.3, 0); g.addColorStop(0, rgba(ink, 0.015)); g.addColorStop(0.42, rgba(ink, dark ? 0.06 : 0.05)); g.addColorStop(1, rgba(ink, 0.02));
+    c.fillStyle = g; c.fill(); c.lineWidth = 1; c.strokeStyle = rgba(ink, dark ? 0.09 : 0.08); c.stroke();
+    c.clip();
+    for (k = 0; k < 7; k++) { // 已完成的工序：留下很淡的釉色与金线
+      var lit = clamp(S.vase.st - k, 0, 1); if (lit <= 0) continue;
+      var r = BANDS[k]; c.fillStyle = rgba(BANDC[k], 0.065 * lit); c.fillRect(cx - h, Y(r[1]), h * 2, Y(r[0]) - Y(r[1]));
+      c.strokeStyle = rgba('#e8c46a', 0.2 * lit); c.lineWidth = 0.8; c.beginPath(); c.moveTo(cx - h, Y(r[1])); c.lineTo(cx + h, Y(r[1])); c.stroke();
+      if (k === 2 || k === 6) { c.beginPath(); for (i = 0; i <= 60; i++) { var u = -1 + i / 30, yy = (r[0] + r[1]) / 2 + Math.sin(u * 9) * (r[1] - r[0]) * 0.25, w3 = vr(h, yy) * 0.92; if (i) c.lineTo(cx + u * w3, Y(yy)); else c.moveTo(cx + u * w3, Y(yy)); } c.stroke(); }
+    }
+    var f = S.vz.flash, kb = S.vz.band;
+    if (f > 0.01) { // 当前工序：吸墨般晕开
+      var rr = kb >= 7 ? [0, 1] : BANDS[kb], my = Y((rr[0] + rr[1]) / 2), rad = h * (0.25 + 0.5 * (1 - f) + (kb >= 7 ? 0.4 : 0));
+      if (kb < 7) { c.save(); c.beginPath(); c.rect(cx - h, Y(rr[1]), h * 2, Y(rr[0]) - Y(rr[1])); c.clip(); }
+      var gg = c.createRadialGradient(cx, my, 0, cx, my, rad); gg.addColorStop(0, rgba(BANDC[kb], 0.55 * f)); gg.addColorStop(0.6, rgba(BANDC[kb], 0.3 * f)); gg.addColorStop(1, rgba(BANDC[kb], 0));
+      c.fillStyle = gg; c.fillRect(cx - h, cy - h, h * 2, h * 2);
+      c.strokeStyle = rgba('#ffe0a0', 0.7 * f); c.lineWidth = 1.2; c.beginPath(); c.moveTo(cx - h, Y(rr[1])); c.lineTo(cx + h, Y(rr[1])); c.moveTo(cx - h, Y(rr[0])); c.lineTo(cx + h, Y(rr[0])); c.stroke();
+      if (kb < 7) c.restore();
+    }
+    c.restore();
+  }
+
+  // 负空间瓶影：两塔之间的留白，被金丝弧线围成一只瓶
+  function drawNegVase(t) {
+    var nv = S.def.negVase, a = proj([nv.l[0], nv.y1, 0]), b = proj([nv.r[0], nv.y1, 0]), c0 = proj([nv.l[0], nv.y0, 0]);
+    var cx = (a[0] + b[0]) / 2, top = Math.min(a[1], b[1]), bot = c0[1], h = bot - top, w = Math.abs(b[0] - a[0]);
+    var grow = clamp(t / 0.7, 0, 1), al = t < 1.2 ? 1 : clamp(1 - (t - 1.2) / 2, 0, 1), sc = w / (h * 1.14);
+    fx.save(); fx.translate(cx, top + h / 2); fx.scale(sc, 1); fx.translate(-cx, -(top + h / 2));
+    vasePath(fx, cx, top + h / 2, h);
+    var g = fx.createRadialGradient(cx, top + h * 0.45, 0, cx, top + h * 0.45, h * 0.6); g.addColorStop(0, 'rgba(255,244,220,' + 0.22 * al * grow + ')'); g.addColorStop(1, 'rgba(255,244,220,0)');
+    fx.fillStyle = g; fx.fill();
+    fx.setLineDash([h * 3 * grow, h * 3]); fx.lineWidth = 1.6 / sc; fx.strokeStyle = 'rgba(255,214,130,' + 0.85 * al + ')'; fx.shadowColor = 'rgba(255,200,120,' + al + ')'; fx.shadowBlur = 10; fx.stroke();
+    fx.restore();
+  }
+  // ───────────── 器即空间（二）：开场三秒，俯身入器 ─────────────
+  function drawDive(c, t) {
+    var T1 = 0.8, T2 = 2.7, T3 = 3.5, z = 1;
+    if (t > T1) z = Math.exp(Math.pow(clamp((t - T1) / (T2 - T1), 0, 1), 1.6) * 3.2);
+    var vh = Math.min(H * 0.44, W * 0.62), cx = W / 2, base = H * 0.72, cy = base - vh / 2, mx = cx, my = base - vh * 0.985;
+    c.save();
+    c.fillStyle = '#0c0a09'; c.fillRect(0, 0, W, H);
+    c.translate(mx, my); c.scale(z, z); c.translate(-mx, -my);
+    var g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#120f0d'); g.addColorStop(1, '#231a13'); c.fillStyle = g; c.fillRect(-W, -H, W * 3, H * 3);
+    g = c.createRadialGradient(W * 0.28, H * 0.42, 0, W * 0.28, H * 0.42, W * 0.6); g.addColorStop(0, 'rgba(255,170,90,0.28)'); g.addColorStop(1, 'rgba(255,170,90,0)'); c.fillStyle = g; c.fillRect(-W, -H, W * 3, H * 3);
+    c.fillStyle = '#3a2a1e'; c.beginPath(); c.moveTo(-W, base + 4); c.lineTo(W * 2, base + 4); c.lineTo(W * 2, H * 3); c.lineTo(-W, H * 3); c.fill();
+    c.strokeStyle = 'rgba(0,0,0,0.25)'; c.lineWidth = 1; for (var i = 0; i < 9; i++) { c.beginPath(); c.moveTo(-W, base + 12 + i * 14); c.lineTo(W * 2, base + 10 + i * 15); c.stroke(); }
+    g = c.createRadialGradient(cx, base + 6, 0, cx, base + 6, vh * 0.5); g.addColorStop(0, 'rgba(0,0,0,0.5)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(cx - vh, base - 20, vh * 2, 60);
+    vasePath(c, cx, cy, vh);
+    g = c.createLinearGradient(cx - vh * 0.3, 0, cx + vh * 0.3, 0); g.addColorStop(0, '#24170f'); g.addColorStop(0.35, '#6a4630'); g.addColorStop(0.55, '#4a3020'); g.addColorStop(1, '#1a110b');
+    c.fillStyle = g; c.fill(); c.strokeStyle = 'rgba(220,170,110,0.35)'; c.lineWidth = 1; c.stroke();
+    c.save(); vasePath(c, cx, cy, vh); c.clip(); var rn = rnd(3);
+    for (i = 0; i < 14; i++) { var px = cx + (rn() - 0.5) * vh * 0.6, py = cy + (rn() - 0.3) * vh * 0.8, pr = vh * (0.03 + rn() * 0.06); g = c.createRadialGradient(px, py, 0, px, py, pr); g.addColorStop(0, 'rgba(95,165,150,0.35)'); g.addColorStop(1, 'rgba(95,165,150,0)'); c.fillStyle = g; c.fillRect(px - pr, py - pr, pr * 2, pr * 2); }
+    c.restore();
+    var mw = VP[VP.length - 1][1] * vh * 0.5; c.fillStyle = '#050403'; c.beginPath(); c.ellipse(mx, my, mw, mw * 0.32, 0, 0, 6.2832); c.fill();
+    c.strokeStyle = 'rgba(230,180,120,0.5)'; c.lineWidth = 1.2; c.beginPath(); c.ellipse(mx, my, mw, mw * 0.32, 0, 0, 6.2832); c.stroke();
+    c.restore();
+    var dk = t < T2 ? clamp((t - (T2 - 0.6)) / 0.6, 0, 1) : 1 - clamp((t - T2) / (T3 - T2), 0, 1);
+    if (t < 0.6) dk = Math.max(dk, 1 - t / 0.6);
+    c.fillStyle = 'rgba(5,4,3,' + dk + ')'; c.fillRect(0, 0, W, H);
+    if (t > T2) { c.globalAlpha = 1 - clamp((t - T2) / (T3 - T2), 0, 1); c.fillStyle = '#050403'; c.globalAlpha *= 0; c.globalAlpha = 1; }
+  }
+
+  // ───────────── 器即空间（三）：终章拉远，七重空间叠合成器 ─────────────
+  var STACK = null, SH = 8;
+  function buildStack() {
+    if (STACK) return STACK;
+    var cols = { stone: hex('#7c7f92'), cu: hex('#a8714a'), au: hex('#d9b45a'), auL: hex('#ffe9b0'), tq: hex('#3fb6a8'), co: hex('#e0786a'), ye: hex('#f0c24b'), lb: hex('#3a6fc4'), gb: hex('#2b7cf0'), fire: hex('#ff8a3c') };
+    STACK = BANDS.map(function (r, k) {
+      var g = new G.Geo(), prof = [], n = 7, j, y;
+      for (j = 0; j <= n; j++) { var f = r[0] + (r[1] - r[0]) * j / n; prof.push([vr(SH, f), f * SH]); }
+      var shrink = function (q) { return prof.map(function (p) { return [p[0] * q, p[1]]; }); };
+      if (k === 0) { g.m = 0; g.lathe(0, 0, 0, prof, cols.stone, 28); g.m = 3; g.e = 0.6; for (j = 0; j < 10; j++) { var a = j * 0.628, rr = vr(SH, 0.05); g.frustum(Math.cos(a) * rr, 0.25, Math.sin(a) * rr, 0.09, 0, 0.3 + (j % 3) * 0.12, j % 2 ? cols.tq : cols.co); } g.e = 0; }
+      else if (k === 1) { g.m = 1; g.lathe(0, 0, 0, prof, cols.cu, 28); }
+      else if (k === 2) { // 镂空金丝笼，里面是铜胎
+        g.m = 1; g.lathe(0, 0, 0, shrink(0.86), cols.cu, 24); g.m = 2;
+        for (j = 0; j < 20; j++) { var aa = j / 20 * 6.2832; for (var q = 0; q < n; q++) { var p0 = prof[q], p1 = prof[q + 1]; g.bar([Math.cos(aa) * p0[0], p0[1], Math.sin(aa) * p0[0]], [Math.cos(aa) * p1[0], p1[1], Math.sin(aa) * p1[0]], 0.018, cols.au); } }
+        for (y = 0; y <= n; y += 2) g.cyl(0, prof[y][1] - 0.02, 0, prof[y][0] + 0.02, prof[y][0] + 0.02, 0.04, cols.au, 28);
+      }
+      else if (k === 3) { g.m = 3; g.lathe(0, 0, 0, prof, cols.tq, 28); g.e = 0.3; for (j = 0; j < 12; j++) { var a3 = j * 0.5236, ym = (r[0] + r[1]) / 2, r3 = vr(SH, ym); g.sphere(Math.cos(a3) * r3, ym * SH, Math.sin(a3) * r3, 0.16, [cols.co, cols.ye, cols.lb][j % 3], 10); } g.e = 0; }
+      else if (k === 4) { g.m = 3; g.lathe(0, 0, 0, prof, cols.lb, 28); g.m = 6; g.e = 1; var ym4 = (r[0] + r[1]) / 2; g.cyl(0, ym4 * SH - 0.06, 0, vr(SH, ym4) + 0.015, vr(SH, ym4) + 0.015, 0.12, cols.fire, 28); g.e = 0; }
+      else if (k === 5) { g.m = 3; g.lathe(0, 0, 0, prof, cols.gb, 28); }
+      else { g.m = 2; g.lathe(0, 0, 0, prof, cols.au, 28); }
+      g.m = 2; g.cyl(0, r[0] * SH - 0.03, 0, vr(SH, r[0]) + 0.03, vr(SH, r[0]) + 0.03, 0.06, cols.auL, 28);
+      return { m: R.mesh(g), r: r };
+    });
+    return STACK;
+  }
+  function stackList(t) {
+    var list = [];
+    buildStack().forEach(function (sl, k) {
+      var ti = 0.6 + k * 0.62, pr = clamp((t - ti) / 1.25, 0, 1), e = ease(pr);
+      if (pr <= 0) return;
+      var dy = (1 - e) * (-7 - k * 0.6), spin = (1 - e) * (1.4 + k * 0.2);
+      list.push({ m: sl.m, model: M.chain(M.tr(0, dy, 0), M.rot('y', spin)), o: { alpha: Math.min(1, pr * 1.6), emis: t > 5.6 ? 0.08 * Math.sin((t - 5.6) * 2) * Math.exp(-(t - 5.6) * 0.5) : 0 } });
+    });
+    return list;
+  }
+
   // ───────────── 粒子 / 特效 ─────────────
   function initDust() {
     var t = S.pal.fx, n = t === 'ember' ? 46 : t === 'star' ? 40 : t === 'grit' ? 30 : 40; S.dust = [];
@@ -1585,16 +1772,18 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
   function drawFX(dt) {
     var pal = S.pal, t = S.t, i, d, s, ppu = S.cam.ppu;
     fx.clearRect(0, 0, W, H);
-    if (S.mode === 'title' || S.mode === 'load' || !S.world) { if (S.mode === 'title') { var tb = vaseBox(); drawVase(fx, tb.x, tb.y, tb.h, 0, S.t); } return; }
+    drawInkVase(vzx, t);
+    if (S.mode === 'dive') { drawDive(fx, S.diveT || 0); return; }
+    if (S.mode === 'title' || S.mode === 'load' || S.mode === 'stack' || S.mode === 'final' || !S.world) return;
     fx.globalAlpha = 1;
-    var vb = vaseBox(); if (S.vase.anim) { var va = S.vase.anim; va.t += dt / 1.8; S.vase.st = va.from + (va.to - va.from) * ease(clamp(va.t, 0, 1)); if (va.t >= 1) S.vase.anim = null; }
-    drawVase(fx, vb.x, vb.y, vb.h, S.vase.st, t);
+    if (S.vase.anim) { var va = S.vase.anim; va.t += dt / 1.8; S.vase.st = va.from + (va.to - va.from) * ease(clamp(va.t, 0, 1)); if (va.t >= 1) S.vase.anim = null; }
     if (S.orb) {
-      var o = S.orb; o.t += dt / o.dur; var u = ease(clamp(o.t, 0, 1)), a0 = o.a, b0 = [vb.x, vb.y], qx0 = (a0[0] + b0[0]) / 2, qy0 = Math.min(a0[1], b0[1]) - 80;
+      var o = S.orb; o.t += dt / o.dur; var u = ease(clamp(o.t, 0, 1)), a0 = o.a, b0 = bandPoint(S.vz.band), qx0 = (a0[0] + b0[0]) / 2, qy0 = Math.min(a0[1], b0[1]) - 80;
       var ox = (1 - u) * (1 - u) * a0[0] + 2 * u * (1 - u) * qx0 + u * u * b0[0], oy = (1 - u) * (1 - u) * a0[1] + 2 * u * (1 - u) * qy0 + u * u * b0[1];
       fx.globalCompositeOperation = 'lighter'; glowDot(ox, oy, 30, '#9cc8ff', 0.75); glowDot(ox, oy, 8, '#ffffff', 0.95); fx.globalCompositeOperation = 'source-over';
-      if (o.t >= 1) { S.orb = null; S.vase.anim = { from: S.vase.st, to: S.idx + 1, t: 0 }; AU.vase(); }
+      if (o.t >= 1) { S.orb = null; S.vase.anim = { from: S.vase.st, to: S.idx + 1, t: 0 }; vzPulse(1); AU.vase(); }
     }
+    if (S.negVase && S.def.negVase) drawNegVase(S.negVase.t);
     fx.globalAlpha = S.ga;
     fx.globalCompositeOperation = 'lighter';
     // 双晕
@@ -1632,11 +1821,11 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
       p.handles.forEach(function (h) {
         var hw = handlePos(p, h); if (hw[1] < -0.8) return;
         s = proj(hw); var k = 0.5 + 0.5 * Math.sin(t * 2.2), rr = ppu * 0.3 * (1 + 0.16 * k);
-        fx.strokeStyle = S.pal.stars ? 'rgba(255,226,150,' + (0.3 + 0.5 * (1 - k)) + ')' : 'rgba(176,128,40,' + (0.3 + 0.5 * (1 - k)) + ')'; fx.lineWidth = 1.5; fx.beginPath(); fx.arc(s[0], s[1], rr, 0, 6.2832); fx.stroke();
+        fx.strokeStyle = S.pal.dark ? 'rgba(255,226,150,' + (0.3 + 0.5 * (1 - k)) + ')' : 'rgba(176,128,40,' + (0.3 + 0.5 * (1 - k)) + ')'; fx.lineWidth = 1.5; fx.beginPath(); fx.arc(s[0], s[1], rr, 0, 6.2832); fx.stroke();
       });
     });
     // 选中人物的标记
-    if (S.duo === 'ctrl' && S.mode === 'play' && C[1].on) { var cc = C[S.sel]; s = proj([cc.pos[0], cc.pos[1] + 1.05 + 0.04 * Math.sin(t * 3), cc.pos[2]]); fx.fillStyle = S.pal.stars ? 'rgba(255,226,150,0.95)' : 'rgba(176,128,40,0.95)'; fx.beginPath(); fx.moveTo(s[0], s[1] + 6); fx.lineTo(s[0] - 4.5, s[1] - 1); fx.lineTo(s[0] + 4.5, s[1] - 1); fx.closePath(); fx.fill(); }
+    if (S.duo === 'ctrl' && S.mode === 'play' && C[1].on) { var cc = C[S.sel]; s = proj([cc.pos[0], cc.pos[1] + 1.05 + 0.04 * Math.sin(t * 3), cc.pos[2]]); fx.fillStyle = S.pal.dark ? 'rgba(255,226,150,0.95)' : 'rgba(176,128,40,0.95)'; fx.beginPath(); fx.moveTo(s[0], s[1] + 6); fx.lineTo(s[0] - 4.5, s[1] - 1); fx.lineTo(s[0] + 4.5, s[1] - 1); fx.closePath(); fx.fill(); }
     // 未灌釉丝格的提示：金丝闪烁表示可灌
     S.world.parts.forEach(function (p) {
       if (!p.glaze || p.filled || p.fillK > 0) return;
@@ -1665,7 +1854,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     // 点击涟漪
     for (i = S.ripples.length - 1; i >= 0; i--) {
       var rp = S.ripples[i]; rp.t += dt * 2.2; if (rp.t >= 1) { S.ripples.splice(i, 1); continue; }
-      var k2 = easeOut(rp.t); fx.strokeStyle = rp.ok ? (S.pal.stars ? 'rgba(255,226,150,' : 'rgba(176,128,40,') + (1 - rp.t) * 0.8 + ')' : 'rgba(230,110,80,' + (1 - rp.t) * 0.8 + ')'; fx.lineWidth = rp.ok ? 1.4 : 2;
+      var k2 = easeOut(rp.t); fx.strokeStyle = rp.ok ? (S.pal.dark ? 'rgba(255,226,150,' : 'rgba(176,128,40,') + (1 - rp.t) * 0.8 + ')' : 'rgba(230,110,80,' + (1 - rp.t) * 0.8 + ')'; fx.lineWidth = rp.ok ? 1.4 : 2;
       var rr2 = rp.ok ? 6 + 20 * k2 : 14 - 6 * k2;
       fx.beginPath(); fx.moveTo(rp.x, rp.y - rr2 * 0.58); fx.lineTo(rp.x + rr2, rp.y); fx.lineTo(rp.x, rp.y + rr2 * 0.58); fx.lineTo(rp.x - rr2, rp.y); fx.closePath(); fx.stroke();
     }
@@ -1673,7 +1862,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     fx.globalAlpha = 1;
   }
   function handlePos(p, h) {
-    if (p.def.wire) { var pv = p.pivot, dv = p.def.wire.dir, ln = p.def.wire.len; return L.tPoint(p, p.val, [pv[0] + dv[0] * ln, pv[1] + 0.6, pv[2] + dv[2] * ln]); }
+    if (p.def.wire) { var pv = p.def.wire.at || p.pivot, dv = p.def.wire.dir, ln = p.def.wire.len, k = p.def.wire.at ? 0.5 : 1; return L.tPoint(p, p.val, [pv[0] + dv[0] * ln * k, pv[1] + 0.6, pv[2] + dv[2] * ln * k]); }
     return L.tPoint(p, p.val, h);
   }
 
@@ -1683,8 +1872,8 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     return L.tPoint(p, p.val, loc);
   }
   function faceOf(c) { var p = c.node.part; return c.face + (!c.step && p.kind === 'rot' && p.axis === 'y' ? (p.val - c.ref) * Math.PI / 2 : 0); }
-  function anyAnim() { var ps = S.world.parts; for (var i = 0; i < ps.length; i++) if (ps[i].anim) return true; return S.fills.length > 0; }
-  function canWalk() { return S.mode === 'play' && !anyAnim() && !(S.drag && S.drag.on) && S.beat <= 0; }
+  function anyAnim() { var ps = S.world.parts; for (var i = 0; i < ps.length; i++) if (ps[i].anim) return true; return S.fills.length > 0 || !!S.camAnim; }
+  function canWalk() { return S.mode === 'play' && !anyAnim() && !(S.drag && S.drag.on) && S.beat <= 0 && !S.camAnim; }
   function ctrlIdx(c) { return S.duo === 'ctrl' ? c.i : (c.i === 0 ? 0 : -1); }
   function blockedFor(i) {
     var b = []; if (S.duo === 'ctrl') { var o = C[1 - i]; if (o.on) b.push(o.step ? o.step.to : o.node); }
@@ -1737,7 +1926,9 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
   }
   function follower(dt) { // 跟随模式：师傅走在阿蓝身后一步
     var m = C[1], a = C[0]; if (!m.on || S.duo !== 'follow' || m.step || m.fade || S.mode !== 'play' && S.mode !== 'end') return;
-    var target = a.step ? a.step.from : a.prev; if (!target || target === m.node || !target.active) return;
+    var target = a.step ? a.step.from : a.prev;
+    if (!m.node.active && !a.step) { var near = a.node.adj.map(function (e) { return e.to; }).filter(function (n) { return n.active && !n.stair; })[0] || a.node; m.path = []; m.fade = { t: 0, to: near }; return; }
+    if (!target || target === m.node || !target.active) return;
     if (!canWalk() && !(S.mode === 'end')) return;
     if (m.path.length) return;
     if (m.node.active) { var p = L.path(m.node, target); if (p && p.length <= 6) { m.path = p; return; } }
@@ -1753,7 +1944,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     if (n.plate && !n.pressed) {
       n.pressed = true; c.path = []; hintEvent('plate');
       var p = S.world.byId[n.plate.part], dur = clamp(1.3 + 0.2 * Math.abs(n.plate.to - p.val), 1.6, 3.6);
-      AU.plate(); AU.rise(dur); animPart(p, n.plate.to, dur, ease); burst([n.stand[0], n.stand[1] + 0.2, n.stand[2]], 18, '#6fd0e0', 1.6, 1.2, 0.4);
+      AU.plate(); AU.rise(dur); vzPulse(0.6); animPart(p, n.plate.to, dur, ease); burst([n.stand[0], n.stand[1] + 0.2, n.stand[2]], 18, '#6fd0e0', 1.6, 1.2, 0.4);
       return;
     }
     if (n.holdOf) { hintEvent('hold'); }
@@ -1784,6 +1975,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
       p.state = ((to % 4) + 4) % 4; p.val = p.state; C.forEach(function (c) { if (c.on && c.node.part === p) c.ref = p.val; });
     } else { p.state = p.val = to; }
     L.settle(S.world);
+    L.drain(S.world).forEach(startDrain);
     if (p.state !== was) {
       if (p.handles.length) hintEvent('part');
       // 半拍停顿：光先变，人后走
@@ -1793,13 +1985,18 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     checkFollows();
     if (!anyAnim() && S.pendingTap) { var q = S.pendingTap; S.pendingTap = null; tap(q[0], q[1]); }
   }
+  function startDrain(p) { // 金丝离开：釉散回空框
+    S.drains.push({ part: p, t: 0, dur: 0.9, o: partCenter(p) }); AU.drain();
+    p.nodes.forEach(function (n) { for (var i = 0; i < 6; i++) parts.push({ p: L.tPoint(p, p.val, [n.c[0] + (Math.random() - 0.5) * 0.8, n.c[1] + 0.4, n.c[2] + (Math.random() - 0.5) * 0.8]), v: [(Math.random() - 0.5) * 0.3, -0.4 - Math.random(), (Math.random() - 0.5) * 0.3], t: 0, life: 1.3, col: '#4f9be8', g: 3, r: 1.4 + Math.random() }); });
+  }
   function checkFollows() {
     S.world.parts.forEach(function (p) {
-      if (!(p.follow || p.hold) || p.anim) return;
+      if (!(p.follow || p.hold || p.collapse) || p.anim) return;
       var t = L.followTarget(S.world, p);
       if (p.state !== t && !L.anyOn(S.world, p) && !C.some(function (c) { return c.on && c.step && (c.step.to.part === p || c.step.from.part === p); })) {
-        var d = p.hold ? 1.3 : 1.7; AU.rise(d);
-        if (p.hold) { AU.hold(t === p.hold.on); if (t === p.hold.on) { S.fire = 0.6; } }
+        var d = p.hold ? 1.3 : p.collapse ? 2.6 : 1.7; if (!p.collapse) AU.rise(d);
+        if (p.collapse) { if (!S.collapsed) { S.collapsed = 1; AU.collapse(); S.fire = 1.4; } burst(partCenter(p), 26, '#ff8a3c', 2.2, 1.6, 1.2); }
+        if (p.hold) { AU.hold(t === p.hold.on); if (t === p.hold.on) { S.fire = 0.6; vzPulse(0.5); } }
         if (p.follow && t < p.state) { AU.collapse(); burst(partCenter(p), 30, '#ff8a3c', 2, 1.4, 1); }
         animPart(p, t, d, ease);
       }
@@ -1869,11 +2066,16 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
       if (Math.random() < 0.5) burst([f.o[0], f.o[1] + 0.55, f.o[2]], 1, '#7fb8ff', 0.6, 0.6, -0.2);
       if (f.t >= 1) {
         S.fills.splice(i, 1); f.part.filled = true; f.part.fillK = 1; L.settle(S.world);
-        S.beat = 0.36; S.pulses.push({ p: partCenter(f.part), t: 0, dur: 1, col: '#5aa8ff' }); AU.filled();
+        S.beat = 0.36; S.pulses.push({ p: partCenter(f.part), t: 0, dur: 1, col: '#5aa8ff' }); AU.filled(); vzPulse(0.8);
         checkFollows();
       }
     }
+    for (i = S.drains.length - 1; i >= 0; i--) {
+      var d = S.drains[i]; d.t += dt / d.dur; d.part.fillK = clamp(1 - d.t, 0, 1);
+      if (d.t >= 1) { S.drains.splice(i, 1); d.part.fillK = 0; }
+    }
   }
+  function vzPulse(k) { S.vz.flash = Math.max(S.vz.flash, k || 0.7); }
   // 磨光
   function roughAt(x, y) {
     var best = null; S.world.parts.forEach(function (p) {
@@ -1889,7 +2091,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     sc.e = Math.min(1, sc.e + d / 40);
     AU.scrub(sc.e, p.polish);
     if (Math.random() < d / 30) { var n = p.nodes[(Math.random() * p.nodes.length) | 0]; burst(L.tPoint(p, p.val, [n.c[0] + (Math.random() - 0.5) * 0.7, n.c[1] + 0.55, n.c[2] + (Math.random() - 0.5) * 0.7]), 1, Math.random() < 0.5 ? '#9fd0ff' : '#bdb5a5', 1.2, 0.6, 1.5); }
-    if (p.polish >= 1) { p.polished = true; L.settle(S.world); AU.polished(); S.beat = 0.36; hintEvent('polish'); S.pulses.push({ p: partCenter(p), t: 0, dur: 1, col: '#9fd0ff' }); p.nodes.forEach(function (n) { burst(L.tPoint(p, p.val, [n.c[0], n.c[1] + 0.6, n.c[2]]), 8, '#e8f4ff', 1.4, 0.9, 0.5); }); checkFollows(); }
+    if (p.polish >= 1) { p.polished = true; L.settle(S.world); AU.polished(); vzPulse(0.8); S.beat = 0.36; hintEvent('polish'); S.pulses.push({ p: partCenter(p), t: 0, dur: 1, col: '#9fd0ff' }); p.nodes.forEach(function (n) { burst(L.tPoint(p, p.val, [n.c[0], n.c[1] + 0.6, n.c[2]]), 8, '#e8f4ff', 1.4, 0.9, 0.5); }); checkFollows(); }
   }
 
   // ───────────── 输入 ─────────────
@@ -1898,7 +2100,8 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     for (var i = 0; i < ns.length; i++) {
       var n = ns[i]; if (!n.active) continue;
       var s = proj(n.stand), du = (x - s[0]) / S.cam.ppu, dv = -(y - s[1]) / S.cam.ppu, a = du * 1.41421356, b = -dv * 2.44948974, dx = (a + b) / 2, dz = (b - a) / 2, m = Math.max(Math.abs(dx), Math.abs(dz));
-      var depth = n.stand[0] + n.stand[1] + n.stand[2];
+      if (!isIso()) m = Math.hypot(du, dv * 1.4) * 0.85;
+      var depth = n.stand[0] * VZ[0] + n.stand[1] * VZ[1] + n.stand[2] * VZ[2];
       if (m <= 0.5) { if (depth > bd) { bd = depth; best = n; } }
       else if (m < nd) { nd = m; near = n; }
     }
@@ -1909,7 +2112,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
       if (!p.glaze || p.filled) return;
       p.nodes.forEach(function (n) {
         var w = L.tPoint(p, p.val, [n.c[0], n.c[1] + 0.5, n.c[2]]), s = proj(w), du = (x - s[0]) / S.cam.ppu, dv = -(y - s[1]) / S.cam.ppu, a = du * 1.41421356, b = -dv * 2.44948974;
-        if (Math.max(Math.abs((a + b) / 2), Math.abs((b - a) / 2)) <= 0.55) best = { p: p, at: w };
+        if ((isIso() ? Math.max(Math.abs((a + b) / 2), Math.abs((b - a) / 2)) : Math.hypot(du, dv * 1.4) * 0.85) <= 0.55) best = { p: p, at: w };
       });
     });
     return best;
@@ -1941,6 +2144,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
   function onDown(e) {
     AU.init();
     var x = e.clientX, y = e.clientY;
+    if (S.mode === 'dive') { S.diveT = Math.max(S.diveT, 3.3); return; }
     if (S.mode === 'card') { beginIntro(); return; }
     if (S.mode === 'end') { if (S.canContinue) nextLevel(); return; }
     if (S.mode !== 'play' || S.ptr) return;
@@ -1996,11 +2200,10 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     after(farewell ? 3.8 : 3.3, function () { $('endvase').textContent = S.def.vase; $('endtext').textContent = S.def.end; $('endline').classList.add('on'); save.done = Math.max(save.done, S.idx + 1); persist(); });
     after(farewell ? 5.8 : 5.0, function () { S.canContinue = true; $('endgo').classList.add('on'); });
   }
-  function finaleVase() { var cv = $('fvase'), c = cv.getContext('2d'), t0 = performance.now(); (function lp() { c.clearRect(0, 0, 320, 360); drawVase(c, 160, 180, 250, 8, (performance.now() - t0) / 1000); if (S.mode === 'final') requestAnimationFrame(lp); })(); }
   function nextLevel() {
     S.canContinue = false; AU.ui();
     if (S.idx < LEVELS.length - 1) start(S.idx + 1, true);
-    else { S.mode = 'load'; veil(true, function () { $('hud').classList.remove('on'); $('chapter').classList.remove('on'); $('who').classList.remove('on'); $('endline').classList.remove('on'); $('finale').classList.add('on'); S.mode = 'final'; AU.finale(); finaleVase(); veil(false); }); }
+    else startStack();
   }
 
   // ───────────── 帧 ─────────────
@@ -2009,11 +2212,25 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     var due = []; S.seq = S.seq.filter(function (s) { if (s.at <= S.t) { due.push(s); return false; } return true; });
     due.forEach(function (s) { s.fn(); });
     if (!S.world) return;
+    if (S.mode === 'dive') { S.diveT += dt; if (S.diveT >= 3.5) endDive(); return; }
+    if (S.mode === 'stack' || S.mode === 'final') {
+      S.stackT += dt; var st = S.stackT;
+      setCam(ISO_YAW + 0.9 * ease(clamp(st / 10, 0, 1)) + (S.mode === 'final' ? (st - 10) * 0.03 : 0), ISO_PITCH - 0.36 * ease(clamp(st / 7, 0, 1)));
+      if (S.flash > 0) S.flash -= dt * 1.2;
+      return;
+    }
     if (S.mode === 'intro') {
       S.introT += dt / 1.8; var k = easeOut(clamp(S.introT, 0, 1)); S.ga = clamp(S.introT * 1.6, 0, 1); S.cam.intro = 90 * (1 - k);
       if (S.introT >= 1) { S.mode = 'play'; S.ga = 1; S.cam.intro = 0; after(0.5, nextHint); }
     }
     if (S.beat > 0) S.beat -= dt;
+    var sv = S.def && S.def.side;
+    if (sv && !S.camAnim && !S.sideOn && S.world.byId[sv.part].state === sv.at && !S.world.byId[sv.part].anim) { S.sideOn = 1; S.camAnim = { t: 0, dur: 2.6, y0: CAMA.yaw, p0: CAMA.pitch, y1: sv.yaw, p1: sv.pitch }; AU.turn(); C.forEach(function (c) { c.path = []; }); }
+    if (S.camAnim) { var ca = S.camAnim; ca.t += dt / ca.dur; var ke = ease(clamp(ca.t, 0, 1)); setCam(ca.y0 + (ca.y1 - ca.y0) * ke, ca.p0 + (ca.p1 - ca.p0) * ke); fitCamera(); if (ca.t >= 1) { S.camAnim = null; S.beat = 0.4; } }
+    var nv = S.def && S.def.negVase;
+    if (nv && !S.negDone && S.world.byId[nv.part].state === nv.at && !S.world.byId[nv.part].anim) { S.negDone = 1; S.negVase = { t: 0 }; AU.negVase(); }
+    if (S.negVase) { S.negVase.t += dt; if (S.negVase.t > 3.4) S.negVase = null; }
+    if (S.vz.flash > 0) S.vz.flash = Math.max(0, S.vz.flash - dt * 0.45);
     if (S.flash > 0) S.flash -= dt * 1.5;
     if (S.fire > 0) S.fire = Math.max(0, S.fire - dt * 0.4);
     if (S.kilnAnim) { S.kilnAnim.t += dt; S.kilnLit = Math.min(1.6, 0.25 + S.kilnAnim.t * 0.6); if (S.kilnAnim.t > 0.4 && S.kilnAnim.t < 3 && Math.random() < 0.5 && S.kiln) burst(S.kiln.p, 2, '#ff9a4a', 1.4, 1.6, -0.8); }
@@ -2052,15 +2269,24 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     }
     if (c.i === 1 && c.wave > 0) { /* 挥手由身体轻点头表现 */ }
   }
+  function renderStack() {
+    var pal = S.pal, st = S.stackT || 0, ppu = Math.min(H * 0.72 / (SH + 1.2), W * 0.86 / 6.4) * (1.25 - 0.25 * ease(clamp(st / 8, 0, 1)));
+    var c = [0, SH * 0.5, 0], up = (S.mode === 'final' ? -H * 0.1 : 0);
+    var ls = [{ p: [2.6, SH * 0.66, 3], c: [0.9, 0.6, 0.3], r: 9 }, { p: [-3, SH * 0.3, 2], c: [0.3, 0.5, 0.9], r: 8 }, { p: [0, SH + 1.5, 0], c: [1, 0.85, 0.5], r: 7 }];
+    R.frame({ cam: [RX, UY, VZ], center: c, sx: 2 * ppu / W, sy: 2 * ppu / H, offY: -2 * up / H, key: [-0.45, 0.8, 0.4], keyC: hex(pal.keyC), sky: mulc(hex(pal.mist), 0.75), gnd: [0.28, 0.2, 0.16],
+      fogC: hex(pal.fog), fog: [-2, 1.2, -4, -0.6], lights: ls, time: S.t, ga: 1, ext: 9, shadows: true }, stackList(st));
+    if (S.flash > 0) { fx.fillStyle = 'rgba(255,240,210,' + S.flash * 0.4 + ')'; fx.fillRect(0, 0, W, H); }
+  }
   function render() {
     if (!S.world) return;
+    if (S.mode === 'stack' || S.mode === 'final') { renderStack(); return; }
     var cam = S.cam, pal = S.pal, list = [], t = S.t;
     S.parts.forEach(function (m) {
       var p = m.part, model = partModel(p);
       list.push({ m: m.main, model: model, o: {} });
       if (p.glaze) {
-        if (p.fillK > 0) { var f = S.fills.filter(function (q) { return q.part === p; })[0]; list.push({ m: m.en, model: model, o: f ? { dis: { p: f.o, k: easeOut(p.fillK) } } : {} }); }
-        if (!p.filled) list.push({ m: m.wire, model: model, o: { emis: L.canFill(S.world, p) ? 0.25 + 0.15 * Math.sin(t * 3) : 0 } });
+        if (p.fillK > 0) { var f = S.fills.filter(function (q) { return q.part === p; })[0] || S.drains.filter(function (q) { return q.part === p; })[0]; list.push({ m: m.en, model: model, o: f ? { dis: { p: f.o, k: easeOut(p.fillK) } } : {} }); }
+        if (!p.filled || p.fillK < 1) list.push({ m: m.wire, model: model, o: { emis: L.canFill(S.world, p) ? 0.25 + 0.15 * Math.sin(t * 3) : 0 } });
       } else if (p.rough) {
         list.push({ m: m.en, model: model, o: {} });
         if (!p.polished) list.push({ m: m.rough, model: model, o: p.polish > 0 ? { dis: { k: p.polish } } : {} });
@@ -2071,11 +2297,12 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
       if (h.v < 0.99) list.push({ m: h.ghost, model: model, o: { alpha: (1 - h.v) * (0.45 + 0.25 * Math.sin(t * 2.4 + h.n.c[0])), noShadow: true, late: true } });
       if (h.v > 0.01) list.push({ m: h.solid, model: M.chain(model, M.tr(h.n.c[0], h.n.c[1] + 0.5, h.n.c[2]), M.sc(1, Math.max(0.02, h.v), 1), M.tr(-h.n.c[0], -h.n.c[1] - 0.5, -h.n.c[2])), o: { alpha: Math.min(1, h.v * 1.4) } });
     });
+    if (CM.rail) list.push({ m: CM.rail, model: M.id(), o: { noShadow: true } });
     if (CM.door) list.push({ m: CM.door, model: M.id(), o: { alpha: 0.42 + 0.06 * Math.sin(t * 1.7) + (S.won ? 0.3 : 0), noShadow: true, late: true, noDepth: true } });
     if (!S.tokenTaken) { var gn = S.world.nodes.filter(function (n) { return n.goal; })[0]; if (gn) { var gp = standNow(gn); list.push({ m: CM.token, model: M.chain(M.tr(gp[0], gp[1] + 0.95 + 0.06 * Math.sin(t * 1.8), gp[2]), M.rot('y', t * 0.9)), o: { noShadow: true } }); } }
     charList(list, C[0]); charList(list, C[1]);
     var key = pal.key, keyC = hex(pal.keyC), amb = pal.amb || 0.32;
-    R.frame({ center: cam.c, sx: 2 * cam.ppu / W, sy: 2 * cam.ppu / H, offY: -2 * (cam.base + cam.intro) / H,
+    R.frame({ cam: [RX, UY, VZ], center: cam.c, sx: 2 * cam.ppu / W, sy: 2 * cam.ppu / H, offY: -2 * (cam.base + cam.intro) / H,
       key: key, keyC: mulc(keyC, 1.05), sky: mulc(hex(pal.mist), amb * 1.6), gnd: mixc(mulc(hex(pal.sky[1]), amb * 1.4), [0.25, 0.17, 0.12], 0.3), fogC: hex(pal.fog),
       fog: [-4.6, -0.4, -6.4, -3.0], lights: lights(), time: t, ga: S.ga, ext: S.ext }, list);
   }
@@ -2087,8 +2314,8 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
   }
   function resize() {
     DPR = CAP ? 1 : Math.min(window.devicePixelRatio || 1, 2); W = Math.max(1, window.innerWidth); H = Math.max(1, window.innerHeight);
-    [bgc, glc, fxc].forEach(function (c) { c.width = (W * DPR) | 0; c.height = (H * DPR) | 0; });
-    bg.setTransform(DPR, 0, 0, DPR, 0, 0); fx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    [bgc, vzc, glc, fxc].forEach(function (c) { c.width = (W * DPR) | 0; c.height = (H * DPR) | 0; });
+    bg.setTransform(DPR, 0, 0, DPR, 0, 0); fx.setTransform(DPR, 0, 0, DPR, 0, 0); vzx.setTransform(DPR, 0, 0, DPR, 0, 0);
     if (S.world) { fitCamera(); } if (S.pal) drawBG();
   }
 
@@ -2105,14 +2332,14 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     });
   }
   function setMuteUI() { $('bmu').classList.toggle('off', save.mute); $('bmu').setAttribute('aria-pressed', save.mute ? 'true' : 'false'); }
-  $('title').addEventListener('click', function () { if (S.mode !== 'title') return; AU.init(); AU.ui(); start(Math.min(save.done, LEVELS.length - 1), true); });
+  $('title').addEventListener('click', function () { if (S.mode !== 'title') return; AU.init(); AU.ui(); var i0 = save.done >= LEVELS.length ? 0 : save.done; start(i0, true, i0 === 0); });
   $('blv').addEventListener('click', function () { AU.ui(); buildLevelList(); $('levels').classList.add('on'); });
   $('lvclose').addEventListener('click', function () { AU.ui(); $('levels').classList.remove('on'); });
   $('bre').addEventListener('click', function () { if (S.mode === 'play' || S.mode === 'end') { AU.ui(); start(S.idx, false); } });
   $('bmu').addEventListener('click', function () { save.mute = !save.mute; AU.setMute(save.mute); persist(); setMuteUI(); AU.ui(); });
   $('w0').addEventListener('click', function () { if (S.mode === 'play') select(0); });
   $('w1').addEventListener('click', function () { if (S.mode === 'play') select(1); });
-  $('again').addEventListener('click', function () { AU.ui(); start(0, true); });
+  $('again').addEventListener('click', function () { AU.ui(); start(0, true, true); });
   $('pick').addEventListener('click', function () { AU.ui(); buildLevelList(); $('levels').classList.add('on'); });
   window.addEventListener('keydown', function (e) {
     if (e.key === 'r' || e.key === 'R') $('bre').click(); else if (e.key === 'm' || e.key === 'M') $('bmu').click();
@@ -2146,7 +2373,8 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     cont: function () { if (S.canContinue) nextLevel(); return S.mode; },
     state: function () { return { mode: S.mode, idx: S.idx, won: S.won, chars: C.map(function (c) { return c.on ? c.node.cell.join(',') : null; }), parts: S.world.parts.map(function (p) { return p.id + ':' + p.state + (p.filled ? 'F' : '') + (p.polished ? 'P' : ''); }) }; },
     title: function () { S.mode = 'title'; }, resize: resize, drawVase: drawVase, AU: AU,
-    busy: function () { return C.some(function (c) { return c.on && (c.step || c.path.length || c.fade); }) || S.world.parts.some(function (p) { return p.anim; }) || S.fills.length > 0 || S.beat > 0; } };
+    stack: function () { startStack(); return 'ok'; }, dive: function () { start(0, true, true); return 'ok'; }, mode: function () { return S.mode; },
+    busy: function () { return !!S.camAnim || C.some(function (c) { return c.on && (c.step || c.path.length || c.fade); }) || S.world.parts.some(function (p) { return p.anim; }) || S.fills.length > 0 || S.beat > 0; } };
 })();
 
 </script>

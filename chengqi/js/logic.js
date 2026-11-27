@@ -58,7 +58,7 @@
         id: pd.id, kind: pd.kind || 'static', axis: pd.axis || 'y', pivot: pd.pivot || [0, 0, 0],
         min: pd.min, max: pd.max, state: pd.state || 0, val: pd.state || 0,
         handles: pd.handles || [], follow: pd.follow || null, hold: pd.hold || null,
-        glaze: pd.glaze || null, filled: !!(pd.glaze && pd.glaze.filled), onlyA: !!pd.onlyA, rough: !!pd.rough, polished: false,
+        collapse: pd.collapse || null, glaze: pd.glaze || null, filled: !!(pd.glaze && pd.glaze.filled), onlyA: !!pd.onlyA, rough: !!pd.rough, polished: false,
         def: pd, cells: [], nodes: []
       };
       (pd.boxes || []).forEach(function (b) {
@@ -176,13 +176,32 @@
 
   // 竖直面旋转的机关，有人站在上面时不可转
   function locked(W, part) {
+    var i;
+    // 有人站在靠这根金丝合拢的釉格上时，金丝不能动（一动釉就散了）
+    for (i = 0; i < W.parts.length; i++) {
+      var g = W.parts[i]; if (!g.glaze || !g.filled || !anyOn(W, g)) continue;
+      for (var k = 0; k < g.glaze.need.length; k++) if (g.glaze.need[k][0] === part.id) return true;
+    }
     if (part.kind !== 'rot' || part.axis === 'y') return false;
-    for (var i = 0; i < W.chars.length; i++) if (W.chars[i] && W.chars[i].part === part) return true;
+    for (i = 0; i < W.chars.length; i++) if (W.chars[i] && W.chars[i].part === part) return true;
     return false;
+  }
+  function needsMet(W, p) { for (var i = 0; i < p.glaze.need.length; i++) { var nd = p.glaze.need[i]; if (W.byId[nd[0]].state !== nd[1]) return false; } return true; }
+  // 金丝一离开，丝格里的釉就散回空框；返回散掉的丝格
+  function drain(W) {
+    var out = [];
+    W.parts.forEach(function (p) { if (p.glaze && p.filled && p.glaze.need.length && !needsMet(W, p)) { p.filled = false; out.push(p); } });
+    if (out.length) settle(W);
+    return out;
   }
   function anyOn(W, part) { for (var i = 0; i < W.chars.length; i++) if (W.chars[i] && W.chars[i].part === part) return true; return false; }
   // 联动 / 托举机关的目标状态
   function followTarget(W, p) {
+    if (p.collapse) { // 一次性：所有人都到了指定处，身后的路就塌进火里
+      if (p.state === p.collapse.to) return p.collapse.to;
+      for (var j = 0; j < W.chars.length; j++) if (!W.chars[j] || p.collapse.on.indexOf(W.chars[j].part.id) < 0) return p.state;
+      return p.collapse.to;
+    }
     if (p.hold) {
       for (var i = 0; i < W.nodes.length; i++) { var n = W.nodes[i]; if (n.holdOf === p.id && occupied(W, n)) return p.hold.on; }
       return p.hold.off;
@@ -190,13 +209,9 @@
     var s = W.byId[p.follow.src]; return s.state === p.follow.when ? p.follow.on : p.follow.off;
   }
   // 丝格是否已合拢、可以灌釉
-  function canFill(W, p) {
-    if (!p.glaze || p.filled) return false;
-    for (var i = 0; i < p.glaze.need.length; i++) { var nd = p.glaze.need[i]; if (W.byId[nd[0]].state !== nd[1]) return false; }
-    return true;
-  }
+  function canFill(W, p) { return !!(p.glaze && !p.filled && needsMet(W, p)); }
 
-  var api = { build: build, settle: settle, path: path, edge: edge, locked: locked, anyOn: anyOn, followTarget: followTarget, canFill: canFill,
+  var api = { build: build, settle: settle, path: path, edge: edge, locked: locked, anyOn: anyOn, followTarget: followTarget, canFill: canFill, drain: drain, needsMet: needsMet,
     occupied: occupied, scr: scr, tPoint: tPoint, tCell: tCell, rot90: rot90, AXV: AXV, key: key };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.SY_LOGIC = api;
 })(typeof window !== 'undefined' ? window : this);
