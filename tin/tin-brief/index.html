@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>画师需求说明</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- 字体：连得上 Google Fonts 时用思源字体，连不上就用系统字体，不会卡住页面 -->
+<link rel="stylesheet" media="print" onload="this.media=\'all\'" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;900&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+/* VOICE  写给画师的工作单：不讲技术，只讲画什么、画成什么样、怎么算合格
+   IDEA   出版社发给插画师的「稿件需求单」——每一张图都有编号、尺寸和验收标准
+   PICTURE 占位版立体书截图，画师一眼看到自己的画会出现在哪里
+   COLOUR 绘本的秋橙做主色；对错示例只用红绿两色
+   TYPE   Noto Serif SC 900 标题 + Noto Sans SC 正文 */
+:root{color-scheme:light dark;
+ --bg:light-dark(#fbfaf6,#141a18);--paper:light-dark(#ffffff,#1c2421);--ink:light-dark(#1f2a26,#e9efe9);--soft:light-dark(#56615c,#a9b6af);
+ --pine:light-dark(#b4521c,#ffb27a);--pineBg:#7a3414;--line:light-dark(#e3e0d6,#2c3833);--seal:light-dark(#c8452e,#ff8a70);--tint:light-dark(#fdf1e6,#2a211b);--code:light-dark(#f4f2ec,#101513)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 "Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Noto Serif SC","Songti SC","STSong","SimSun",serif;line-height:1.2;text-wrap:balance;margin:0}
+h2{font-size:clamp(26px,3.4vw,36px);font-weight:900;margin-bottom:14px}
+h3{font-size:20px;font-weight:900;margin:30px 0 10px}
+p{margin:0 0 14px;max-width:72ch}
+a{color:var(--pine)}
+code{font:14px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+pre{position:relative;background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 18px}
+pre code{background:none;padding:0;font-size:inherit}
+.copy{position:absolute;right:8px;top:8px;font:12px "Noto Sans SC",sans-serif;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;padding:4px 10px;cursor:pointer;min-height:30px}
+img{max-width:100%;display:block;border-radius:10px}
+figure{margin:0 0 20px}figcaption{font-size:13px;color:var(--soft);margin-top:6px}
+.band{padding:clamp(36px,5vw,72px) max(5vw,16px)}
+.wrap{max-width:1180px;margin:0 auto}
+/* 头图 */
+.hero{background:var(--pineBg);color:#f3efe2;padding:clamp(28px,4vw,56px) max(5vw,16px) 0}
+.hero .wrap{display:grid;gap:22px}
+.hero h1{font-size:clamp(32px,5vw,52px);font-weight:900;color:#fff8e6;max-width:20ch}
+.hero .lead{font-size:18px;color:#d9e4dc;max-width:62ch;margin:0}
+.hero .shot{border-radius:14px 14px 0 0;overflow:hidden;box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+.hero .shot img{border-radius:0}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:10px;font-weight:700;text-decoration:none;background:#f0c36d;color:#2c2210}
+.btn.ghost{background:transparent;color:#fff8e6;border:1px solid rgba(255,248,230,.4)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:rgba(255,255,255,.12);border-radius:12px;overflow:hidden}
+.facts div{background:var(--pineBg);padding:12px 14px}.facts b{display:block;font:900 26px/1.1 "Noto Serif SC","Songti SC","STSong","SimSun",serif;color:#fff8e6}.facts span{font-size:13px;color:#c9d6cd}
+/* 目录 */
+.toc{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.toc .scroll{display:flex;gap:4px;overflow-x:auto;max-width:1180px;margin:0 auto;padding:8px max(5vw,16px)}
+.toc a{flex:none;text-decoration:none;color:var(--soft);font-size:14px;padding:6px 10px;border-radius:8px}.toc a:hover{background:var(--tint);color:var(--ink)}
+/* 步骤卡 */
+.step{display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px 22px;border-top:1px solid var(--line)}
+.step .no{font:900 54px/1 "Noto Serif SC","Songti SC","STSong","SimSun",serif;color:var(--pine);opacity:.9}
+.step .no small{display:block;font:500 12px "Noto Sans SC",sans-serif;opacity:.8;margin-top:6px}
+.key{background:var(--tint);border-left:4px solid var(--pine);border-radius:0 10px 10px 0;padding:12px 16px;margin:0 0 18px}
+.key b{color:var(--pine)}
+.warn{border-left-color:var(--seal)}.warn b{color:var(--seal)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;align-items:start}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;align-items:start}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.card h4{margin:0 0 6px;font:900 17px "Noto Serif SC","Songti SC","STSong","SimSun",serif}
+.card p{font-size:15px;margin:0 0 8px}
+.stamp{display:inline-block;border:2px solid var(--seal);color:var(--seal);border-radius:6px;padding:0 8px;font:900 13px "Noto Serif SC","Songti SC","STSong","SimSun",serif;transform:rotate(-3deg);margin-right:6px}
+ul,ol{padding-left:1.3em;margin:0 0 16px;max-width:76ch}li{margin:4px 0}
+table{width:100%;border-collapse:collapse;font-size:14.5px;margin:0 0 20px;background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--tint);font-weight:700;font-size:13px;color:var(--soft)}
+td code{font-size:13px;white-space:nowrap}
+.scroll{overflow-x:auto}
+.tree{font:13px/1.7 ui-monospace,Menlo,monospace}
+.compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.compare figure{margin:0}
+.check li{list-style:none;position:relative;padding-left:28px}.check li::before{content:"";position:absolute;left:0;top:6px;width:16px;height:16px;border:2px solid var(--pine);border-radius:4px}
+.check{padding-left:0}
+footer{color:var(--soft);font-size:14px}
+@media(max-width:600px){.step{grid-template-columns:1fr}.step .no{font-size:40px}table{font-size:13px}
+ .stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 10px;padding-inline-start:7.5em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7em;margin-inline-start:-7.5em;color:var(--soft);font-size:12px;white-space:normal}.stack td:empty{display:none}td code{white-space:normal}}
+@media(prefers-reduced-motion:no-preference){.hero .shot img{animation:rise .9s ease-out both}@keyframes rise{from{transform:translateY(24px);opacity:.4}}}
+</style><style>
+.sp{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;padding:22px 0;border-top:1px solid var(--line)}
+.sp h3{margin:0 0 6px}.sp .meta{font-size:13px;color:var(--soft);margin-bottom:8px}
+.sp ul{font-size:15px}.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:99px;margin:0 6px 4px 0;background:var(--tint);color:var(--pine);font-weight:700}
+.tag.ok{background:light-dark(#e6f3ea,#1c2c22);color:light-dark(#2f7a4a,#8fd6a6)}.tag.new{background:light-dark(#fdeaea,#331c1c);color:var(--seal)}
+.pri{display:inline-block;font:900 13px "Noto Serif SC","Songti SC","STSong","SimSun",serif;color:#fff;background:var(--seal);border-radius:6px;padding:0 7px}
+.pri.p1{background:#d98a2b}.pri.p2{background:#7b8a84}
+@media(max-width:760px){.sp{grid-template-columns:1fr}}
+</style><style>
+.dd{margin:0 0 22px}.dd img{border:1px solid var(--line)}
+.rule{display:grid;grid-template-columns:40px minmax(0,1fr);gap:14px;padding:18px 0;border-top:1px solid var(--line)}
+.rule .n{font:900 30px/1 "Noto Serif SC","Songti SC","STSong","SimSun",serif;color:var(--pine)}
+.rule h3{margin:0 0 6px}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;counter-reset:f}
+.flow div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;counter-increment:f}
+.flow div::before{content:counter(f);display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--pine);color:#fff;font-weight:900;margin-bottom:6px}
+.flow b{display:block;margin-bottom:4px}
+.flow p{font-size:14px;margin:0}
+.legend4{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 16px}
+.legend4 span{display:inline-flex;align-items:center;gap:6px;font-size:14px}
+.legend4 i{width:22px;height:16px;border-radius:4px;border:2px dashed}
+.status{font-size:12px;font-weight:700;padding:1px 8px;border-radius:99px;white-space:nowrap}
+.s-todo{background:#fdeaea;color:#b43a24}.s-ok{background:#e6f3ea;color:#2f7a4a}.s-tmp{background:#fdf1dc;color:#a06414}
+@media (prefers-color-scheme:dark){.s-todo{background:#3a1f1a}.s-ok{background:#1c2c22}.s-tmp{background:#33281a}}
+.spread{border-top:2px solid var(--pine);padding-top:18px;margin-top:34px}
+.spread .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin:12px 0}
+@media(max-width:760px){.spread .two{grid-template-columns:1fr}}
+.pass{color:var(--ok, #2f7a4a)}
+.grid2 figure img{max-height:560px;object-fit:contain;margin:0 auto;width:auto;max-width:100%}
+.layers td:first-child{font-weight:700;white-space:nowrap}
+@media print{.toc,.cta{display:none}.band{padding:18px 0}.spread{break-inside:avoid-page}img{max-height:340px;object-fit:contain}}
+</style><script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+ <h1 style="max-width:none">《铁皮的旅行》立体书<br>画师需求说明</h1>
+ <p class="lead">这本绘本要做成一本能在手机和电脑上“翻”的立体书：书页摊在桌上，翻开时房子、树、人物会像纸片一样从书页上立起来。你要做的，是把画拆成一张张能立起来的纸片。这份说明不讲技术，只讲三件事：<b>画什么、画成什么样、怎么算合格</b>。</p>
+ <div class="cta">
+  <a class="btn" href="../tin-book/index.html">打开占位版，看每张图用在哪</a>
+  <a class="btn ghost" href="../tin-check/index.html">画稿自检页</a>
+ </div>
+ <div class="facts">
+  <div><b>8 张</b><span>地面页：从正上方往下看的地面</span></div>
+  <div><b>52 张</b><span>立牌和道具：其中 38 张待画，14 张已有临时图</span></div>
+  <div><b>4 个</b><span>角色分件：铁皮人、仙子、矮人、毛毛虫</span></div>
+  <div><b>1 个网页</b><span>画完拖进自检页，全绿就能交稿</span></div>
+ </div>
+ <figure class="shot"><img src="img/sturn.jpg" alt="占位版翻页的样子"></figure>
+</div></header>
+
+<nav class="toc" aria-label="目录"><div class="scroll">
+ <a href="#how">先看这里</a><a href="#rules">五条总规则</a><a href="#ground">地面页</a><a href="#stand">立牌和道具</a><a href="#char">角色分件</a><a href="#tasks">每页任务单</a><a href="#deliver">交稿方式</a><a href="#accept">验收标准</a>
+</div></nav>
+
+<main>
+<section class="band" id="how"><div class="wrap">
+ <h2>先看这里：工作流程</h2>
+ <div class="flow">
+  <div><b>看位置</b><p>打开占位版，翻到要画的那一页。彩色虚线牌子就是待画的图，上面写着名字和文件名。</p></div>
+  <div><b>拿底稿</b><p>地面页照素材包里的底稿画；立牌和角色照下面的规格画。</p></div>
+  <div><b>画</b><p>每样东西单独一个图层，导出成透明 PNG，按任务单起文件名。</p></div>
+  <div><b>自检</b><p>把导出的图拖进自检页，红色的项目改掉，直到全部变绿。</p></div>
+  <div><b>交稿</b><p>按文件夹放好，连同源文件（Procreate 或 PSD）一起交。</p></div>
+ </div>
+ <h3>占位版里的四种颜色</h3>
+ <div class="legend4">
+  <span><i style="background:#f6e0be;border-color:#b4521c"></i>橙色：立牌（立在书页上的景物）</span>
+  <span><i style="background:#e7daf6;border-color:#7a4fa0"></i>紫色：机关件（读者会点、拖、转的东西）</span>
+  <span><i style="background:#d6e8f6;border-color:#2f6f9e"></i>蓝色：隐藏件（读者完成机关后才出现）</span>
+  <span><i style="background:#d9efdc;border-color:#2f7a4a"></i>绿色：角色</span>
+ </div>
+ <p>没有虚线、看起来像原画的，是从你的原画里临时抠出来的（矿石、城堡、云、月亮、铁皮人等）。它们已经能用，有时间可以按规范重画一版更干净的。</p>
+</div></section>
+
+<section class="band" id="rules" style="background:var(--tint)"><div class="wrap">
+ <h2>五条总规则</h2>
+ <div class="rule"><div class="n">1</div><div><h3>地面从正上方看，立牌从正面看</h3><p>地面页像一张地图，只画平的东西：路、草地、河、地毯。立牌像舞台布景，只画正面：房子画立面，树画侧影。原画大多是斜着看的，这两种画法要分开。</p><figure class="dd"><img src="img/dd-ground.jpg" alt="地面页对错示例"></figure><figure class="dd"><img src="img/dd-front.jpg" alt="立牌对错示例"></figure></div></div>
+ <div class="rule"><div class="n">2</div><div><h3>背景透明</h3><p>立牌、道具、角色部件都要透明背景。导出前关掉背景色图层。在自检页里看到棋盘格，就说明背景是透明的。</p><figure class="dd"><img src="img/dd-alpha.jpg" alt="透明背景对错示例"></figure></div></div>
+ <div class="rule"><div class="n">3</div><div><h3>不画影子</h3><p>立体书会自动打光、自动生成影子。画里再画影子，就会出现两个影子。物体本身的明暗可以画，统一按左上方来光。</p><figure class="dd"><img src="img/dd-shadow.jpg" alt="影子对错示例"></figure></div></div>
+ <div class="rule"><div class="n">4</div><div><h3>画完整，底边平</h3><p>原画里被前景挡住的部分，比如城堡的下半截、山丘后面的树，都要补画完整。立牌靠底边“站”在书页上，所以房子、山丘这类东西的底边要画平。树、灯塔这类上宽下窄的不用。</p><figure class="dd"><img src="img/dd-complete.jpg" alt="完整剪影对错示例"></figure></div></div>
+ <div class="rule"><div class="n">5</div><div><h3>不写字</h3><p>画面里不要有正文文字，文字由立体书单独显示，还会配朗读。路牌、招牌上的字可以画。如果想保留手写标题字，单独画成一张透明 PNG。</p></div></div>
+</div></section>
+
+<section class="band" id="ground"><div class="wrap">
+ <h2>地面页：8 张</h2>
+ <div class="grid2">
+  <figure><img src="img/g6.jpg" alt="地面页底稿示例"><figcaption>第 6 跨页的底稿。色块写着“这里画什么”，彩色横线是立牌站的位置</figcaption></figure>
+  <div>
+   <table class="layers"><tbody>
+    <tr><td>尺寸</td><td>2048 × 1200 像素，横版</td></tr>
+    <tr><td>格式</td><td>PNG 或 JPG，铺满，不透明</td></tr>
+    <tr><td>文件名</td><td><code>ground.png</code>，放进对应跨页的文件夹</td></tr>
+    <tr><td>视角</td><td>从正上方往下看。画面上方是远处，下方靠近读者</td></tr>
+    <tr><td>中线</td><td>正中间是书缝，左右各约 24 像素会被书缝吃掉，不要放重要内容</td></tr>
+    <tr><td>画什么</td><td>照底稿的色块：小路、广场、河流、雪地、地毯、落叶……</td></tr>
+    <tr><td>不画什么</td><td>房子、树、人物这些“立起来”的东西；影子；正文文字</td></tr>
+   </tbody></table>
+   <p>做法：把底稿放在最下面一层，降低透明度，在上面新建图层画；画完删掉底稿层再导出。彩色横线上方的位置会立着东西，那里的地面可以画得简单些。</p>
+  </div>
+ </div>
+</div></section>
+
+<section class="band" id="stand" style="background:var(--tint)"><div class="wrap">
+ <h2>立牌和道具：52 张（38 张待画）</h2>
+ <div class="grid2">
+  <div>
+   <table class="layers"><tbody>
+    <tr><td>格式</td><td>透明 PNG，一张图只放一样东西</td></tr>
+    <tr><td>尺寸</td><td>最长边 800–1500 像素。不用和别的立牌比大小，大小由程序按任务单里的“高度”统一调整</td></tr>
+    <tr><td>文件名</td><td>照任务单，小写英文，比如 <code>big-tree.png</code></td></tr>
+    <tr><td>视角</td><td>正面</td></tr>
+    <tr><td>白边</td><td>不用画。程序会自动给每张立牌加一圈纸白边</td></tr>
+    <tr><td>会动的部分</td><td>单独一张。比如锤子、季节转盘、红心，都和别的东西分开画</td></tr>
+   </tbody></table>
+  </div>
+  <div>
+   <h3 style="margin-top:0">任务单里的“高度”是什么</h3>
+   <p>它表示这样东西在书里立起来有多高，以铁皮人 = 1.5 为参照。比如“高耸的山峰”是 4.0，大约有铁皮人的两倍半高；“树桩”是 0.45。画的时候心里有这个比例就好，图片本身画多大都可以。</p>
+   <h3>会动的道具，画的时候注意</h3>
+   <ul>
+    <li><b>锤子</b>：程序握着锤柄的底端转动，所以锤柄要画完整。</li>
+    <li><b>季节转盘</b>：程序绕圆心转它，所以要画成正圆，圆心居中。</li>
+    <li><b>一束阳光</b>：顶窄底宽的光柱，可以半透明。</li>
+    <li><b>藤绳</b>：细长一条，从山顶垂到地面。</li>
+    <li><b>红心</b>、<b>果实</b>：单独一个完整的物件。</li>
+   </ul>
+  </div>
+ </div>
+</div></section>
+
+<section class="band" id="char"><div class="wrap">
+ <h2>角色分件：4 个角色</h2>
+ <p>角色要能眨眼、挥手、走路，所以每个角色要拆成几个部件，每个部件一个图层。<b>不用量任何坐标</b>，程序会自动找出每个部件的位置和转动的轴。</p>
+ <div class="grid2">
+  <figure><img src="img/tin-parts.jpg" alt="直接切开的铁皮人"><figcaption>✗ 直接从设定稿上切开：肩膀和腰下缺一块，一转动就露缝</figcaption></figure>
+  <figure><img src="img/tin-overlap.jpg" alt="铁皮人需要重叠的地方"><figcaption>✓ 红色区域要“多画一截”：这些地方会被身体盖住，平时看不见，转动时才不会露缝</figcaption></figure>
+ </div>
+ <h3>画布和图层</h3>
+ <div class="grid2">
+  <table class="layers"><tbody>
+   <tr><td>画布</td><td>竖版 1200 × 1600 像素，四个角色都用这个尺寸</td></tr>
+   <tr><td>姿势</td><td>正面站立，和设定稿的正面一致；双手自然下垂，稍微离开身体</td></tr>
+   <tr><td>位置</td><td>角色居中，脚底站在离画布底边约 80 像素的地方（素材包里的画布模板有参考线），头顶离上边留出空白</td></tr>
+   <tr><td>背景</td><td>导出前关掉背景色图层</td></tr>
+   <tr><td>重叠</td><td>手、腿、头和身体连接的一头，要多画约自身长度的十分之一，藏到身体下面</td></tr>
+   <tr><td>眼睛</td><td>单独一层，只画睁开的眼睛。眨眼由程序完成</td></tr>
+  </tbody></table>
+  <div>
+   <p><b>图层从下到上，按这个顺序、用这些名字：</b></p>
+   <table class="layers"><thead><tr><th>图层名</th><th>画什么</th></tr></thead><tbody>
+    <tr><td>尾巴</td><td>没有就不建（四个角色都不用）</td></tr>
+    <tr><td>左腿</td><td>画面左边那条腿，连鞋</td></tr>
+    <tr><td>右腿</td><td>画面右边那条腿，连鞋</td></tr>
+    <tr><td>后手</td><td>在身体后面的那只手臂，连手</td></tr>
+    <tr><td>身体</td><td>躯干和衣服</td></tr>
+    <tr><td>头</td><td>头，包括帽子、耳朵、头发、嘴巴、腮红</td></tr>
+    <tr><td>眼睛</td><td>只有眼睛</td></tr>
+    <tr><td>前手</td><td>在身体前面的那只手臂，连手</td></tr>
+   </tbody></table>
+   <p class="note">毛毛虫只要“身体”和“眼睛”两层。</p>
+  </div>
+ </div>
+ <div class="scroll"><table class="stack"><thead><tr><th>角色</th><th>参考</th><th>现在的状态</th><th>文件夹</th></tr></thead><tbody>
+  <tr><td><b>铁皮人</b></td><td>0558</td><td><span class="status s-tmp">临时切件（会露缝，需画师重画分件）</span></td><td><code>cast/tin/</code></td></tr><tr><td><b>暖心仙子</b></td><td>0551</td><td><span class="status s-tmp">整张临时抠图（只能整体动）</span></td><td><code>cast/fairy/</code></td></tr><tr><td><b>毛毛虫</b></td><td>0550</td><td><span class="status s-tmp">整张临时抠图</span></td><td><code>cast/worm/</code></td></tr><tr><td><b>铁匠矮人</b></td><td>0578 / 0579</td><td><span class="status s-tmp">占位（没有设定稿）</span></td><td><code>cast/dwarf/</code></td></tr>
+ </tbody></table></div>
+ <div class="key warn"><b>铁匠矮人没有设定稿。</b>请先画一张正面、侧面的设定稿，确认后再分件。</div>
+ <figure><img src="img/chk_tin.jpg" alt="自检页角色检查截图"><figcaption>自检页会让角色动起来，并逐项告诉你哪里要改。这张是临时切的铁皮人：缺眼睛层，头和两只手没有重叠</figcaption></figure>
+</div></section>
+
+<section class="band" id="tasks" style="background:var(--tint)"><div class="wrap">
+ <h2>每页任务单</h2>
+ <p>下面 8 张表就是全部要交的图。“状态”是“已有临时图，可直接用”的，可以不画；有时间的话，按规范补画一版更干净的。</p>
+ <div class="spread" id="sp1"><h3>第 1 跨页 · 黑暗的山洞　<small style="font-weight:400;color:var(--soft)">文件夹 <code>ch1-cave/</code> · 参考原画 0580</small></h3>
+ <p><b>这一页的玩法：</b>读者拖着“一束阳光”照到矿石上，提灯的矮人出现。</p>
+ <div class="two"><figure><img src="img/s1.jpg" alt="第 1 跨页占位版截图" loading="lazy"><figcaption>占位版：彩色虚线牌子就是你要画的图，写着文件名</figcaption></figure>
+ <figure><img src="img/g1.jpg" alt="第 1 跨页地面页底稿" loading="lazy"><figcaption>地面页底稿 <code>ground.png</code>：照着色块画俯视地面，彩色线是立牌站的位置</figcaption></figure></div>
+ <div class="scroll"><table class="stack"><thead><tr><th>文件名</th><th>画什么</th><th>类型</th><th>参考原画</th><th>高度</th><th>状态</th></tr></thead><tbody>
+ <tr><td><code>ground.png</code></td><td><b>地面页（俯视）</b><br><small>2048×1200，照底稿画，删掉网格和标注</small></td><td>地面页</td><td>0580</td><td>—</td><td><span class="status s-todo">待画</span></td></tr>
+ <tr><td><code>stalactite-l.png</code></td><td><b>紫色钟乳石帘（左）</b><br><small>像幕布一样挂下来的钟乳石，底边不规则即可，顶边要平</small></td><td>立牌</td><td>0580 顶部</td><td>2.4</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>stalactite-r.png</code></td><td><b>紫色钟乳石帘（右）</b></td><td>立牌</td><td>0580 顶部</td><td>2.3</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>hill-l.png</code></td><td><b>黄绿山丘（左）</b><br><small>补全被矿石挡住的部分</small></td><td>立牌</td><td>0580 中景</td><td>1.2</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>hill-r.png</code></td><td><b>暗绿山丘（右）</b></td><td>立牌</td><td>0580 中景</td><td>1.1</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>beam.png</code></td><td><b>一束阳光</b><br><small>淡黄色、可以半透明的光柱，顶窄底宽；机关：读者拖着它移到矿石上</small></td><td>机关件</td><td>0580 光柱</td><td>2.6</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>ore-main.png</code></td><td><b>矿石（主角）</b><br><small>临时抠图可用；最好补画一版无背景杂色的</small></td><td>立牌</td><td>0580 带脸的矿石</td><td>0.75</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr><tr><td><code>ore-a.png</code></td><td><b>矿石 A</b></td><td>立牌</td><td>0580 左侧矿石</td><td>0.6</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr><tr><td><code>ore-b.png</code></td><td><b>矿石 B</b></td><td>立牌</td><td>0580 右侧矿石</td><td>0.5</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr><tr><td><code>dwarf-lamp.png</code></td><td><b>提灯的矮人</b><br><small>解谜后出现；需先完成矮人设定稿</small></td><td>隐藏件（解谜后出现）</td><td>0578 矮人造型</td><td>1.4</td><td><span class="status s-todo">待画</span></td></tr></tbody></table></div></div><div class="spread" id="sp2"><h3>第 2 跨页 · 矮人的铁匠铺　<small style="font-weight:400;color:var(--soft)">文件夹 <code>ch2-forge/</code> · 参考原画 0578 0579</small></h3>
+ <p><b>这一页的玩法：</b>读者点锤子敲五下，矿石消失，铁皮人站起来。</p>
+ <div class="two"><figure><img src="img/s2.jpg" alt="第 2 跨页占位版截图" loading="lazy"><figcaption>占位版：彩色虚线牌子就是你要画的图，写着文件名</figcaption></figure>
+ <figure><img src="img/g2.jpg" alt="第 2 跨页地面页底稿" loading="lazy"><figcaption>地面页底稿 <code>ground.png</code>：照着色块画俯视地面，彩色线是立牌站的位置</figcaption></figure></div>
+ <div class="scroll"><table class="stack"><thead><tr><th>文件名</th><th>画什么</th><th>类型</th><th>参考原画</th><th>高度</th><th>状态</th></tr></thead><tbody>
+ <tr><td><code>ground.png</code></td><td><b>地面页（俯视）</b><br><small>2048×1200，照底稿画，删掉网格和标注</small></td><td>地面页</td><td>0578 0579</td><td>—</td><td><span class="status s-todo">待画</span></td></tr>
+ <tr><td><code>wall-l.png</code></td><td><b>挂满锅具的墙</b><br><small>墙面加挂着的锅、勺、钟表，顶边可以是屋梁</small></td><td>立牌</td><td>0578 背景</td><td>2.4</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>wall-r.png</code></td><td><b>工具墙</b></td><td>立牌</td><td>0579 背景</td><td>2.4</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>furnace.png</code></td><td><b>炉灶与炉火</b></td><td>立牌</td><td>0578 / 0579</td><td>1.8</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>anvil.png</code></td><td><b>铁砧台</b><br><small>矿石放在上面</small></td><td>立牌</td><td>0578 圆台</td><td>0.9</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>hammer.png</code></td><td><b>锤子</b><br><small>轴心在握柄底端；机关：读者点它敲五下</small></td><td>机关件</td><td>0579 矮人手里的锤子</td><td>0.8</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>barrel.png</code></td><td><b>木桶与柴堆</b></td><td>立牌</td><td>自由发挥</td><td>0.65</td><td><span class="status s-todo">待画</span></td></tr></tbody></table></div></div><div class="spread" id="sp3"><h3>第 3 跨页 · 秋天的伐木场　<small style="font-weight:400;color:var(--soft)">文件夹 <code>ch3-forest/</code> · 参考原画 0576 0552 0574 0573 0553</small></h3>
+ <p><b>这一页的玩法：</b>读者点大树砍三下，秋天的果实掉下来。</p>
+ <div class="two"><figure><img src="img/s3.jpg" alt="第 3 跨页占位版截图" loading="lazy"><figcaption>占位版：彩色虚线牌子就是你要画的图，写着文件名</figcaption></figure>
+ <figure><img src="img/g3.jpg" alt="第 3 跨页地面页底稿" loading="lazy"><figcaption>地面页底稿 <code>ground.png</code>：照着色块画俯视地面，彩色线是立牌站的位置</figcaption></figure></div>
+ <div class="scroll"><table class="stack"><thead><tr><th>文件名</th><th>画什么</th><th>类型</th><th>参考原画</th><th>高度</th><th>状态</th></tr></thead><tbody>
+ <tr><td><code>ground.png</code></td><td><b>地面页（俯视）</b><br><small>2048×1200，照底稿画，删掉网格和标注</small></td><td>地面页</td><td>0576 0552 0574 0573 0553</td><td>—</td><td><span class="status s-todo">待画</span></td></tr>
+ <tr><td><code>trees-back-l.png</code></td><td><b>秋树林（左）</b><br><small>红橙色树冠连成一排</small></td><td>立牌</td><td>0576 / 0552</td><td>2.6</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>trees-back-r.png</code></td><td><b>秋树林（右）</b></td><td>立牌</td><td>0574</td><td>2.4</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>big-tree.png</code></td><td><b>要砍的大树</b><br><small>机关：读者点它砍三下；树冠完整，树干下部留出斧痕位置</small></td><td>机关件</td><td>0553 大树</td><td>3.0</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>stump.png</code></td><td><b>树桩</b></td><td>立牌</td><td>0552 树桩</td><td>0.45</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>logs.png</code></td><td><b>木柴堆</b></td><td>立牌</td><td>0576 / 0552</td><td>0.7</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>axe.png</code></td><td><b>斧头</b></td><td>立牌</td><td>0553</td><td>0.6</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>fruit.png</code></td><td><b>秋天的果实（南瓜）</b><br><small>解谜后掉下来；单独画一个完整的果实</small></td><td>隐藏件（解谜后出现）</td><td>0573</td><td>0.55</td><td><span class="status s-todo">待画</span></td></tr></tbody></table></div></div><div class="spread" id="sp4"><h3>第 4 跨页 · 走过四季　<small style="font-weight:400;color:var(--soft)">文件夹 <code>ch4-seasons/</code> · 参考原画 0572 0571 0570</small></h3>
+ <p><b>这一页的玩法：</b>读者转“季节转盘”：雪中树林倒下、春天的花丛和小鸟立起；再转，花丛倒下、夏天的森林和高草立起。</p>
+ <div class="two"><figure><img src="img/s4.jpg" alt="第 4 跨页占位版截图" loading="lazy"><figcaption>占位版：彩色虚线牌子就是你要画的图，写着文件名</figcaption></figure>
+ <figure><img src="img/g4.jpg" alt="第 4 跨页地面页底稿" loading="lazy"><figcaption>地面页底稿 <code>ground.png</code>：照着色块画俯视地面，彩色线是立牌站的位置</figcaption></figure></div>
+ <div class="scroll"><table class="stack"><thead><tr><th>文件名</th><th>画什么</th><th>类型</th><th>参考原画</th><th>高度</th><th>状态</th></tr></thead><tbody>
+ <tr><td><code>ground.png</code></td><td><b>地面页（俯视）</b><br><small>2048×1200，照底稿画，删掉网格和标注</small></td><td>地面页</td><td>0572 0571 0570</td><td>—</td><td><span class="status s-todo">待画</span></td></tr>
+ <tr><td><code>winter-trees.png</code></td><td><b>雪中树林（冬）</b></td><td>立牌</td><td>0572</td><td>2.4</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>snow-pile.png</code></td><td><b>雪堆（冬）</b></td><td>立牌</td><td>0572</td><td>0.45</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>spring-flowers-a.png</code></td><td><b>花丛（春）</b></td><td>立牌</td><td>0571</td><td>0.6</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>spring-flowers-b.png</code></td><td><b>花丛（春）</b></td><td>立牌</td><td>0571</td><td>0.55</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>bird.png</code></td><td><b>小鸟（春）</b></td><td>立牌</td><td>0571 肩头的小鸟</td><td>0.32</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>summer-forest.png</code></td><td><b>茂密森林（夏）</b></td><td>立牌</td><td>0570</td><td>2.5</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>tall-grass.png</code></td><td><b>高草（夏）</b></td><td>立牌</td><td>0570</td><td>0.8</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>bug.png</code></td><td><b>虫子（夏）</b></td><td>立牌</td><td>0570 / 毛毛虫设定</td><td>0.3</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>season-dial.png</code></td><td><b>季节转盘</b><br><small>圆盘四等分：冬、春、夏、秋的小图标；机关：读者拖着它转一圈</small></td><td>机关件</td><td>新画</td><td>0.85</td><td><span class="status s-todo">待画</span></td></tr></tbody></table></div></div><div class="spread" id="sp5"><h3>第 5 跨页 · 云端的高山　<small style="font-weight:400;color:var(--soft)">文件夹 <code>ch5-mountain/</code> · 参考原画 0569 0568 0567</small></h3>
+ <p><b>这一页的玩法：</b>读者往下拉藤绳，铁皮人沿着山峰往上爬。</p>
+ <div class="two"><figure><img src="img/s5.jpg" alt="第 5 跨页占位版截图" loading="lazy"><figcaption>占位版：彩色虚线牌子就是你要画的图，写着文件名</figcaption></figure>
+ <figure><img src="img/g5.jpg" alt="第 5 跨页地面页底稿" loading="lazy"><figcaption>地面页底稿 <code>ground.png</code>：照着色块画俯视地面，彩色线是立牌站的位置</figcaption></figure></div>
+ <div class="scroll"><table class="stack"><thead><tr><th>文件名</th><th>画什么</th><th>类型</th><th>参考原画</th><th>高度</th><th>状态</th></tr></thead><tbody>
+ <tr><td><code>ground.png</code></td><td><b>地面页（俯视）</b><br><small>2048×1200，照底稿画，删掉网格和标注</small></td><td>地面页</td><td>0569 0568 0567</td><td>—</td><td><span class="status s-todo">待画</span></td></tr>
+ <tr><td><code>far-hill-l.png</code></td><td><b>远山（左）</b></td><td>立牌</td><td>0569</td><td>1.8</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>far-hill-r.png</code></td><td><b>远山（右）</b></td><td>立牌</td><td>0569</td><td>1.6</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>peak.png</code></td><td><b>高耸的山峰</b><br><small>全书最高的立牌，细长；补全被云挡住的部分</small></td><td>立牌</td><td>0569 / 0567</td><td>4.0</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>cloud-a.png</code></td><td><b>云带</b></td><td>立牌</td><td></td><td>0.55</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr><tr><td><code>cloud-b.png</code></td><td><b>云带</b></td><td>立牌</td><td></td><td>0.7</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr><tr><td><code>cloud-c.png</code></td><td><b>云带</b></td><td>立牌</td><td></td><td>0.5</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr><tr><td><code>rope.png</code></td><td><b>攀爬的藤绳</b><br><small>从山顶垂下来的藤绳；机关：读者往下拉，铁皮人往上爬</small></td><td>机关件</td><td>新画</td><td>3.4</td><td><span class="status s-todo">待画</span></td></tr></tbody></table></div></div><div class="spread" id="sp6"><h3>第 6 跨页 · 山顶的城堡　<small style="font-weight:400;color:var(--soft)">文件夹 <code>ch6-summit/</code> · 参考原画 0565 0564 0983</small></h3>
+ <p><b>这一页的玩法：</b>读者点门口的毛毛虫，它说主人不在家。</p>
+ <div class="two"><figure><img src="img/s6.jpg" alt="第 6 跨页占位版截图" loading="lazy"><figcaption>占位版：彩色虚线牌子就是你要画的图，写着文件名</figcaption></figure>
+ <figure><img src="img/g6.jpg" alt="第 6 跨页地面页底稿" loading="lazy"><figcaption>地面页底稿 <code>ground.png</code>：照着色块画俯视地面，彩色线是立牌站的位置</figcaption></figure></div>
+ <div class="scroll"><table class="stack"><thead><tr><th>文件名</th><th>画什么</th><th>类型</th><th>参考原画</th><th>高度</th><th>状态</th></tr></thead><tbody>
+ <tr><td><code>ground.png</code></td><td><b>地面页（俯视）</b><br><small>2048×1200，照底稿画，删掉网格和标注</small></td><td>地面页</td><td>0565 0564 0983</td><td>—</td><td><span class="status s-todo">待画</span></td></tr>
+ <tr><td><code>hill-back-l.png</code></td><td><b>暗绿山丘（左）</b><br><small>临时拼的形状，需按原画补画</small></td><td>立牌</td><td>0983</td><td>1.6</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr><tr><td><code>hill-back-r.png</code></td><td><b>暗绿山丘（右）</b></td><td>立牌</td><td>0983</td><td>1.4</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr><tr><td><code>castle.png</code></td><td><b>城堡</b><br><small>临时抠图可用；需补画被山丘挡住的下沿</small></td><td>立牌</td><td>0983</td><td>2.2</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr><tr><td><code>hill-front-l.png</code></td><td><b>黄绿小丘（前左）</b></td><td>立牌</td><td>0983</td><td>0.6</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr><tr><td><code>hill-front-r.png</code></td><td><b>黄绿小丘（前右）</b></td><td>立牌</td><td>0983</td><td>0.55</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr></tbody></table></div></div><div class="spread" id="sp7"><h3>第 7 跨页 · 城外的夜　<small style="font-weight:400;color:var(--soft)">文件夹 <code>ch7-night/</code> · 参考原画 0563 0566</small></h3>
+ <p><b>这一页的玩法：</b>读者点月亮三下（等待了几天），仙子出现在城堡门口。</p>
+ <div class="two"><figure><img src="img/s7.jpg" alt="第 7 跨页占位版截图" loading="lazy"><figcaption>占位版：彩色虚线牌子就是你要画的图，写着文件名</figcaption></figure>
+ <figure><img src="img/g7.jpg" alt="第 7 跨页地面页底稿" loading="lazy"><figcaption>地面页底稿 <code>ground.png</code>：照着色块画俯视地面，彩色线是立牌站的位置</figcaption></figure></div>
+ <div class="scroll"><table class="stack"><thead><tr><th>文件名</th><th>画什么</th><th>类型</th><th>参考原画</th><th>高度</th><th>状态</th></tr></thead><tbody>
+ <tr><td><code>ground.png</code></td><td><b>地面页（俯视）</b><br><small>2048×1200，照底稿画，删掉网格和标注</small></td><td>地面页</td><td>0563 0566</td><td>—</td><td><span class="status s-todo">待画</span></td></tr>
+ <tr><td><code>moon.png</code></td><td><b>笑脸月亮</b><br><small>临时抠图可用</small></td><td>机关件</td><td>0563</td><td>1.15</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr><tr><td><code>castle-night.png</code></td><td><b>城堡（夜）</b><br><small>由白天版调色得到，不用另画</small></td><td>立牌</td><td>程序调色</td><td>2.2</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr><tr><td><code>tin-sleep.png</code></td><td><b>睡着的铁皮人</b></td><td>立牌</td><td>0563</td><td>1.1</td><td><span class="status s-ok">已有临时图，可直接用</span></td></tr></tbody></table></div></div><div class="spread" id="sp8"><h3>第 8 跨页 · 暖心仙子　<small style="font-weight:400;color:var(--soft)">文件夹 <code>ch8-warmth/</code> · 参考原画 0562 0561 0560 0559</small></h3>
+ <p><b>这一页的玩法：</b>读者把红心从仙子手里拖到铁皮人手心，小推车和行李出现，踏上新的旅行。</p>
+ <div class="two"><figure><img src="img/s8.jpg" alt="第 8 跨页占位版截图" loading="lazy"><figcaption>占位版：彩色虚线牌子就是你要画的图，写着文件名</figcaption></figure>
+ <figure><img src="img/g8.jpg" alt="第 8 跨页地面页底稿" loading="lazy"><figcaption>地面页底稿 <code>ground.png</code>：照着色块画俯视地面，彩色线是立牌站的位置</figcaption></figure></div>
+ <div class="scroll"><table class="stack"><thead><tr><th>文件名</th><th>画什么</th><th>类型</th><th>参考原画</th><th>高度</th><th>状态</th></tr></thead><tbody>
+ <tr><td><code>ground.png</code></td><td><b>地面页（俯视）</b><br><small>2048×1200，照底稿画，删掉网格和标注</small></td><td>地面页</td><td>0562 0561 0560 0559</td><td>—</td><td><span class="status s-todo">待画</span></td></tr>
+ <tr><td><code>clock-wall-l.png</code></td><td><b>挂满钟表的墙（左）</b></td><td>立牌</td><td>0561 / 0562</td><td>2.6</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>clock-wall-r.png</code></td><td><b>挂满钟表的墙（右）</b></td><td>立牌</td><td>0561</td><td>2.6</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>green-door.png</code></td><td><b>绿色拱门</b></td><td>立牌</td><td>0562 / 0566</td><td>2.2</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>sun-face.png</code></td><td><b>笑脸太阳</b></td><td>立牌</td><td>0561</td><td>0.8</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>heart.png</code></td><td><b>一颗红心</b><br><small>机关：读者把它从仙子手里拖到铁皮人手心</small></td><td>机关件</td><td>0560</td><td>0.42</td><td><span class="status s-todo">待画</span></td></tr><tr><td><code>cart.png</code></td><td><b>小推车和行李</b><br><small>结局：踏上新的旅行</small></td><td>隐藏件（解谜后出现）</td><td>0559</td><td>1.1</td><td><span class="status s-todo">待画</span></td></tr></tbody></table></div></div>
+</div></section>
+
+<section class="band" id="deliver"><div class="wrap">
+ <h2>交稿方式</h2>
+ <div class="grid2">
+<pre class="tree"><code>铁皮的旅行-交稿/
+├─ ch1-cave/          ground.png  beam.png  stalactite-l.png …
+├─ ch2-forge/         ground.png  anvil.png  hammer.png …
+├─ ch3-forest/ …
+├─ ch4-seasons/ …
+├─ ch5-mountain/ …
+├─ ch6-summit/ …
+├─ ch7-night/ …
+├─ ch8-warmth/ …
+├─ cast/
+│   ├─ tin/     左腿.png 右腿.png 后手.png 身体.png 头.png 眼睛.png 前手.png
+│   ├─ fairy/ …
+│   ├─ dwarf/ …
+│   └─ worm/    身体.png 眼睛.png
+└─ 源文件/        每张图的 Procreate 或 PSD（保留图层）</code></pre>
+  <div>
+   <h3 style="margin-top:0">从 Procreate 导出</h3>
+   <ol>
+    <li><b>立牌和地面页：</b>只显示要导出的那一层，关掉背景色，选“操作 → 分享 → PNG”。</li>
+    <li><b>角色：</b>关掉背景色，选“操作 → 分享 → 分享图层 → PNG 文件”，每个图层会各导出一张。导出的文件名是“作品名-1、作品名-2……”，从最下面的图层开始编号。按上面的图层顺序画，自检页就能自动认出每个部件；也可以手动改成中文部件名。</li>
+    <li>同时导出一份 PSD（“分享 → PSD”），放进“源文件”文件夹。</li>
+   </ol>
+   <h3>从 Photoshop 导出</h3>
+   <p>“文件 → 导出 → 将图层导出到文件”，格式选 PNG-24，勾选“透明区域”，<b>不要</b>勾选“裁切图层”。</p>
+  </div>
+ </div>
+</div></section>
+
+<section class="band" id="accept" style="background:var(--tint)"><div class="wrap">
+ <h2>验收标准</h2>
+ <p>前两列由自检页自动判断，全部变绿才算通过；第三列需要你自己确认。</p>
+ <div class="scroll"><table class="stack"><thead><tr><th>类别</th><th>自检页会查</th><th>你自己确认</th></tr></thead><tbody>
+  <tr><td>地面页</td><td>尺寸 2048×1200；整页铺满没有透明；网格线已删掉</td><td>是俯视；没画立起来的东西；没画影子；书缝两侧没有重要内容</td></tr>
+  <tr><td>立牌和道具</td><td>背景透明；边缘干净，没有半透明杂边和碎点；一张图只有一样东西；底边能站稳；尺寸合适；文件名在任务单里</td><td>是正面；被挡住的部分补全了；没画影子；没写正文文字</td></tr>
+  <tr><td>角色</td><td>所有部件画布一样大；部件齐全、不重复；背景透明；每个关节都和身体有重叠（转动不露缝）；有单独的眼睛层</td><td>和设定稿一致；眼睛层只有眼睛；线条粗细和原画一致</td></tr>
+ </tbody></table></div>
+ <figure><img src="img/chk_stand.jpg" alt="自检页立牌检查截图"><figcaption>自检页的立牌检查：每张图都会立在一张纸上给你看</figcaption></figure>
+</div></section>
+</main>
+</body>
+</html>

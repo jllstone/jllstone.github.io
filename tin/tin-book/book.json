@@ -1,0 +1,1056 @@
+{
+ "id": "tin-journey-placeholder",
+ "title": "铁皮的旅行",
+ "subtitle": "立体书占位版 · 8 跨页",
+ "hero": "tin",
+ "editor": true,
+ "edge": 6,
+ "theme": {
+  "sky": "#3c8a7a",
+  "table": "#47766a",
+  "accent": "#ffb44d",
+  "paper": "#f6ecd6",
+  "paperEdge": "#fbf4e4",
+  "paperBack": "#efe2c6",
+  "cover": "#c4642c",
+  "coverEdge": "#e89a52",
+  "ribbon": "#7a4fa0"
+ },
+ "characters": {
+  "tin": {
+   "name": "铁皮人",
+   "dir": "art/cast/tin/",
+   "parts": [
+    "legL",
+    "legR",
+    "armL",
+    "body",
+    "head",
+    "armR"
+   ],
+   "h": 1.5
+  },
+  "fairy": {
+   "name": "暖心仙子",
+   "dir": "art/cast/fairy/",
+   "parts": [
+    "body"
+   ],
+   "h": 1.1
+  },
+  "worm": {
+   "name": "毛毛虫",
+   "dir": "art/cast/worm/",
+   "parts": [
+    "body"
+   ],
+   "h": 0.55
+  },
+  "dwarf": {
+   "name": "铁匠矮人",
+   "dir": "art/cast/dwarf/",
+   "parts": [
+    "body"
+   ],
+   "h": 1.3
+  }
+ },
+ "chapters": [
+  {
+   "id": "cave",
+   "title": "黑暗的山洞",
+   "place": "山洞",
+   "tag": "等待",
+   "line": "我是一块没有温度的铁矿石，在黑暗的山洞里，等待阳光。",
+   "story": "我是一块没有温度的铁矿石。\n在黑暗的山洞里，等待阳光。",
+   "note": "原画：0580。彩色虚线框的立牌是占位，写着它对应的文件名；地面上的网格和标注是给画师的底稿。",
+   "alt": "黑暗的山洞",
+   "ground": {
+    "spread": "art/ch1-cave/ground.jpg"
+   },
+   "sky": "#2a2440",
+   "table": "#3a3352",
+   "standees": [
+    {
+     "id": "stalactite-l",
+     "src": "art/ch1-cave/stalactite-l.png",
+     "x": -3.1,
+     "z": -3.15,
+     "h": 2.4
+    },
+    {
+     "id": "stalactite-r",
+     "src": "art/ch1-cave/stalactite-r.png",
+     "x": 3.1,
+     "z": -3.15,
+     "h": 2.3
+    },
+    {
+     "id": "hill-l",
+     "src": "art/ch1-cave/hill-l.png",
+     "x": -3.4,
+     "z": -2.1,
+     "h": 1.2
+    },
+    {
+     "id": "hill-r",
+     "src": "art/ch1-cave/hill-r.png",
+     "x": 3.5,
+     "z": -2.0,
+     "h": 1.1
+    },
+    {
+     "id": "beam",
+     "src": "art/ch1-cave/beam.png",
+     "x": -2.6,
+     "z": -0.4,
+     "h": 2.6,
+     "tab": false
+    },
+    {
+     "id": "ore-main",
+     "src": "art/ch1-cave/ore-main.png",
+     "x": 1.5,
+     "z": 0.3,
+     "h": 0.75
+    },
+    {
+     "id": "ore-a",
+     "src": "art/ch1-cave/ore-a.png",
+     "x": -1.3,
+     "z": 1.5,
+     "h": 0.6,
+     "tap": "sparkle"
+    },
+    {
+     "id": "ore-b",
+     "src": "art/ch1-cave/ore-b.png",
+     "x": 3.8,
+     "z": 1.1,
+     "h": 0.5
+    },
+    {
+     "id": "dwarf-lamp",
+     "src": "art/ch1-cave/dwarf-lamp.png",
+     "x": 3.3,
+     "z": -0.5,
+     "h": 1.4,
+     "hidden": true
+    }
+   ],
+   "cast": [],
+   "interaction": {
+    "type": "pull",
+    "target": "beam",
+    "dir": [
+     1,
+     0.25
+    ],
+    "distance": 3.6,
+    "hint": "拖着阳光，照到矿石上。",
+    "activeHint": "再往右一点，矿石在等你。",
+    "button": "让阳光照进来",
+    "task": "山洞里黑黑的，矿石在等待阳光。",
+    "effect": "sparkle",
+    "stamp": "等到阳光",
+    "solved": "阳光照亮了山洞——我被铁匠矮人发现，带回了他的家里。"
+   }
+  },
+  {
+   "id": "forge",
+   "title": "矮人的铁匠铺",
+   "place": "矮人的家",
+   "tag": "锻造",
+   "line": "经过日日夜夜，不间断的锻造。",
+   "story": "我被铁匠矮人发现，带回了他的家里。\n经过日日夜夜，不间断的锻造，我成为了一个铁皮人。",
+   "note": "原画：0578 0579。彩色虚线框的立牌是占位，写着它对应的文件名；地面上的网格和标注是给画师的底稿。",
+   "alt": "矮人的铁匠铺",
+   "ground": {
+    "spread": "art/ch2-forge/ground.jpg"
+   },
+   "sky": "#5a2e1a",
+   "table": "#6e3a22",
+   "standees": [
+    {
+     "id": "wall-l",
+     "src": "art/ch2-forge/wall-l.png",
+     "x": -3.1,
+     "z": -3.1,
+     "h": 2.4
+    },
+    {
+     "id": "wall-r",
+     "src": "art/ch2-forge/wall-r.png",
+     "x": 3.1,
+     "z": -3.1,
+     "h": 2.4
+    },
+    {
+     "id": "furnace",
+     "src": "art/ch2-forge/furnace.png",
+     "x": -3.7,
+     "z": -1.3,
+     "h": 1.8,
+     "tap": "sparkle",
+     "say": "呼呼——炉火好旺！"
+    },
+    {
+     "id": "anvil",
+     "src": "art/ch2-forge/anvil.png",
+     "x": 1.2,
+     "z": -0.3,
+     "h": 0.9
+    },
+    {
+     "id": "ore-anvil",
+     "src": "art/ch1-cave/ore-main.png",
+     "x": 1.2,
+     "z": -0.25,
+     "h": 0.55,
+     "y": 0.88,
+     "tab": false,
+     "stick": false
+    },
+    {
+     "id": "hammer",
+     "src": "art/ch2-forge/hammer.png",
+     "x": 2.15,
+     "z": 0.15,
+     "h": 0.8,
+     "y": 0.75,
+     "pivot": [
+      0.5,
+      1
+     ],
+     "tab": false,
+     "stick": false
+    },
+    {
+     "id": "barrel",
+     "src": "art/ch2-forge/barrel.png",
+     "x": -4.4,
+     "z": 2.0,
+     "h": 0.65
+    }
+   ],
+   "cast": [
+    {
+     "who": "dwarf",
+     "x": 3.0,
+     "z": 0.3,
+     "h": 1.3,
+     "idle": "look",
+     "flip": true,
+     "say": [
+      "叮当，叮当！",
+      "再敲几下就好了。"
+     ]
+    },
+    {
+     "who": "tin",
+     "x": -0.8,
+     "z": 0.9,
+     "h": 1.5,
+     "idle": "look",
+     "hidden": true,
+     "say": "我……成为了一个铁皮人？"
+    }
+   ],
+   "interaction": {
+    "type": "tap",
+    "target": "hammer",
+    "count": 5,
+    "react": "swing",
+    "hint": "点锤子，帮矮人敲五下。",
+    "activeHint": "叮当！再敲几下。",
+    "button": "敲一下",
+    "task": "日日夜夜，不间断的锻造。",
+    "effect": "sparkle",
+    "stamp": "成为铁皮人",
+    "solved": "我成为了一个铁皮人，成为了矮人家的伐木工。",
+    "drive": [
+     {
+      "target": "ore-anvil",
+      "prop": "scale",
+      "from": 1,
+      "to": 0.001,
+      "range": [
+       0.85,
+       1
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "forest",
+   "title": "秋天的伐木场",
+   "place": "秋天的森林",
+   "tag": "工作",
+   "line": "日复一日，年复一年，我努力地工作再工作。",
+   "story": "日复一日，年复一年，我努力地工作再工作。\n有一天，在完成一天工作休息的时候，我突然被什么东西砸到了。\n是秋天沉重的果实。我把果实放在手心里，感受到了一点点柔软。于是我决定出发去旅行。",
+   "note": "原画：0576 0552 0574 0573 0553。彩色虚线框的立牌是占位，写着它对应的文件名；地面上的网格和标注是给画师的底稿。",
+   "alt": "秋天的伐木场",
+   "ground": {
+    "spread": "art/ch3-forest/ground.jpg"
+   },
+   "sky": "#3f4a2a",
+   "table": "#56603a",
+   "standees": [
+    {
+     "id": "trees-l",
+     "src": "art/ch3-forest/trees-back-l.png",
+     "x": -3.2,
+     "z": -3.0,
+     "h": 2.6
+    },
+    {
+     "id": "trees-r",
+     "src": "art/ch3-forest/trees-back-r.png",
+     "x": 3.3,
+     "z": -3.0,
+     "h": 2.4
+    },
+    {
+     "id": "big-tree",
+     "src": "art/ch3-forest/big-tree.png",
+     "x": 1.9,
+     "z": -0.9,
+     "h": 3.0
+    },
+    {
+     "id": "stump-a",
+     "src": "art/ch3-forest/stump.png",
+     "x": -4.2,
+     "z": 0.2,
+     "h": 0.45
+    },
+    {
+     "id": "stump-b",
+     "src": "art/ch3-forest/stump.png",
+     "x": 4.4,
+     "z": 1.4,
+     "h": 0.4
+    },
+    {
+     "id": "logs",
+     "src": "art/ch3-forest/logs.png",
+     "x": 3.6,
+     "z": 0.2,
+     "h": 0.7
+    },
+    {
+     "id": "axe",
+     "src": "art/ch3-forest/axe.png",
+     "x": -0.3,
+     "z": 1.1,
+     "h": 0.6
+    },
+    {
+     "id": "fruit",
+     "src": "art/ch3-forest/fruit.png",
+     "x": 0.5,
+     "z": 1.2,
+     "h": 0.55,
+     "hidden": true,
+     "tap": "leaves"
+    }
+   ],
+   "cast": [
+    {
+     "who": "tin",
+     "x": -1.6,
+     "z": 0.8,
+     "h": 1.5,
+     "idle": "look",
+     "say": [
+      "日复一日，年复一年。",
+      "工作，再工作。"
+     ]
+    }
+   ],
+   "interaction": {
+    "type": "tap",
+    "target": "big-tree",
+    "count": 3,
+    "react": "shake",
+    "hint": "点大树，帮铁皮人砍三下。",
+    "activeHint": "再砍几下……",
+    "button": "砍一下",
+    "task": "日复一日，年复一年，我努力地工作再工作。",
+    "effect": "leaves",
+    "stamp": "秋天的果实",
+    "solved": "咚！是秋天沉重的果实。我感受到了一点点柔软——于是我决定出发去旅行。"
+   }
+  },
+  {
+   "id": "seasons",
+   "title": "走过四季",
+   "place": "旅途",
+   "tag": "四季",
+   "line": "冬天、春天、夏天，我一直往前走。",
+   "story": "冬天，天上下起了大雪，我的身上覆盖着厚厚的白雪，冷冷的，也很白很白。\n春天来了，地上开满了各色的花朵，鸟儿也跑到我肩头嬉戏。\n夏天草叶茂盛，鸟儿和虫子都在茂密的森林里叽叽喳喳地叫个不停。",
+   "note": "原画：0572 0571 0570。彩色虚线框的立牌是占位，写着它对应的文件名；地面上的网格和标注是给画师的底稿。",
+   "alt": "走过四季",
+   "ground": {
+    "spread": "art/ch4-seasons/ground.jpg"
+   },
+   "sky": "#2f5a6a",
+   "table": "#3f6c78",
+   "standees": [
+    {
+     "id": "winter-trees",
+     "src": "art/ch4-seasons/winter-trees.png",
+     "x": -3.2,
+     "z": -2.9,
+     "h": 2.4
+    },
+    {
+     "id": "snow-pile",
+     "src": "art/ch4-seasons/snow-pile.png",
+     "x": -1.7,
+     "z": 1.7,
+     "h": 0.45
+    },
+    {
+     "id": "spring-flowers-a",
+     "src": "art/ch4-seasons/spring-flowers-a.png",
+     "x": -3.7,
+     "z": 0.7,
+     "h": 0.6,
+     "tap": "petals"
+    },
+    {
+     "id": "spring-flowers-b",
+     "src": "art/ch4-seasons/spring-flowers-b.png",
+     "x": 1.6,
+     "z": 1.9,
+     "h": 0.55,
+     "tap": "petals"
+    },
+    {
+     "id": "bird",
+     "src": "art/ch4-seasons/bird.png",
+     "x": -0.95,
+     "z": 0.65,
+     "h": 0.32,
+     "y": 1.3,
+     "stick": false,
+     "anim": "bob",
+     "say": "叽叽！"
+    },
+    {
+     "id": "summer-forest",
+     "src": "art/ch4-seasons/summer-forest.png",
+     "x": 3.3,
+     "z": -2.9,
+     "h": 2.5
+    },
+    {
+     "id": "tall-grass",
+     "src": "art/ch4-seasons/tall-grass.png",
+     "x": -4.4,
+     "z": 1.9,
+     "h": 0.8
+    },
+    {
+     "id": "bug",
+     "src": "art/ch4-seasons/bug.png",
+     "x": 2.6,
+     "z": 0.7,
+     "h": 0.3,
+     "tap": "notes",
+     "say": "吱吱吱——"
+    },
+    {
+     "id": "season-dial",
+     "src": "art/ch4-seasons/season-dial.png",
+     "x": 4.1,
+     "z": 1.3,
+     "h": 0.85,
+     "y": 0.45,
+     "pivot": [
+      0.5,
+      0.5
+     ],
+     "stick": true
+    }
+   ],
+   "cast": [
+    {
+     "who": "tin",
+     "x": -1.1,
+     "z": 0.5,
+     "h": 1.5,
+     "idle": "walk",
+     "walk": 0.5,
+     "say": [
+      "冷冷的，也很白很白。",
+      "鸟儿跑到我的肩头。"
+     ]
+    }
+   ],
+   "interaction": {
+    "type": "rotate",
+    "target": "season-dial",
+    "turns": 1,
+    "hint": "拖着季节转盘转一圈。",
+    "activeHint": "接着转，下一个季节要来了。",
+    "button": "转一下",
+    "task": "冬天、春天、夏天……转动转盘，陪铁皮人走过四季。",
+    "effect": "petals",
+    "stamp": "走过四季",
+    "solved": "走过四季，在炎热的夏天，我看到了一座高高的山峰。",
+    "drive": [
+     {
+      "target": "winter-trees",
+      "prop": "rise",
+      "from": 1,
+      "to": 0,
+      "range": [
+       0.2,
+       0.4
+      ]
+     },
+     {
+      "target": "snow-pile",
+      "prop": "rise",
+      "from": 1,
+      "to": 0,
+      "range": [
+       0.2,
+       0.4
+      ]
+     },
+     {
+      "target": "spring-flowers-a",
+      "prop": "rise",
+      "from": 0,
+      "to": 1,
+      "range": [
+       0.3,
+       0.5
+      ]
+     },
+     {
+      "target": "spring-flowers-a",
+      "prop": "rise",
+      "from": 1,
+      "to": 0,
+      "range": [
+       0.7,
+       0.85
+      ]
+     },
+     {
+      "target": "spring-flowers-b",
+      "prop": "rise",
+      "from": 0,
+      "to": 1,
+      "range": [
+       0.3,
+       0.5
+      ]
+     },
+     {
+      "target": "spring-flowers-b",
+      "prop": "rise",
+      "from": 1,
+      "to": 0,
+      "range": [
+       0.7,
+       0.85
+      ]
+     },
+     {
+      "target": "bird",
+      "prop": "rise",
+      "from": 0,
+      "to": 1,
+      "range": [
+       0.35,
+       0.5
+      ]
+     },
+     {
+      "target": "summer-forest",
+      "prop": "rise",
+      "from": 0,
+      "to": 1,
+      "range": [
+       0.7,
+       0.9
+      ]
+     },
+     {
+      "target": "tall-grass",
+      "prop": "rise",
+      "from": 0,
+      "to": 1,
+      "range": [
+       0.72,
+       0.92
+      ]
+     },
+     {
+      "target": "bug",
+      "prop": "rise",
+      "from": 0,
+      "to": 1,
+      "range": [
+       0.8,
+       0.95
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "mountain",
+   "title": "云端的高山",
+   "place": "高山脚下",
+   "tag": "攀登",
+   "line": "远远望去，有座城堡，在云端，在山顶。",
+   "story": "这一路上我看到许多风景，却第一次见到这么高的山。\n远远望去，有座城堡，在云端，在山顶。\n我想我找到了方向。于是我爬呀爬，爬呀爬。",
+   "note": "原画：0569 0568 0567。彩色虚线框的立牌是占位，写着它对应的文件名；地面上的网格和标注是给画师的底稿。",
+   "alt": "云端的高山",
+   "ground": {
+    "spread": "art/ch5-mountain/ground.jpg"
+   },
+   "sky": "#2f6f62",
+   "table": "#3e7c6e",
+   "standees": [
+    {
+     "id": "far-hill-l",
+     "src": "art/ch5-mountain/far-hill-l.png",
+     "x": -3.4,
+     "z": -3.0,
+     "h": 1.8
+    },
+    {
+     "id": "far-hill-r",
+     "src": "art/ch5-mountain/far-hill-r.png",
+     "x": 4.2,
+     "z": -2.9,
+     "h": 1.6
+    },
+    {
+     "id": "peak",
+     "src": "art/ch5-mountain/peak.png",
+     "x": 1.4,
+     "z": -1.2,
+     "h": 4.0
+    },
+    {
+     "id": "castle-tiny",
+     "src": "art/ch6-summit/castle.png",
+     "x": 0,
+     "z": 0.05,
+     "h": 0.5,
+     "y": 3.75,
+     "parent": "peak"
+    },
+    {
+     "id": "cloud-a",
+     "src": "art/ch5-mountain/cloud-a.png",
+     "x": -2.4,
+     "z": -2.0,
+     "h": 0.55,
+     "y": 1.9,
+     "anim": "drift",
+     "stick": false
+    },
+    {
+     "id": "cloud-b",
+     "src": "art/ch5-mountain/cloud-b.png",
+     "x": 3.0,
+     "z": -0.6,
+     "h": 0.7,
+     "y": 1.4,
+     "anim": "drift",
+     "stick": false
+    },
+    {
+     "id": "cloud-c",
+     "src": "art/ch5-mountain/cloud-c.png",
+     "x": -0.9,
+     "z": -2.5,
+     "h": 0.5,
+     "y": 3.1,
+     "anim": "drift",
+     "stick": false
+    },
+    {
+     "id": "rope",
+     "src": "art/ch5-mountain/rope.png",
+     "x": 0.55,
+     "z": -0.5,
+     "h": 3.4,
+     "tab": false
+    }
+   ],
+   "cast": [
+    {
+     "who": "tin",
+     "x": 0.75,
+     "z": 0.0,
+     "h": 1.2,
+     "idle": "breathe",
+     "say": [
+      "爬呀爬，爬呀爬。"
+     ]
+    }
+   ],
+   "interaction": {
+    "type": "pull",
+    "target": "rope",
+    "dir": [
+     0,
+     1
+    ],
+    "distance": 0.9,
+    "hint": "往下拉藤绳，帮铁皮人往上爬。",
+    "activeHint": "爬呀爬，再拉一点！",
+    "button": "拉藤绳",
+    "task": "我想我找到了方向。于是我爬呀爬，爬呀爬。",
+    "effect": "sparkle",
+    "stamp": "爬上高山",
+    "solved": "用尽力气，终于来到了山顶。",
+    "drive": [
+     {
+      "target": "tin",
+      "prop": "y",
+      "from": 0,
+      "to": 2.9
+     },
+     {
+      "target": "tin",
+      "prop": "z",
+      "from": 0,
+      "to": -0.75
+     }
+    ]
+   }
+  },
+  {
+   "id": "summit",
+   "title": "山顶的城堡",
+   "place": "云端的城堡",
+   "tag": "到达",
+   "line": "用尽力气，终于来到了山顶。",
+   "story": "用尽力气，终于来到了山顶。\n城堡里的毛毛虫告诉我，城堡的主人没在家。",
+   "note": "原画：0565 0564 0983。彩色虚线框的立牌是占位，写着它对应的文件名；地面上的网格和标注是给画师的底稿。",
+   "alt": "山顶的城堡",
+   "ground": {
+    "spread": "art/ch6-summit/ground.jpg"
+   },
+   "sky": "#3c8a7a",
+   "table": "#47766a",
+   "standees": [
+    {
+     "id": "cloud-a",
+     "src": "art/ch5-mountain/cloud-a.png",
+     "x": -3.3,
+     "z": -3.1,
+     "h": 0.6,
+     "y": 2.7,
+     "anim": "drift",
+     "stick": false
+    },
+    {
+     "id": "cloud-b",
+     "src": "art/ch5-mountain/cloud-b.png",
+     "x": 3.0,
+     "z": -3.05,
+     "h": 0.8,
+     "y": 3.0,
+     "anim": "drift",
+     "stick": false
+    },
+    {
+     "id": "hill-l",
+     "src": "art/ch6-summit/hill-back-l.png",
+     "x": -3.2,
+     "z": -2.9,
+     "h": 1.6
+    },
+    {
+     "id": "hill-r",
+     "src": "art/ch6-summit/hill-back-r.png",
+     "x": 3.7,
+     "z": -2.85,
+     "h": 1.4,
+     "flip": true
+    },
+    {
+     "id": "castle",
+     "src": "art/ch6-summit/castle.png",
+     "x": 2.05,
+     "z": -1.0,
+     "h": 2.2
+    },
+    {
+     "id": "hill-fl",
+     "src": "art/ch6-summit/hill-front-l.png",
+     "x": -3.7,
+     "z": 2.4,
+     "h": 0.6
+    },
+    {
+     "id": "hill-fr",
+     "src": "art/ch6-summit/hill-front-r.png",
+     "x": 4.3,
+     "z": 2.5,
+     "h": 0.55,
+     "flip": true
+    }
+   ],
+   "cast": [
+    {
+     "who": "tin",
+     "x": -1.7,
+     "z": 0.7,
+     "h": 1.5,
+     "idle": "look",
+     "say": [
+      "终于来到了山顶！",
+      "城堡里有人吗？"
+     ]
+    },
+    {
+     "who": "worm",
+     "x": 1.25,
+     "z": 0.45,
+     "h": 0.5,
+     "idle": "hop"
+    }
+   ],
+   "interaction": {
+    "type": "tap",
+    "target": "worm",
+    "count": 1,
+    "react": "bounce",
+    "hint": "点一点城堡门口的毛毛虫。",
+    "activeHint": "问问毛毛虫。",
+    "button": "问问毛毛虫",
+    "task": "城堡门口有一只毛毛虫，问问它主人在不在家。",
+    "effect": "notes",
+    "stamp": "登上山顶",
+    "solved": "城堡里的毛毛虫告诉我：城堡的主人没在家。"
+   }
+  },
+  {
+   "id": "night",
+   "title": "城外的夜",
+   "place": "城堡外",
+   "tag": "等待",
+   "line": "到了夜里，我就只好睡在城外。",
+   "story": "到了夜里，我就只好睡在城外。\n等待了几天，我终于见到了一个白衣的仙女，出现在城堡大门。",
+   "note": "原画：0563 0566。彩色虚线框的立牌是占位，写着它对应的文件名；地面上的网格和标注是给画师的底稿。",
+   "alt": "城外的夜",
+   "ground": {
+    "spread": "art/ch7-night/ground.jpg"
+   },
+   "sky": "#2d2b61",
+   "table": "#39365f",
+   "standees": [
+    {
+     "id": "moon",
+     "src": "art/ch7-night/moon.png",
+     "x": 3.5,
+     "z": -3.1,
+     "h": 1.15,
+     "y": 2.8,
+     "pivot": [
+      0.5,
+      0.5
+     ],
+     "anim": "float"
+    },
+    {
+     "id": "hill-l",
+     "src": "art/ch6-summit/hill-back-l.png",
+     "x": -3.2,
+     "z": -2.9,
+     "h": 1.6
+    },
+    {
+     "id": "hill-r",
+     "src": "art/ch6-summit/hill-back-r.png",
+     "x": 3.7,
+     "z": -2.85,
+     "h": 1.4,
+     "flip": true
+    },
+    {
+     "id": "castle",
+     "src": "art/ch7-night/castle-night.png",
+     "x": 2.05,
+     "z": -1.0,
+     "h": 2.2
+    },
+    {
+     "id": "tin-sleep",
+     "src": "art/ch7-night/tin-sleep.png",
+     "x": -1.5,
+     "z": 0.8,
+     "h": 1.1,
+     "anim": "pulse",
+     "animStrength": 0.6,
+     "tap": "notes",
+     "say": "呼……呼……"
+    },
+    {
+     "id": "hill-fl",
+     "src": "art/ch6-summit/hill-front-l.png",
+     "x": -3.7,
+     "z": 2.4,
+     "h": 0.6
+    },
+    {
+     "id": "hill-fr",
+     "src": "art/ch6-summit/hill-front-r.png",
+     "x": 4.3,
+     "z": 2.5,
+     "h": 0.55,
+     "flip": true
+    }
+   ],
+   "cast": [
+    {
+     "who": "fairy",
+     "x": 1.3,
+     "z": 0.45,
+     "h": 1.1,
+     "idle": "breathe",
+     "hidden": true,
+     "say": [
+      "你好呀，铁皮人。",
+      "我是暖心仙子。"
+     ]
+    }
+   ],
+   "interaction": {
+    "type": "tap",
+    "target": "moon",
+    "count": 3,
+    "react": "bounce",
+    "hint": "点一点月亮，一下就是一天。",
+    "activeHint": "再等一等……",
+    "button": "再等一天",
+    "task": "城堡的主人不在，我就在城外等着。",
+    "effect": "sparkle",
+    "stamp": "耐心等待",
+    "solved": "等待了几天，我终于见到了一个白衣的仙女，出现在城堡大门。"
+   }
+  },
+  {
+   "id": "warmth",
+   "title": "暖心仙子",
+   "place": "城堡里",
+   "tag": "温暖",
+   "line": "这是城堡的主人，暖心仙子。",
+   "story": "这是城堡的主人，暖心仙子。她试着给每个需要的人，送去一点温暖。\n作为铁皮人，我也有幸收到了属于自己的一点温暖。\n于是我踏上了新的旅行，想和仙子一起，把温暖传递给更多需要的人们。",
+   "note": "原画：0562 0561 0560 0559。彩色虚线框的立牌是占位，写着它对应的文件名；地面上的网格和标注是给画师的底稿。",
+   "alt": "暖心仙子",
+   "ground": {
+    "spread": "art/ch8-warmth/ground.jpg"
+   },
+   "sky": "#6a3520",
+   "table": "#7a4428",
+   "standees": [
+    {
+     "id": "clock-wall-l",
+     "src": "art/ch8-warmth/clock-wall-l.png",
+     "x": -3.1,
+     "z": -3.1,
+     "h": 2.6
+    },
+    {
+     "id": "clock-wall-r",
+     "src": "art/ch8-warmth/clock-wall-r.png",
+     "x": 3.1,
+     "z": -3.1,
+     "h": 2.6
+    },
+    {
+     "id": "green-door",
+     "src": "art/ch8-warmth/green-door.png",
+     "x": 3.4,
+     "z": -1.5,
+     "h": 2.2
+    },
+    {
+     "id": "sun-face",
+     "src": "art/ch8-warmth/sun-face.png",
+     "x": -1.5,
+     "z": -2.6,
+     "h": 0.8,
+     "y": 2.2,
+     "anim": "float",
+     "stick": false,
+     "tap": "sparkle"
+    },
+    {
+     "id": "heart",
+     "src": "art/ch8-warmth/heart.png",
+     "x": 1.0,
+     "z": 0.45,
+     "h": 0.42,
+     "y": 0.75,
+     "stick": false,
+     "tab": false,
+     "anim": "pulse"
+    },
+    {
+     "id": "cart",
+     "src": "art/ch8-warmth/cart.png",
+     "x": -3.6,
+     "z": 1.6,
+     "h": 1.1,
+     "hidden": true,
+     "tap": "confetti"
+    }
+   ],
+   "cast": [
+    {
+     "who": "fairy",
+     "x": 1.6,
+     "z": 0.3,
+     "h": 1.1,
+     "idle": "wave",
+     "flip": true,
+     "say": [
+      "送你一点温暖。"
+     ]
+    },
+    {
+     "who": "tin",
+     "x": -1.3,
+     "z": 0.6,
+     "h": 1.5,
+     "idle": "look",
+     "say": [
+      "这就是温暖吗？"
+     ]
+    }
+   ],
+   "interaction": {
+    "type": "pull",
+    "target": "heart",
+    "dir": [
+     -1,
+     0.1
+    ],
+    "distance": 2.1,
+    "hint": "把仙子手里的红心，拖到铁皮人手心。",
+    "activeHint": "再近一点……",
+    "button": "接住温暖",
+    "task": "她试着给每个需要的人，送去一点温暖。",
+    "effect": "hearts",
+    "stamp": "一点点温暖",
+    "solved": "我收到了属于自己的一点温暖。于是我踏上了新的旅行，想和仙子一起，把温暖传递给更多需要的人们。"
+   }
+  }
+ ]
+}
