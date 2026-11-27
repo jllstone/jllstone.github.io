@@ -112,24 +112,24 @@
 
   // 共享：屏幕投影与光源空间
   var VHEAD = [
-    'attribute vec3 aP,aN,aC;attribute vec2 aE;uniform mat4 uM;uniform vec3 uCen;uniform vec3 uSc;',
+    'attribute vec3 aP,aN,aC;attribute vec2 aE;uniform mat4 uM;uniform vec3 uCen;uniform vec3 uSc;uniform vec3 uCR,uCU,uCF;',
     'uniform vec3 uLX,uLY,uLZ;uniform vec4 uLS;'
   ].join('\n');
   var VS = VHEAD + [
     'varying vec3 vN,vC,vW,vL;varying vec2 vE;',
     'void main(){vec4 w=uM*vec4(aP,1.);vec3 d=w.xyz-uCen;',
-    'float sx=dot(d,vec3(.70710678,0.,-.70710678));float sy=dot(d,vec3(-.40824829,.81649658,-.40824829));float sz=dot(d,vec3(.57735027));',
+    'float sx=dot(d,uCR);float sy=dot(d,uCU);float sz=dot(d,uCF);',
     'gl_Position=vec4(sx*uSc.x,sy*uSc.y+uSc.z,-sz*.02,1.);vN=(uM*vec4(aN,0.)).xyz;vC=aC;vW=w.xyz;vE=aE;',
     'vec3 q=w.xyz-uCen;vL=vec3(dot(q,uLX)*uLS.x,dot(q,uLY)*uLS.x,dot(q,uLZ)*uLS.y)*.5+.5;}'
   ].join('\n');
   var FS = [
-    'precision highp float;varying vec3 vN,vC,vW,vL;varying vec2 vE;',
+    'precision highp float;varying vec3 vN,vC,vW,vL;varying vec2 vE;uniform vec3 uCF;',
     'uniform vec3 uKey,uKeyC,uSky,uGnd,uFogC;uniform vec4 uFog,uOpt,uDis,uTint;uniform vec3 uPL[6],uPC[6];uniform float uPR[6];uniform sampler2D uSM;uniform vec2 uSMs;',
     NOISE,
     'float unpack(vec4 c){return dot(c,vec4(1.,1./255.,1./65025.,1./16581375.));}',
     'float shadow(vec3 n){if(vL.x<0.||vL.x>1.||vL.y<0.||vL.y>1.)return 1.;float b=.0016+.0035*(1.-max(dot(n,uKey),0.));float s=0.;',
     'for(int i=0;i<4;i++){vec2 o=vec2(float(i-(i/2)*2)-.5,float(i/2)-.5)*uSMs.y;s+=step(vL.z-b,unpack(texture2D(uSM,vL.xy+o)));}return s*.25;}',
-    'void main(){vec3 n=normalize(vN);float mat=floor(vE.y+.5);float e=max(vE.x,uOpt.x);vec3 V=vec3(.57735);',
+    'void main(){vec3 n=normalize(vN);float mat=floor(vE.y+.5);float e=max(vE.x,uOpt.x);vec3 V=normalize(uCF);',
     // 溶解：釉液自注入点流开 / 氧化渣被磨去
     'if(uDis.w>.5){float r=distance(vW,uDis.xyz);if(r>uOpt.w*4.+fbm(vW*3.1)*.6-.3)discard;}',
     'if(uDis.w<-.5){if(fbm(vW*3.1)<uOpt.w*1.08-.04)discard;}',
@@ -186,7 +186,7 @@
       us.forEach(function (k) { o.u[k] = gl.getUniformLocation(pr, k); });
       return o;
     };
-    var common = ['uM', 'uCen', 'uSc', 'uLX', 'uLY', 'uLZ', 'uLS'];
+    var common = ['uM', 'uCen', 'uSc', 'uLX', 'uLY', 'uLZ', 'uLS', 'uCR', 'uCU', 'uCF'];
     this.P = mk(VS, FS, common.concat(['uKey', 'uKeyC', 'uSky', 'uGnd', 'uFogC', 'uFog', 'uOpt', 'uDis', 'uTint', 'uPL', 'uPC', 'uPR', 'uSM', 'uSMs']));
     this.SP = mk(SVS, SFS, common);
     // 阴影贴图
@@ -220,6 +220,7 @@
     if (a.aC >= 0) { gl.enableVertexAttribArray(a.aC); gl.vertexAttribPointer(a.aC, 3, gl.FLOAT, false, s, 24); }
     if (a.aE >= 0) { gl.enableVertexAttribArray(a.aE); gl.vertexAttribPointer(a.aE, 2, gl.FLOAT, false, s, 36); }
   }
+  var ISO = [[0.70710678, 0, -0.70710678], [-0.40824829, 0.81649658, -0.40824829], [0.57735027, 0.57735027, 0.57735027]];
   function norm(v) { var l = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; }
   function cross(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
   // v: center sx sy offY key keyC sky gnd fogC fog lights[{p,c,r}] time ga ext
@@ -229,6 +230,7 @@
     var LY = cross(LZ, LX), ext = v.ext || 16;
     var setCommon = function (P) {
       gl.uniform3fv(P.u.uCen, v.center); gl.uniform3f(P.u.uSc, v.sx, v.sy, v.offY);
+      var cb = v.cam || ISO; if (P.u.uCR) { gl.uniform3fv(P.u.uCR, cb[0]); gl.uniform3fv(P.u.uCU, cb[1]); gl.uniform3fv(P.u.uCF, cb[2]); }
       gl.uniform3fv(P.u.uLX, LX); gl.uniform3fv(P.u.uLY, LY); gl.uniform3fv(P.u.uLZ, LZ); gl.uniform4f(P.u.uLS, 1 / ext, -1 / (ext * 1.6), 0, 0);
     };
     // 阴影通道

@@ -202,7 +202,12 @@
     reignite: function (b, t) { var o = out(b, 1, 0.8); drum(b, t, o, 0.32, 70); drum(b, t + 0.5, o, 0.26, 80); var w = noiseSrc(b, t, 2.6, o, 0.06, 'lowpass', 300, 0.6, 1); w.f.frequency.linearRampToValueAtTime(1400, t + 2.4); pad(b, [43, 50, 55, 59, 62], t + 0.3, 3, o, 0.012); },
     card: function (b, t, ch) { var S = SONGS[ch], o = out(b, 1, 1); qing(b, deg(S.mode, S.root, 5), t, o, 0.1); bell(b, deg(S.mode, S.root - 12, 0), t + 0.05, o, 0.12, 4); },
     finale: function (b, t) { var o = out(b, 1, 1); [0, 2, 4, 5, 7, 9, 10].forEach(function (d, i) { bell(b, deg('gong', 55, d), t + i * 0.42, o, 0.12, 4); qin(b, deg('gong', 43, d), t + i * 0.42, 2, o, 0.16); }); pad(b, [43, 50, 55, 59], t, 6, o, 0.012); },
-    ui: function (b, t) { var o = out(b, 1, 0.4); osc(b, 'sine', 1320, t, 0.12, o, 0.03); }
+    ui: function (b, t) { var o = out(b, 1, 0.4); osc(b, 'sine', 1320, t, 0.12, o, 0.03); },
+    drain: function (b, t) { var o = out(b, 1, 0.5); for (var i = 0; i < 5; i++) { var tt = t + i * 0.07, f = 900 - i * 110; var x = b.ctx.createOscillator(), g = b.ctx.createGain(); x.type = 'sine'; x.frequency.setValueAtTime(f, tt); x.frequency.exponentialRampToValueAtTime(f * 0.55, tt + 0.12); env(g, tt, 0.002, 0.03, 0.14); x.connect(g); g.connect(o); x.start(tt); x.stop(tt + 0.2); } noiseSrc(b, t, 0.5, o, 0.02, 'lowpass', 700, 0.7, 0.05); },
+    dive: function (b, t) { var o = out(b, 1, 0.9); pad(b, [38, 45, 50], t, 3.2, o, 0.01); var w = noiseSrc(b, t + 0.6, 2.2, o, 0.05, 'bandpass', 300, 0.8, 1.6); w.f.frequency.exponentialRampToValueAtTime(120, t + 2.8); bell(b, 50, t + 2.7, o, 0.14, 4.5); qing(b, 74, t + 2.75, o, 0.05); },
+    turn: function (b, t) { var o = out(b, 1, 0.8); var w = noiseSrc(b, t, 2.4, o, 0.04, 'bandpass', 400, 1.2, 1.1); w.f.frequency.exponentialRampToValueAtTime(1600, t + 2.2); pad(b, [40, 47, 52, 59], t + 0.2, 2.4, o, 0.008); bell(b, 52, t + 2.3, o, 0.12, 4); },
+    negVase: function (b, t) { var o = out(b, 1, 1); [0, 2, 4, 7].forEach(function (d, i) { bell(b, deg('yu', 64, d), t + i * 0.12, o, 0.05, 2.6); }); },
+    slice: function (b, t, k) { var o = out(b, 1, 0.9); bell(b, deg('gong', 43, k), t, o, 0.16, 3.6); qing(b, deg('gong', 67, k), t + 0.02, o, 0.04); drum(b, t, o, 0.12, 70 + k * 6); }
   };
 
   // ───────── 实时 ─────────

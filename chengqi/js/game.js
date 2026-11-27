@@ -4,7 +4,16 @@
   var L = window.SY_LOGIC, G = window.SY_GFX, AU = window.SY_AUDIO, LEVELS = window.SY_LEVELS, M = G.M;
   var CAP = !!window.__CAPTURE;
   var $ = function (id) { return document.getElementById(id); };
-  var RX = [0.70710678, 0, -0.70710678], UY = [-0.40824829, 0.81649658, -0.40824829];
+  var RX = [0.70710678, 0, -0.70710678], UY = [-0.40824829, 0.81649658, -0.40824829], VZ = [0.57735027, 0.57735027, 0.57735027];
+  var ISO_YAW = Math.PI / 4, ISO_PITCH = Math.asin(1 / Math.sqrt(3)), CAMA = { yaw: ISO_YAW, pitch: ISO_PITCH };
+  function setCam(yaw, pitch) { // 相机朝向：yaw 绕竖轴，pitch 俯角；等距视角为 (45°, 35.26°)
+    CAMA.yaw = yaw; CAMA.pitch = pitch;
+    var f = [Math.cos(pitch) * Math.sin(yaw), Math.sin(pitch), Math.cos(pitch) * Math.cos(yaw)];
+    var r = [f[2], 0, -f[0]], rl = Math.hypot(r[0], r[2]) || 1; r = [r[0] / rl, 0, r[2] / rl];
+    var u = [f[1] * r[2] - f[2] * r[1], f[2] * r[0] - f[0] * r[2], f[0] * r[1] - f[1] * r[0]];
+    RX = r; UY = u; VZ = f;
+  }
+  function isIso() { return Math.abs(CAMA.yaw - ISO_YAW) < 1e-3 && Math.abs(CAMA.pitch - ISO_PITCH) < 1e-3; }
   var s2 = function (v) { return [v[0] * RX[0] + v[2] * RX[2], v[0] * UY[0] + v[1] * UY[1] + v[2] * UY[2]]; };
   var hex = function (h) { return [1, 3, 5].map(function (i) { return parseInt(h.substr(i, 2), 16) / 255; }); };
   var mulc = function (c, k) { return [Math.min(1, c[0] * k), Math.min(1, c[1] * k), Math.min(1, c[2] * k)]; };
@@ -16,7 +25,7 @@
   var MAT = { rk: 0, wd: 0, kl: 0, cu: 1, cuL: 1, au: 2, en: 3, en2: 3, rg: 4 };
   var GOLD = hex('#d9b45a'), GOLDL = hex('#ffe7a3');
 
-  var bgc = $('bg'), glc = $('gl'), fxc = $('fx'), bg = bgc.getContext('2d'), fx = fxc.getContext('2d');
+  var bgc = $('bg'), vzc = $('vz'), glc = $('gl'), fxc = $('fx'), bg = bgc.getContext('2d'), vzx = vzc.getContext('2d'), fx = fxc.getContext('2d');
   var R;
   try { R = new G.Renderer(glc); } catch (e) { $('nogl').classList.add('on'); console.error(e); return; }
 
@@ -28,7 +37,7 @@
 
   var S = { mode: 'title', idx: 0, t: 0, world: null, def: null, pal: null, pc: {}, seq: [], cam: { c: [0, 0, 0], ppu: 60, base: 0, intro: 0 }, ga: 1, ext: 14,
     ptr: null, drag: null, scrub: null, pendingTap: null, ripples: [], dust: [], parts: [], pulses: [], fills: [], spills: [], halos: [],
-    hintI: 0, hintT: 0, did: {}, beat: 0, vase: { st: 0, anim: null }, orb: null, tokenTaken: false, sel: 0, duo: null, won: false, canContinue: false, flash: 0, fire: 0, kilnLit: 1, stepN: 0 };
+    hintI: 0, hintT: 0, did: {}, beat: 0, vase: { st: 0, anim: null }, orb: null, tokenTaken: false, drains: [], camAnim: null, negVase: null, vz: { flash: 0, band: 0 }, sel: 0, duo: null, won: false, canContinue: false, flash: 0, fire: 0, kilnLit: 1, stepN: 0 };
   function mkChar(i) { return { i: i, node: null, pos: [0, 0, 0], path: [], step: null, face: 0.8, faceT: 0.8, ref: 0, idle: 0, hop: 0, cheer: 0, vis: 1, fade: null, on: false, prev: null, wave: 0 }; }
   var C = [mkChar(0), mkChar(1)];
   var CM = [{}, {}];
@@ -56,10 +65,10 @@
         p.nodes.forEach(function (n) { add(L.tPoint(p, st, [n.c[0], n.c[1] + 2.0, n.c[2]])); add(L.tPoint(p, st, [n.c[0], n.c[1] - 0.6, n.c[2]])); });
       });
     });
-    var top = CAP ? 70 : 84, bot = CAP ? 250 : 100, side = 32, rr = vaseBox().res;
+    var top = CAP ? 70 : 76, bot = CAP ? 250 : 110, side = 24, rr = 0;
     var ppu = Math.max(6, Math.min((W - side * 2 - rr) / (mx[0] - mn[0]), (H - top - bot) / (mx[1] - mn[1]), 80 * Math.max(1, Math.min(W, H) / 720)));
     var cu = (mn[0] + mx[0]) / 2 + rr / 2 / ppu, cv = (mn[1] + mx[1]) / 2;
-    S.cam.c = [RX[0] * cu + UY[0] * cv, UY[1] * cv, RX[2] * cu + UY[2] * cv];
+    S.cam.c = [RX[0] * cu + UY[0] * cv, RX[1] * cu + UY[1] * cv, RX[2] * cu + UY[2] * cv];
     S.cam.ppu = ppu; S.cam.base = (top - bot) / 2;
     S.ext = Math.max(hi[0] - lo[0], hi[1] - lo[1] + 4, hi[2] - lo[2]) * 0.95 + 3;
   }
@@ -129,17 +138,17 @@
     g.m = 0; void glow;
   }
   // 珐琅丝格：灌满后的釉板（含表面金丝）；未灌时只有镂空金丝骨架
-  function enamelCell(g, q, col, thick, motif) {
+  function enamelCell(g, q, col, thick, motif, kind) {
     var y1 = q[1] + 0.5, y0 = thick ? q[1] - 0.5 : q[1] + 0.12, cy = (y0 + y1) / 2, hy = (y1 - y0) / 2;
-    g.m = 3; g.box(q[0], cy, q[2], 0.47, hy, 0.47, col);
-    g.m = 2; var r = 0.022, y = y1 + 0.006;
+    g.m = kind === 'gilt' ? 2 : 3; if (kind === 'gem') g.e = 0.22; g.box(q[0], cy, q[2], 0.47, hy, 0.47, col); g.e = kind === 'gem' ? 0.35 : 0;
+    g.m = 2; var r = kind === 'gem' ? 0.014 : 0.022, y = y1 + 0.006;
     g.box(q[0], y, q[2] - 0.47, 0.49, r, r, S.pc.au); g.box(q[0], y, q[2] + 0.47, 0.49, r, r, S.pc.au); g.box(q[0] - 0.47, y, q[2], r, r, 0.49, S.pc.au); g.box(q[0] + 0.47, y, q[2], r, r, 0.49, S.pc.au);
     // 掐丝纹：如意云头的折线 + 小圆点
     var rr = 0.011;
     if (motif % 2 === 0) { g.bar([q[0] - 0.28, y, q[2] - 0.12], [q[0] + 0.05, y, q[2] - 0.12], rr, S.pc.au); g.bar([q[0] + 0.05, y, q[2] - 0.12], [q[0] + 0.05, y, q[2] + 0.2], rr, S.pc.au); g.bar([q[0] - 0.12, y, q[2] + 0.2], [q[0] + 0.28, y, q[2] + 0.2], rr, S.pc.au); }
     else { g.bar([q[0] - 0.2, y, q[2] - 0.24], [q[0] - 0.2, y, q[2] + 0.1], rr, S.pc.au); g.bar([q[0] - 0.2, y, q[2] + 0.1], [q[0] + 0.22, y, q[2] + 0.1], rr, S.pc.au); g.bar([q[0] + 0.22, y, q[2] - 0.2], [q[0] + 0.22, y, q[2] + 0.1], rr, S.pc.au); }
     g.sphere(q[0] + 0.26, y, q[2] - 0.28, 0.035, 0.012, 0.035, S.pc.au, 8);
-    g.m = 0;
+    g.m = 0; g.e = 0;
     return [y0, y1];
   }
   function skeleton(g, q, y0, y1) {
@@ -176,7 +185,7 @@
       }
       if (n.halo) return;
       if (special) {
-        var col = colOf((d.boxes && d.boxes[0] && d.boxes[0][6]) || 'en'), yy = enamelCell(ge, q, col, !d.thin && !p.glaze && !(p.kind === 'slide'), mi++);
+        var col = colOf((d.boxes && d.boxes[0] && d.boxes[0][6]) || 'en'), yy = enamelCell(ge, q, col, !d.thin && !p.glaze && !(p.kind === 'slide'), mi++, d.gilt ? 'gilt' : p.rough ? 'gem' : '');
         if (p.glaze) skeleton(gw, q, yy[0], yy[1]);
         if (p.rough) { gr.m = 4; gr.box(q[0], (yy[0] + yy[1]) / 2 + 0.02, q[2], 0.5, (yy[1] - yy[0]) / 2 + 0.03, 0.5, c.rg); for (var k = 0; k < 5; k++) gr.sphere(q[0] + Math.sin(k * 2.3 + q[0]) * 0.3, yy[1] + 0.03, q[2] + Math.cos(k * 1.7 + q[2]) * 0.3, 0.12, 0.05, 0.1, mulc(c.rg, 0.85 + k * 0.06), 8); }
         if (n.goal) goalMark(ge, q);
@@ -189,11 +198,12 @@
       if (n.holdOf) { g.m = 2; g.box(q[0], q[1] + 0.52, q[2], 0.34, 0.02, 0.34, c.au); g.m = 6; g.e = 1; g.box(q[0], q[1] + 0.53, q[2], 0.22, 0.008, 0.22, c.fire); g.e = 0; g.m = 0; }
     });
     if (d.wire) { // 可转动的金丝：一根贴地的扁丝，末端一颗金珠
-      g.m = 2; var pv = p.pivot, dv = d.wire.dir, ln = d.wire.len, y = pv[1] + 0.56;
+      g.m = 2; var pv = d.wire.at || p.pivot, dv = d.wire.dir, ln = d.wire.len, y = pv[1] + 0.56;
       g.bar([pv[0], y, pv[2]], [pv[0] + dv[0] * ln, y, pv[2] + dv[2] * ln], 0.03, c.au);
       g.box(pv[0] + dv[0] * ln / 2, y - 0.04, pv[2] + dv[2] * ln / 2, Math.abs(dv[0]) * ln / 2 + 0.012, 0.05, Math.abs(dv[2]) * ln / 2 + 0.012, c.au);
-      g.cyl(pv[0], y - 0.08, pv[2], 0.07, 0.07, 0.14, c.au, 12);
+      if (!d.wire.at) g.cyl(pv[0], y - 0.08, pv[2], 0.07, 0.07, 0.14, c.au, 12);
       g.sphere(pv[0] + dv[0] * ln, y + 0.04, pv[2] + dv[2] * ln, 0.1, c.auL, 12);
+      if (d.wire.at) g.sphere(pv[0], y + 0.04, pv[2], 0.08, c.auL, 10);
       g.m = 0;
     }
     (d.deco || []).forEach(function (x) { deco(g, p, x); });
@@ -299,6 +309,9 @@
     S.seq = []; S.doors = []; S.doorPanels = []; S.kiln = null;
     S.world = L.build(def);
     S.world.parts.forEach(function (p) { p.anim = null; p.shake = 0; p.polish = 0; p.fillK = p.filled ? 1 : 0; var ms = buildPart(p); ms.part = p; S.parts.push(ms); });
+    if (CM.rail) R.free(CM.rail); var grl = new G.Geo(); grl.m = 2;
+    S.world.parts.forEach(function (p) { var rl = p.def.rail; if (!rl) return; var y = rl.from[1] + 0.515, z = rl.from[2] + 0.13; grl.bar([rl.from[0], y, z], [rl.to[0], y, z], 0.01, S.pc.au); for (var x = Math.ceil(rl.from[0]); x <= rl.to[0]; x += 2) grl.box(x, y, z, 0.02, 0.025, 0.04, S.pc.au); });
+    CM.rail = R.mesh(grl);
     if (CM.door) R.free(CM.door); var gd = new G.Geo(); gd.m = 6; gd.e = 1;
     S.doorPanels.forEach(function (d) { gd.box(d[0], d[1] + d[4] / 2, d[2], d[3] - 0.03, d[4] / 2 - 0.02, 0.006, [1, 0.86, 0.6]); gd.box(d[0], d[1] + d[4] * 0.4, d[2] + 0.005, d[3] * 0.6, d[4] * 0.36, 0.006, [1, 0.97, 0.88]); });
     CM.door = R.mesh(gd);
@@ -310,9 +323,9 @@
     C[0].on = true; setNode(C[0], S.world.start);
     if (S.duo && S.world.start2) { C[1].on = true; setNode(C[1], S.world.start2); C[1].face = C[1].faceT = 0.8; }
     S.sel = 0; S.won = false; S.canContinue = false; S.drag = null; S.scrub = null; S.ptr = null; S.pendingTap = null; S.ripples = []; S.pulses = []; S.fills = []; S.spills = [];
-    S.hintI = 0; S.hintT = 0; S.did = {}; S.beat = 0; S.flash = 0; S.vase = { st: i, anim: null }; S.orb = null; S.tokenTaken = false; buildToken(i); S.kilnLit = i === 7 ? 0.25 : 1;
+    S.hintI = 0; S.hintT = 0; S.did = {}; S.beat = 0; S.flash = 0; S.vase = { st: i, anim: null }; S.orb = null; S.tokenTaken = false; buildToken(i); S.drains = []; S.camAnim = null; S.sideOn = 0; S.negVase = null; S.negDone = 0; S.collapsed = 0; S.vz = { flash: 0, band: def.band || i, lit: 0 }; setCam(ISO_YAW, ISO_PITCH); S.kilnLit = i === 7 ? 0.25 : 1;
     initDust(); drawBG();
-    var rs = document.documentElement.style; rs.setProperty('--ink', def.pal.ink); rs.setProperty('--ink-soft', rgba(def.pal.ink, 0.45)); rs.setProperty('--ts', def.pal.stars ? '0 1px 10px rgba(0,0,0,.45)' : '0 0 12px rgba(255,250,240,.7)');
+    var rs = document.documentElement.style; rs.setProperty('--ink', def.pal.ink); rs.setProperty('--ink-soft', rgba(def.pal.ink, 0.45)); rs.setProperty('--ts', def.pal.dark ? '0 1px 10px rgba(0,0,0,.55)' : '0 0 12px rgba(255,250,240,.8)'); rs.setProperty('--gold', def.pal.dark ? '#d9b45a' : '#9a6d22'); rs.setProperty('--paper', def.pal.sky[0]);
     $('chname').textContent = (def.no === '序' ? '序' : '第' + def.no + '道') + ' · ' + def.name;
     $('endline').classList.remove('on'); $('endgo').classList.remove('on'); setHint('');
     $('who').classList.toggle('on', S.duo === 'ctrl'); updWho();
@@ -335,7 +348,7 @@
   function veil(on, cb) { var v = $('veil'); v.classList.toggle('on', on); if (cb) { if (CAP) cb(); else setTimeout(cb, on ? 750 : 60); } }
   function showCard() {
     S.mode = 'card'; S.ga = 0; S.cam.intro = 90; var d = S.def;
-    $('cno').textContent = d.no === '序' ? '序 章' : '第 ' + d.no + ' 道 工 序'; $('cname').textContent = d.name; $('ccraft').textContent = d.craft; $('cpoem').textContent = d.poem;
+    $('cno').textContent = d.no === '序' ? '序 章' : '第 ' + d.no + ' 道 工 序'; $('cname').textContent = d.name; $('cpoem').textContent = d.poem;
     $('card').classList.add('on'); AU.card(S.idx);
     after(3.6, beginIntro);
   }
@@ -343,15 +356,24 @@
     if (S.mode !== 'card' && S.mode !== 'load') return;
     $('card').classList.remove('on'); S.mode = 'intro'; S.introT = 0; S.seq = [];
   }
-  function start(i, withCard) {
+  function start(i, withCard, dive) {
     S.mode = 'load';
     veil(true, function () {
       ['title', 'levels', 'finale'].forEach(function (id) { $(id).classList.remove('on'); });
-      $('hud').classList.add('on'); $('chapter').classList.add('on');
       loadLevel(i);
-      if (withCard) showCard(); else { S.ga = 0; S.cam.intro = 90; beginIntro(); }
+      if (dive) { var tt = $('title'); tt.style.transition = 'none'; tt.classList.remove('on'); setTimeout(function () { tt.style.transition = ''; }, 50); S.mode = 'dive'; S.diveT = 0; S.ga = 0; AU.dive(); $('hud').classList.remove('on'); $('chapter').classList.remove('on'); $('who').classList.remove('on'); }
+      else { $('hud').classList.add('on'); $('chapter').classList.add('on'); if (withCard) showCard(); else { S.ga = 0; S.cam.intro = 90; beginIntro(); } }
       veil(false);
     });
+  }
+  function endDive() { S.mode = 'load'; $('hud').classList.add('on'); $('chapter').classList.add('on'); $('who').classList.toggle('on', S.duo === 'ctrl'); showCard(); }
+  function startStack() {
+    S.mode = 'stack'; S.stackT = 0; S.seq = []; buildStack(); setHint('');
+    ['hud', 'chapter', 'who'].forEach(function (id) { $(id).classList.remove('on'); }); $('endline').classList.remove('on'); $('endgo').classList.remove('on');
+    BANDS.forEach(function (r, k) { after(0.6 + k * 0.62 + 1.2, function () { AU.slice(k); }); });
+    after(5.4, function () { S.flash = 0.8; AU.vase(); });
+    after(6.2, function () { $('endvase').textContent = ''; $('endtext').textContent = '器，成了。'; $('endline').classList.add('on'); });
+    after(10.0, function () { $('endline').classList.remove('on'); $('finale').classList.add('on'); S.mode = 'final'; AU.finale(); });
   }
 
   // ───────────── 背景：深靛水彩 + 矿物颗粒 + 铜锈暖褐 + 哑金细线 ─────────────
@@ -359,8 +381,11 @@
   var grain = null;
   function makeGrain() {
     var c = document.createElement('canvas'); c.width = c.height = 256; var x = c.getContext('2d'), d = x.createImageData(256, 256), r = rnd(7);
-    for (var i = 0; i < d.data.length; i += 4) { var v = r(); var on = v > 0.86; d.data[i] = on ? 230 : 0; d.data[i + 1] = on ? 215 : 0; d.data[i + 2] = on ? 170 : 0; d.data[i + 3] = on ? (r() * 34) | 0 : (r() * 22) | 0; }
-    x.putImageData(d, 0, 0); grain = c;
+    for (var i = 0; i < d.data.length; i += 4) { var v = r(); var on = v > 0.84, cu = v > 0.995; d.data[i] = cu ? 168 : on ? 236 : 0; d.data[i + 1] = cu ? 120 : on ? 220 : 0; d.data[i + 2] = cu ? 80 : on ? 176 : 0; d.data[i + 3] = cu ? 120 : on ? (r() * 44) | 0 : (r() * 30) | 0; }
+    x.putImageData(d, 0, 0);
+    x.globalAlpha = 0.07; x.strokeStyle = '#f0e6d0'; x.lineWidth = 0.6; // 宣纸纤维
+    for (i = 0; i < 70; i++) { var px = r() * 256, py = r() * 256, a = r() * 6.28, l = 6 + r() * 22; x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo(px + Math.cos(a + 0.6) * l * 0.5, py + Math.sin(a + 0.6) * l * 0.5, px + Math.cos(a) * l, py + Math.sin(a) * l); x.stroke(); }
+    grain = c;
   }
   function drawBG() {
     var pal = S.pal, g, i, k, r = rnd(S.idx * 13 + 5);
@@ -393,6 +418,16 @@
       bg.fillStyle = g; bg.fill();
       if (k < 2) { bg.strokeStyle = 'rgba(190,150,70,' + (0.3 + 0.15 * k) + ')'; bg.lineWidth = 0.9; bg.beginPath(); pts.forEach(function (p, j) { if (j) bg.lineTo(p[0], p[1] + 0.5); else bg.moveTo(p[0], p[1] + 0.5); }); bg.stroke(); }
     }
+    if (pal.moon) { var mx2 = W * 0.8, my2 = H * 0.16, mr = Math.min(W, H) * 0.045; g = bg.createRadialGradient(mx2, my2, mr * 0.8, mx2, my2, mr * 4); g.addColorStop(0, 'rgba(230,236,255,0.22)'); g.addColorStop(1, 'rgba(230,236,255,0)'); bg.fillStyle = g; bg.fillRect(mx2 - mr * 4, my2 - mr * 4, mr * 8, mr * 8);
+      bg.fillStyle = 'rgba(236,240,255,0.9)'; bg.beginPath(); bg.arc(mx2, my2, mr, 0, 6.2832); bg.fill(); bg.fillStyle = rgba(pal.sky[0], 1); bg.beginPath(); bg.arc(mx2 + mr * 0.45, my2 - mr * 0.2, mr * 0.92, 0, 6.2832); bg.fill(); }
+    if (pal.beams) { // 暗场里的冷暖斜光：左下窑光，右上冷白硬光
+      bg.save(); bg.globalCompositeOperation = 'lighter';
+      g = bg.createLinearGradient(0, H, W * 0.55, H * 0.2); g.addColorStop(0, 'rgba(255,120,50,0.34)'); g.addColorStop(0.5, 'rgba(255,120,50,0.1)'); g.addColorStop(1, 'rgba(255,120,50,0)');
+      bg.fillStyle = g; bg.beginPath(); bg.moveTo(0, H * 0.62); bg.lineTo(W * 0.22, H); bg.lineTo(W * 0.78, H * 0.18); bg.lineTo(W * 0.5, H * 0.05); bg.closePath(); bg.fill();
+      g = bg.createLinearGradient(W, 0, W * 0.45, H * 0.7); g.addColorStop(0, 'rgba(220,232,255,0.3)'); g.addColorStop(0.6, 'rgba(220,232,255,0.06)'); g.addColorStop(1, 'rgba(220,232,255,0)');
+      bg.fillStyle = g; bg.beginPath(); bg.moveTo(W * 0.72, 0); bg.lineTo(W, 0); bg.lineTo(W * 0.62, H * 0.8); bg.lineTo(W * 0.45, H * 0.7); bg.closePath(); bg.fill();
+      bg.restore();
+    }
     if (pal.lamp) { var lx = W * 0.12, ly = H * 0.62; g = bg.createRadialGradient(lx, ly, 0, lx, ly, 40); g.addColorStop(0, 'rgba(255,190,110,0.8)'); g.addColorStop(0.15, 'rgba(255,170,90,0.35)'); g.addColorStop(1, 'rgba(255,170,90,0)'); bg.fillStyle = g; bg.fillRect(lx - 40, ly - 40, 80, 80); }
     // 雾
     g = bg.createLinearGradient(0, H * 0.7, 0, H); g.addColorStop(0, rgba(pal.fog, 0)); g.addColorStop(1, rgba(pal.fog, 0.8));
@@ -400,7 +435,7 @@
     if (!grain) makeGrain();
     bg.fillStyle = bg.createPattern(grain, 'repeat'); bg.fillRect(0, 0, W, H);
     // 纸边暗角
-    g = bg.createRadialGradient(W / 2, H * 0.45, Math.min(W, H) * 0.35, W / 2, H / 2, Math.max(W, H) * 0.75); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, pal.stars ? 'rgba(8,8,30,0.45)' : rgba(pal.ink, 0.16));
+    g = bg.createRadialGradient(W / 2, H * 0.45, Math.min(W, H) * 0.35, W / 2, H / 2, Math.max(W, H) * 0.75); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, pal.dark ? 'rgba(4,5,12,0.5)' : rgba(pal.ink, 0.16));
     bg.fillStyle = g; bg.fillRect(0, 0, W, H);
   }
 
@@ -425,7 +460,7 @@
     c.save();
     if (k(8) > 0) { var g0 = c.createRadialGradient(cx, cy, h * 0.1, cx, cy, h * 0.6); g0.addColorStop(0, 'rgba(255,226,160,' + 0.5 * k(8) + ')'); g0.addColorStop(1, 'rgba(255,226,160,0)'); c.fillStyle = g0; c.fillRect(cx - h * 0.6, cy - h * 0.6, h * 1.2, h * 1.2); }
     // 空器：虚线金轮廓
-    vasePath(c, cx, cy, h); c.setLineDash([3, 5]); c.lineWidth = 1; c.strokeStyle = S.pal && S.pal.stars ? 'rgba(255,226,150,' + (0.6 * (1 - k(2)) + 0.05) + ')' : 'rgba(176,128,40,' + (0.7 * (1 - k(2)) + 0.05) + ')'; c.stroke(); c.setLineDash([]);
+    vasePath(c, cx, cy, h); c.setLineDash([3, 5]); c.lineWidth = 1; c.strokeStyle = S.pal && S.pal.dark ? 'rgba(255,226,150,' + (0.6 * (1 - k(2)) + 0.05) + ')' : 'rgba(176,128,40,' + (0.7 * (1 - k(2)) + 0.05) + ')'; c.stroke(); c.setLineDash([]);
     // 一 色样：几粒蓝矿在器旁浮着
     if (k(1) > 0) for (i = 0; i < 5; i++) { var a = t * 0.4 + i * 1.26, rx = cx + Math.cos(a) * h * 0.38, ry = cy + Math.sin(a * 1.3) * h * 0.12 + h * 0.05; var gg = c.createRadialGradient(rx, ry, 0, rx, ry, 7); gg.addColorStop(0, 'rgba(110,190,255,' + 0.9 * k(1) * (1 - k(4)) + ')'); gg.addColorStop(1, 'rgba(110,190,255,0)'); c.fillStyle = gg; c.fillRect(rx - 7, ry - 7, 14, 14); }
     c.save(); vasePath(c, cx, cy, h); c.clip();
@@ -462,6 +497,116 @@
     c.restore();
   }
 
+
+  // ───────────── 器即空间（一）：背景水雾里的淡墨瓶影 ─────────────
+  // 平时几乎隐身；完成一道工序的瞬间，对应的那一圈像宣纸吸墨般亮起，随后沉回去。
+  var BANDS = [[0, 0.1], [0.1, 0.3], [0.3, 0.46], [0.46, 0.6], [0.6, 0.74], [0.74, 0.86], [0.86, 1]];
+  var BANDC = ['#3fb6a8', '#b5794b', '#e8c46a', '#e0786a', '#ff8a3c', '#2b7cf0', '#f0c860', '#ffe0a0'];
+  function inkBox() { var h = Math.min(H * 0.9, W * 1.7); return { cx: W / 2, h: h, cy: H * 0.965 - h / 2 }; }
+  function bandPoint(k) { var b = inkBox(), r = BANDS[Math.min(k, 6)]; return [b.cx, b.cy + b.h / 2 - (r[0] + r[1]) / 2 * b.h]; }
+  function drawInkVase(c, t) {
+    c.clearRect(0, 0, W, H);
+    if (!S.pal || S.mode === 'stack' || S.mode === 'final' || S.mode === 'dive') return;
+    var b = inkBox(), cx = b.cx, h = b.h, cy = b.cy, y0 = cy + h / 2, dark = !!S.pal.dark, ink = dark ? [0.92, 0.88, 0.8] : [0.25, 0.2, 0.3], k, i;
+    var Y = function (y) { return y0 - y * h; };
+    c.save(); vasePath(c, cx, cy, h);
+    var g = c.createLinearGradient(cx - h * 0.3, 0, cx + h * 0.3, 0); g.addColorStop(0, rgba(ink, 0.015)); g.addColorStop(0.42, rgba(ink, dark ? 0.06 : 0.05)); g.addColorStop(1, rgba(ink, 0.02));
+    c.fillStyle = g; c.fill(); c.lineWidth = 1; c.strokeStyle = rgba(ink, dark ? 0.09 : 0.08); c.stroke();
+    c.clip();
+    for (k = 0; k < 7; k++) { // 已完成的工序：留下很淡的釉色与金线
+      var lit = clamp(S.vase.st - k, 0, 1); if (lit <= 0) continue;
+      var r = BANDS[k]; c.fillStyle = rgba(BANDC[k], 0.065 * lit); c.fillRect(cx - h, Y(r[1]), h * 2, Y(r[0]) - Y(r[1]));
+      c.strokeStyle = rgba('#e8c46a', 0.2 * lit); c.lineWidth = 0.8; c.beginPath(); c.moveTo(cx - h, Y(r[1])); c.lineTo(cx + h, Y(r[1])); c.stroke();
+      if (k === 2 || k === 6) { c.beginPath(); for (i = 0; i <= 60; i++) { var u = -1 + i / 30, yy = (r[0] + r[1]) / 2 + Math.sin(u * 9) * (r[1] - r[0]) * 0.25, w3 = vr(h, yy) * 0.92; if (i) c.lineTo(cx + u * w3, Y(yy)); else c.moveTo(cx + u * w3, Y(yy)); } c.stroke(); }
+    }
+    var f = S.vz.flash, kb = S.vz.band;
+    if (f > 0.01) { // 当前工序：吸墨般晕开
+      var rr = kb >= 7 ? [0, 1] : BANDS[kb], my = Y((rr[0] + rr[1]) / 2), rad = h * (0.25 + 0.5 * (1 - f) + (kb >= 7 ? 0.4 : 0));
+      if (kb < 7) { c.save(); c.beginPath(); c.rect(cx - h, Y(rr[1]), h * 2, Y(rr[0]) - Y(rr[1])); c.clip(); }
+      var gg = c.createRadialGradient(cx, my, 0, cx, my, rad); gg.addColorStop(0, rgba(BANDC[kb], 0.55 * f)); gg.addColorStop(0.6, rgba(BANDC[kb], 0.3 * f)); gg.addColorStop(1, rgba(BANDC[kb], 0));
+      c.fillStyle = gg; c.fillRect(cx - h, cy - h, h * 2, h * 2);
+      c.strokeStyle = rgba('#ffe0a0', 0.7 * f); c.lineWidth = 1.2; c.beginPath(); c.moveTo(cx - h, Y(rr[1])); c.lineTo(cx + h, Y(rr[1])); c.moveTo(cx - h, Y(rr[0])); c.lineTo(cx + h, Y(rr[0])); c.stroke();
+      if (kb < 7) c.restore();
+    }
+    c.restore();
+  }
+
+  // 负空间瓶影：两塔之间的留白，被金丝弧线围成一只瓶
+  function drawNegVase(t) {
+    var nv = S.def.negVase, a = proj([nv.l[0], nv.y1, 0]), b = proj([nv.r[0], nv.y1, 0]), c0 = proj([nv.l[0], nv.y0, 0]);
+    var cx = (a[0] + b[0]) / 2, top = Math.min(a[1], b[1]), bot = c0[1], h = bot - top, w = Math.abs(b[0] - a[0]);
+    var grow = clamp(t / 0.7, 0, 1), al = t < 1.2 ? 1 : clamp(1 - (t - 1.2) / 2, 0, 1), sc = w / (h * 1.14);
+    fx.save(); fx.translate(cx, top + h / 2); fx.scale(sc, 1); fx.translate(-cx, -(top + h / 2));
+    vasePath(fx, cx, top + h / 2, h);
+    var g = fx.createRadialGradient(cx, top + h * 0.45, 0, cx, top + h * 0.45, h * 0.6); g.addColorStop(0, 'rgba(255,244,220,' + 0.22 * al * grow + ')'); g.addColorStop(1, 'rgba(255,244,220,0)');
+    fx.fillStyle = g; fx.fill();
+    fx.setLineDash([h * 3 * grow, h * 3]); fx.lineWidth = 1.6 / sc; fx.strokeStyle = 'rgba(255,214,130,' + 0.85 * al + ')'; fx.shadowColor = 'rgba(255,200,120,' + al + ')'; fx.shadowBlur = 10; fx.stroke();
+    fx.restore();
+  }
+  // ───────────── 器即空间（二）：开场三秒，俯身入器 ─────────────
+  function drawDive(c, t) {
+    var T1 = 0.8, T2 = 2.7, T3 = 3.5, z = 1;
+    if (t > T1) z = Math.exp(Math.pow(clamp((t - T1) / (T2 - T1), 0, 1), 1.6) * 3.2);
+    var vh = Math.min(H * 0.44, W * 0.62), cx = W / 2, base = H * 0.72, cy = base - vh / 2, mx = cx, my = base - vh * 0.985;
+    c.save();
+    c.fillStyle = '#0c0a09'; c.fillRect(0, 0, W, H);
+    c.translate(mx, my); c.scale(z, z); c.translate(-mx, -my);
+    var g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#120f0d'); g.addColorStop(1, '#231a13'); c.fillStyle = g; c.fillRect(-W, -H, W * 3, H * 3);
+    g = c.createRadialGradient(W * 0.28, H * 0.42, 0, W * 0.28, H * 0.42, W * 0.6); g.addColorStop(0, 'rgba(255,170,90,0.28)'); g.addColorStop(1, 'rgba(255,170,90,0)'); c.fillStyle = g; c.fillRect(-W, -H, W * 3, H * 3);
+    c.fillStyle = '#3a2a1e'; c.beginPath(); c.moveTo(-W, base + 4); c.lineTo(W * 2, base + 4); c.lineTo(W * 2, H * 3); c.lineTo(-W, H * 3); c.fill();
+    c.strokeStyle = 'rgba(0,0,0,0.25)'; c.lineWidth = 1; for (var i = 0; i < 9; i++) { c.beginPath(); c.moveTo(-W, base + 12 + i * 14); c.lineTo(W * 2, base + 10 + i * 15); c.stroke(); }
+    g = c.createRadialGradient(cx, base + 6, 0, cx, base + 6, vh * 0.5); g.addColorStop(0, 'rgba(0,0,0,0.5)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(cx - vh, base - 20, vh * 2, 60);
+    vasePath(c, cx, cy, vh);
+    g = c.createLinearGradient(cx - vh * 0.3, 0, cx + vh * 0.3, 0); g.addColorStop(0, '#24170f'); g.addColorStop(0.35, '#6a4630'); g.addColorStop(0.55, '#4a3020'); g.addColorStop(1, '#1a110b');
+    c.fillStyle = g; c.fill(); c.strokeStyle = 'rgba(220,170,110,0.35)'; c.lineWidth = 1; c.stroke();
+    c.save(); vasePath(c, cx, cy, vh); c.clip(); var rn = rnd(3);
+    for (i = 0; i < 14; i++) { var px = cx + (rn() - 0.5) * vh * 0.6, py = cy + (rn() - 0.3) * vh * 0.8, pr = vh * (0.03 + rn() * 0.06); g = c.createRadialGradient(px, py, 0, px, py, pr); g.addColorStop(0, 'rgba(95,165,150,0.35)'); g.addColorStop(1, 'rgba(95,165,150,0)'); c.fillStyle = g; c.fillRect(px - pr, py - pr, pr * 2, pr * 2); }
+    c.restore();
+    var mw = VP[VP.length - 1][1] * vh * 0.5; c.fillStyle = '#050403'; c.beginPath(); c.ellipse(mx, my, mw, mw * 0.32, 0, 0, 6.2832); c.fill();
+    c.strokeStyle = 'rgba(230,180,120,0.5)'; c.lineWidth = 1.2; c.beginPath(); c.ellipse(mx, my, mw, mw * 0.32, 0, 0, 6.2832); c.stroke();
+    c.restore();
+    var dk = t < T2 ? clamp((t - (T2 - 0.6)) / 0.6, 0, 1) : 1 - clamp((t - T2) / (T3 - T2), 0, 1);
+    if (t < 0.6) dk = Math.max(dk, 1 - t / 0.6);
+    c.fillStyle = 'rgba(5,4,3,' + dk + ')'; c.fillRect(0, 0, W, H);
+    if (t > T2) { c.globalAlpha = 1 - clamp((t - T2) / (T3 - T2), 0, 1); c.fillStyle = '#050403'; c.globalAlpha *= 0; c.globalAlpha = 1; }
+  }
+
+  // ───────────── 器即空间（三）：终章拉远，七重空间叠合成器 ─────────────
+  var STACK = null, SH = 8;
+  function buildStack() {
+    if (STACK) return STACK;
+    var cols = { stone: hex('#7c7f92'), cu: hex('#a8714a'), au: hex('#d9b45a'), auL: hex('#ffe9b0'), tq: hex('#3fb6a8'), co: hex('#e0786a'), ye: hex('#f0c24b'), lb: hex('#3a6fc4'), gb: hex('#2b7cf0'), fire: hex('#ff8a3c') };
+    STACK = BANDS.map(function (r, k) {
+      var g = new G.Geo(), prof = [], n = 7, j, y;
+      for (j = 0; j <= n; j++) { var f = r[0] + (r[1] - r[0]) * j / n; prof.push([vr(SH, f), f * SH]); }
+      var shrink = function (q) { return prof.map(function (p) { return [p[0] * q, p[1]]; }); };
+      if (k === 0) { g.m = 0; g.lathe(0, 0, 0, prof, cols.stone, 28); g.m = 3; g.e = 0.6; for (j = 0; j < 10; j++) { var a = j * 0.628, rr = vr(SH, 0.05); g.frustum(Math.cos(a) * rr, 0.25, Math.sin(a) * rr, 0.09, 0, 0.3 + (j % 3) * 0.12, j % 2 ? cols.tq : cols.co); } g.e = 0; }
+      else if (k === 1) { g.m = 1; g.lathe(0, 0, 0, prof, cols.cu, 28); }
+      else if (k === 2) { // 镂空金丝笼，里面是铜胎
+        g.m = 1; g.lathe(0, 0, 0, shrink(0.86), cols.cu, 24); g.m = 2;
+        for (j = 0; j < 20; j++) { var aa = j / 20 * 6.2832; for (var q = 0; q < n; q++) { var p0 = prof[q], p1 = prof[q + 1]; g.bar([Math.cos(aa) * p0[0], p0[1], Math.sin(aa) * p0[0]], [Math.cos(aa) * p1[0], p1[1], Math.sin(aa) * p1[0]], 0.018, cols.au); } }
+        for (y = 0; y <= n; y += 2) g.cyl(0, prof[y][1] - 0.02, 0, prof[y][0] + 0.02, prof[y][0] + 0.02, 0.04, cols.au, 28);
+      }
+      else if (k === 3) { g.m = 3; g.lathe(0, 0, 0, prof, cols.tq, 28); g.e = 0.3; for (j = 0; j < 12; j++) { var a3 = j * 0.5236, ym = (r[0] + r[1]) / 2, r3 = vr(SH, ym); g.sphere(Math.cos(a3) * r3, ym * SH, Math.sin(a3) * r3, 0.16, [cols.co, cols.ye, cols.lb][j % 3], 10); } g.e = 0; }
+      else if (k === 4) { g.m = 3; g.lathe(0, 0, 0, prof, cols.lb, 28); g.m = 6; g.e = 1; var ym4 = (r[0] + r[1]) / 2; g.cyl(0, ym4 * SH - 0.06, 0, vr(SH, ym4) + 0.015, vr(SH, ym4) + 0.015, 0.12, cols.fire, 28); g.e = 0; }
+      else if (k === 5) { g.m = 3; g.lathe(0, 0, 0, prof, cols.gb, 28); }
+      else { g.m = 2; g.lathe(0, 0, 0, prof, cols.au, 28); }
+      g.m = 2; g.cyl(0, r[0] * SH - 0.03, 0, vr(SH, r[0]) + 0.03, vr(SH, r[0]) + 0.03, 0.06, cols.auL, 28);
+      return { m: R.mesh(g), r: r };
+    });
+    return STACK;
+  }
+  function stackList(t) {
+    var list = [];
+    buildStack().forEach(function (sl, k) {
+      var ti = 0.6 + k * 0.62, pr = clamp((t - ti) / 1.25, 0, 1), e = ease(pr);
+      if (pr <= 0) return;
+      var dy = (1 - e) * (-7 - k * 0.6), spin = (1 - e) * (1.4 + k * 0.2);
+      list.push({ m: sl.m, model: M.chain(M.tr(0, dy, 0), M.rot('y', spin)), o: { alpha: Math.min(1, pr * 1.6), emis: t > 5.6 ? 0.08 * Math.sin((t - 5.6) * 2) * Math.exp(-(t - 5.6) * 0.5) : 0 } });
+    });
+    return list;
+  }
+
   // ───────────── 粒子 / 特效 ─────────────
   function initDust() {
     var t = S.pal.fx, n = t === 'ember' ? 46 : t === 'star' ? 40 : t === 'grit' ? 30 : 40; S.dust = [];
@@ -481,16 +626,18 @@
   function drawFX(dt) {
     var pal = S.pal, t = S.t, i, d, s, ppu = S.cam.ppu;
     fx.clearRect(0, 0, W, H);
-    if (S.mode === 'title' || S.mode === 'load' || !S.world) { if (S.mode === 'title') { var tb = vaseBox(); drawVase(fx, tb.x, tb.y, tb.h, 0, S.t); } return; }
+    drawInkVase(vzx, t);
+    if (S.mode === 'dive') { drawDive(fx, S.diveT || 0); return; }
+    if (S.mode === 'title' || S.mode === 'load' || S.mode === 'stack' || S.mode === 'final' || !S.world) return;
     fx.globalAlpha = 1;
-    var vb = vaseBox(); if (S.vase.anim) { var va = S.vase.anim; va.t += dt / 1.8; S.vase.st = va.from + (va.to - va.from) * ease(clamp(va.t, 0, 1)); if (va.t >= 1) S.vase.anim = null; }
-    drawVase(fx, vb.x, vb.y, vb.h, S.vase.st, t);
+    if (S.vase.anim) { var va = S.vase.anim; va.t += dt / 1.8; S.vase.st = va.from + (va.to - va.from) * ease(clamp(va.t, 0, 1)); if (va.t >= 1) S.vase.anim = null; }
     if (S.orb) {
-      var o = S.orb; o.t += dt / o.dur; var u = ease(clamp(o.t, 0, 1)), a0 = o.a, b0 = [vb.x, vb.y], qx0 = (a0[0] + b0[0]) / 2, qy0 = Math.min(a0[1], b0[1]) - 80;
+      var o = S.orb; o.t += dt / o.dur; var u = ease(clamp(o.t, 0, 1)), a0 = o.a, b0 = bandPoint(S.vz.band), qx0 = (a0[0] + b0[0]) / 2, qy0 = Math.min(a0[1], b0[1]) - 80;
       var ox = (1 - u) * (1 - u) * a0[0] + 2 * u * (1 - u) * qx0 + u * u * b0[0], oy = (1 - u) * (1 - u) * a0[1] + 2 * u * (1 - u) * qy0 + u * u * b0[1];
       fx.globalCompositeOperation = 'lighter'; glowDot(ox, oy, 30, '#9cc8ff', 0.75); glowDot(ox, oy, 8, '#ffffff', 0.95); fx.globalCompositeOperation = 'source-over';
-      if (o.t >= 1) { S.orb = null; S.vase.anim = { from: S.vase.st, to: S.idx + 1, t: 0 }; AU.vase(); }
+      if (o.t >= 1) { S.orb = null; S.vase.anim = { from: S.vase.st, to: S.idx + 1, t: 0 }; vzPulse(1); AU.vase(); }
     }
+    if (S.negVase && S.def.negVase) drawNegVase(S.negVase.t);
     fx.globalAlpha = S.ga;
     fx.globalCompositeOperation = 'lighter';
     // 双晕
@@ -528,11 +675,11 @@
       p.handles.forEach(function (h) {
         var hw = handlePos(p, h); if (hw[1] < -0.8) return;
         s = proj(hw); var k = 0.5 + 0.5 * Math.sin(t * 2.2), rr = ppu * 0.3 * (1 + 0.16 * k);
-        fx.strokeStyle = S.pal.stars ? 'rgba(255,226,150,' + (0.3 + 0.5 * (1 - k)) + ')' : 'rgba(176,128,40,' + (0.3 + 0.5 * (1 - k)) + ')'; fx.lineWidth = 1.5; fx.beginPath(); fx.arc(s[0], s[1], rr, 0, 6.2832); fx.stroke();
+        fx.strokeStyle = S.pal.dark ? 'rgba(255,226,150,' + (0.3 + 0.5 * (1 - k)) + ')' : 'rgba(176,128,40,' + (0.3 + 0.5 * (1 - k)) + ')'; fx.lineWidth = 1.5; fx.beginPath(); fx.arc(s[0], s[1], rr, 0, 6.2832); fx.stroke();
       });
     });
     // 选中人物的标记
-    if (S.duo === 'ctrl' && S.mode === 'play' && C[1].on) { var cc = C[S.sel]; s = proj([cc.pos[0], cc.pos[1] + 1.05 + 0.04 * Math.sin(t * 3), cc.pos[2]]); fx.fillStyle = S.pal.stars ? 'rgba(255,226,150,0.95)' : 'rgba(176,128,40,0.95)'; fx.beginPath(); fx.moveTo(s[0], s[1] + 6); fx.lineTo(s[0] - 4.5, s[1] - 1); fx.lineTo(s[0] + 4.5, s[1] - 1); fx.closePath(); fx.fill(); }
+    if (S.duo === 'ctrl' && S.mode === 'play' && C[1].on) { var cc = C[S.sel]; s = proj([cc.pos[0], cc.pos[1] + 1.05 + 0.04 * Math.sin(t * 3), cc.pos[2]]); fx.fillStyle = S.pal.dark ? 'rgba(255,226,150,0.95)' : 'rgba(176,128,40,0.95)'; fx.beginPath(); fx.moveTo(s[0], s[1] + 6); fx.lineTo(s[0] - 4.5, s[1] - 1); fx.lineTo(s[0] + 4.5, s[1] - 1); fx.closePath(); fx.fill(); }
     // 未灌釉丝格的提示：金丝闪烁表示可灌
     S.world.parts.forEach(function (p) {
       if (!p.glaze || p.filled || p.fillK > 0) return;
@@ -561,7 +708,7 @@
     // 点击涟漪
     for (i = S.ripples.length - 1; i >= 0; i--) {
       var rp = S.ripples[i]; rp.t += dt * 2.2; if (rp.t >= 1) { S.ripples.splice(i, 1); continue; }
-      var k2 = easeOut(rp.t); fx.strokeStyle = rp.ok ? (S.pal.stars ? 'rgba(255,226,150,' : 'rgba(176,128,40,') + (1 - rp.t) * 0.8 + ')' : 'rgba(230,110,80,' + (1 - rp.t) * 0.8 + ')'; fx.lineWidth = rp.ok ? 1.4 : 2;
+      var k2 = easeOut(rp.t); fx.strokeStyle = rp.ok ? (S.pal.dark ? 'rgba(255,226,150,' : 'rgba(176,128,40,') + (1 - rp.t) * 0.8 + ')' : 'rgba(230,110,80,' + (1 - rp.t) * 0.8 + ')'; fx.lineWidth = rp.ok ? 1.4 : 2;
       var rr2 = rp.ok ? 6 + 20 * k2 : 14 - 6 * k2;
       fx.beginPath(); fx.moveTo(rp.x, rp.y - rr2 * 0.58); fx.lineTo(rp.x + rr2, rp.y); fx.lineTo(rp.x, rp.y + rr2 * 0.58); fx.lineTo(rp.x - rr2, rp.y); fx.closePath(); fx.stroke();
     }
@@ -569,7 +716,7 @@
     fx.globalAlpha = 1;
   }
   function handlePos(p, h) {
-    if (p.def.wire) { var pv = p.pivot, dv = p.def.wire.dir, ln = p.def.wire.len; return L.tPoint(p, p.val, [pv[0] + dv[0] * ln, pv[1] + 0.6, pv[2] + dv[2] * ln]); }
+    if (p.def.wire) { var pv = p.def.wire.at || p.pivot, dv = p.def.wire.dir, ln = p.def.wire.len, k = p.def.wire.at ? 0.5 : 1; return L.tPoint(p, p.val, [pv[0] + dv[0] * ln * k, pv[1] + 0.6, pv[2] + dv[2] * ln * k]); }
     return L.tPoint(p, p.val, h);
   }
 
@@ -579,8 +726,8 @@
     return L.tPoint(p, p.val, loc);
   }
   function faceOf(c) { var p = c.node.part; return c.face + (!c.step && p.kind === 'rot' && p.axis === 'y' ? (p.val - c.ref) * Math.PI / 2 : 0); }
-  function anyAnim() { var ps = S.world.parts; for (var i = 0; i < ps.length; i++) if (ps[i].anim) return true; return S.fills.length > 0; }
-  function canWalk() { return S.mode === 'play' && !anyAnim() && !(S.drag && S.drag.on) && S.beat <= 0; }
+  function anyAnim() { var ps = S.world.parts; for (var i = 0; i < ps.length; i++) if (ps[i].anim) return true; return S.fills.length > 0 || !!S.camAnim; }
+  function canWalk() { return S.mode === 'play' && !anyAnim() && !(S.drag && S.drag.on) && S.beat <= 0 && !S.camAnim; }
   function ctrlIdx(c) { return S.duo === 'ctrl' ? c.i : (c.i === 0 ? 0 : -1); }
   function blockedFor(i) {
     var b = []; if (S.duo === 'ctrl') { var o = C[1 - i]; if (o.on) b.push(o.step ? o.step.to : o.node); }
@@ -633,7 +780,9 @@
   }
   function follower(dt) { // 跟随模式：师傅走在阿蓝身后一步
     var m = C[1], a = C[0]; if (!m.on || S.duo !== 'follow' || m.step || m.fade || S.mode !== 'play' && S.mode !== 'end') return;
-    var target = a.step ? a.step.from : a.prev; if (!target || target === m.node || !target.active) return;
+    var target = a.step ? a.step.from : a.prev;
+    if (!m.node.active && !a.step) { var near = a.node.adj.map(function (e) { return e.to; }).filter(function (n) { return n.active && !n.stair; })[0] || a.node; m.path = []; m.fade = { t: 0, to: near }; return; }
+    if (!target || target === m.node || !target.active) return;
     if (!canWalk() && !(S.mode === 'end')) return;
     if (m.path.length) return;
     if (m.node.active) { var p = L.path(m.node, target); if (p && p.length <= 6) { m.path = p; return; } }
@@ -649,7 +798,7 @@
     if (n.plate && !n.pressed) {
       n.pressed = true; c.path = []; hintEvent('plate');
       var p = S.world.byId[n.plate.part], dur = clamp(1.3 + 0.2 * Math.abs(n.plate.to - p.val), 1.6, 3.6);
-      AU.plate(); AU.rise(dur); animPart(p, n.plate.to, dur, ease); burst([n.stand[0], n.stand[1] + 0.2, n.stand[2]], 18, '#6fd0e0', 1.6, 1.2, 0.4);
+      AU.plate(); AU.rise(dur); vzPulse(0.6); animPart(p, n.plate.to, dur, ease); burst([n.stand[0], n.stand[1] + 0.2, n.stand[2]], 18, '#6fd0e0', 1.6, 1.2, 0.4);
       return;
     }
     if (n.holdOf) { hintEvent('hold'); }
@@ -680,6 +829,7 @@
       p.state = ((to % 4) + 4) % 4; p.val = p.state; C.forEach(function (c) { if (c.on && c.node.part === p) c.ref = p.val; });
     } else { p.state = p.val = to; }
     L.settle(S.world);
+    L.drain(S.world).forEach(startDrain);
     if (p.state !== was) {
       if (p.handles.length) hintEvent('part');
       // 半拍停顿：光先变，人后走
@@ -689,13 +839,18 @@
     checkFollows();
     if (!anyAnim() && S.pendingTap) { var q = S.pendingTap; S.pendingTap = null; tap(q[0], q[1]); }
   }
+  function startDrain(p) { // 金丝离开：釉散回空框
+    S.drains.push({ part: p, t: 0, dur: 0.9, o: partCenter(p) }); AU.drain();
+    p.nodes.forEach(function (n) { for (var i = 0; i < 6; i++) parts.push({ p: L.tPoint(p, p.val, [n.c[0] + (Math.random() - 0.5) * 0.8, n.c[1] + 0.4, n.c[2] + (Math.random() - 0.5) * 0.8]), v: [(Math.random() - 0.5) * 0.3, -0.4 - Math.random(), (Math.random() - 0.5) * 0.3], t: 0, life: 1.3, col: '#4f9be8', g: 3, r: 1.4 + Math.random() }); });
+  }
   function checkFollows() {
     S.world.parts.forEach(function (p) {
-      if (!(p.follow || p.hold) || p.anim) return;
+      if (!(p.follow || p.hold || p.collapse) || p.anim) return;
       var t = L.followTarget(S.world, p);
       if (p.state !== t && !L.anyOn(S.world, p) && !C.some(function (c) { return c.on && c.step && (c.step.to.part === p || c.step.from.part === p); })) {
-        var d = p.hold ? 1.3 : 1.7; AU.rise(d);
-        if (p.hold) { AU.hold(t === p.hold.on); if (t === p.hold.on) { S.fire = 0.6; } }
+        var d = p.hold ? 1.3 : p.collapse ? 2.6 : 1.7; if (!p.collapse) AU.rise(d);
+        if (p.collapse) { if (!S.collapsed) { S.collapsed = 1; AU.collapse(); S.fire = 1.4; } burst(partCenter(p), 26, '#ff8a3c', 2.2, 1.6, 1.2); }
+        if (p.hold) { AU.hold(t === p.hold.on); if (t === p.hold.on) { S.fire = 0.6; vzPulse(0.5); } }
         if (p.follow && t < p.state) { AU.collapse(); burst(partCenter(p), 30, '#ff8a3c', 2, 1.4, 1); }
         animPart(p, t, d, ease);
       }
@@ -765,11 +920,16 @@
       if (Math.random() < 0.5) burst([f.o[0], f.o[1] + 0.55, f.o[2]], 1, '#7fb8ff', 0.6, 0.6, -0.2);
       if (f.t >= 1) {
         S.fills.splice(i, 1); f.part.filled = true; f.part.fillK = 1; L.settle(S.world);
-        S.beat = 0.36; S.pulses.push({ p: partCenter(f.part), t: 0, dur: 1, col: '#5aa8ff' }); AU.filled();
+        S.beat = 0.36; S.pulses.push({ p: partCenter(f.part), t: 0, dur: 1, col: '#5aa8ff' }); AU.filled(); vzPulse(0.8);
         checkFollows();
       }
     }
+    for (i = S.drains.length - 1; i >= 0; i--) {
+      var d = S.drains[i]; d.t += dt / d.dur; d.part.fillK = clamp(1 - d.t, 0, 1);
+      if (d.t >= 1) { S.drains.splice(i, 1); d.part.fillK = 0; }
+    }
   }
+  function vzPulse(k) { S.vz.flash = Math.max(S.vz.flash, k || 0.7); }
   // 磨光
   function roughAt(x, y) {
     var best = null; S.world.parts.forEach(function (p) {
@@ -785,7 +945,7 @@
     sc.e = Math.min(1, sc.e + d / 40);
     AU.scrub(sc.e, p.polish);
     if (Math.random() < d / 30) { var n = p.nodes[(Math.random() * p.nodes.length) | 0]; burst(L.tPoint(p, p.val, [n.c[0] + (Math.random() - 0.5) * 0.7, n.c[1] + 0.55, n.c[2] + (Math.random() - 0.5) * 0.7]), 1, Math.random() < 0.5 ? '#9fd0ff' : '#bdb5a5', 1.2, 0.6, 1.5); }
-    if (p.polish >= 1) { p.polished = true; L.settle(S.world); AU.polished(); S.beat = 0.36; hintEvent('polish'); S.pulses.push({ p: partCenter(p), t: 0, dur: 1, col: '#9fd0ff' }); p.nodes.forEach(function (n) { burst(L.tPoint(p, p.val, [n.c[0], n.c[1] + 0.6, n.c[2]]), 8, '#e8f4ff', 1.4, 0.9, 0.5); }); checkFollows(); }
+    if (p.polish >= 1) { p.polished = true; L.settle(S.world); AU.polished(); vzPulse(0.8); S.beat = 0.36; hintEvent('polish'); S.pulses.push({ p: partCenter(p), t: 0, dur: 1, col: '#9fd0ff' }); p.nodes.forEach(function (n) { burst(L.tPoint(p, p.val, [n.c[0], n.c[1] + 0.6, n.c[2]]), 8, '#e8f4ff', 1.4, 0.9, 0.5); }); checkFollows(); }
   }
 
   // ───────────── 输入 ─────────────
@@ -794,7 +954,8 @@
     for (var i = 0; i < ns.length; i++) {
       var n = ns[i]; if (!n.active) continue;
       var s = proj(n.stand), du = (x - s[0]) / S.cam.ppu, dv = -(y - s[1]) / S.cam.ppu, a = du * 1.41421356, b = -dv * 2.44948974, dx = (a + b) / 2, dz = (b - a) / 2, m = Math.max(Math.abs(dx), Math.abs(dz));
-      var depth = n.stand[0] + n.stand[1] + n.stand[2];
+      if (!isIso()) m = Math.hypot(du, dv * 1.4) * 0.85;
+      var depth = n.stand[0] * VZ[0] + n.stand[1] * VZ[1] + n.stand[2] * VZ[2];
       if (m <= 0.5) { if (depth > bd) { bd = depth; best = n; } }
       else if (m < nd) { nd = m; near = n; }
     }
@@ -805,7 +966,7 @@
       if (!p.glaze || p.filled) return;
       p.nodes.forEach(function (n) {
         var w = L.tPoint(p, p.val, [n.c[0], n.c[1] + 0.5, n.c[2]]), s = proj(w), du = (x - s[0]) / S.cam.ppu, dv = -(y - s[1]) / S.cam.ppu, a = du * 1.41421356, b = -dv * 2.44948974;
-        if (Math.max(Math.abs((a + b) / 2), Math.abs((b - a) / 2)) <= 0.55) best = { p: p, at: w };
+        if ((isIso() ? Math.max(Math.abs((a + b) / 2), Math.abs((b - a) / 2)) : Math.hypot(du, dv * 1.4) * 0.85) <= 0.55) best = { p: p, at: w };
       });
     });
     return best;
@@ -837,6 +998,7 @@
   function onDown(e) {
     AU.init();
     var x = e.clientX, y = e.clientY;
+    if (S.mode === 'dive') { S.diveT = Math.max(S.diveT, 3.3); return; }
     if (S.mode === 'card') { beginIntro(); return; }
     if (S.mode === 'end') { if (S.canContinue) nextLevel(); return; }
     if (S.mode !== 'play' || S.ptr) return;
@@ -892,11 +1054,10 @@
     after(farewell ? 3.8 : 3.3, function () { $('endvase').textContent = S.def.vase; $('endtext').textContent = S.def.end; $('endline').classList.add('on'); save.done = Math.max(save.done, S.idx + 1); persist(); });
     after(farewell ? 5.8 : 5.0, function () { S.canContinue = true; $('endgo').classList.add('on'); });
   }
-  function finaleVase() { var cv = $('fvase'), c = cv.getContext('2d'), t0 = performance.now(); (function lp() { c.clearRect(0, 0, 320, 360); drawVase(c, 160, 180, 250, 8, (performance.now() - t0) / 1000); if (S.mode === 'final') requestAnimationFrame(lp); })(); }
   function nextLevel() {
     S.canContinue = false; AU.ui();
     if (S.idx < LEVELS.length - 1) start(S.idx + 1, true);
-    else { S.mode = 'load'; veil(true, function () { $('hud').classList.remove('on'); $('chapter').classList.remove('on'); $('who').classList.remove('on'); $('endline').classList.remove('on'); $('finale').classList.add('on'); S.mode = 'final'; AU.finale(); finaleVase(); veil(false); }); }
+    else startStack();
   }
 
   // ───────────── 帧 ─────────────
@@ -905,11 +1066,25 @@
     var due = []; S.seq = S.seq.filter(function (s) { if (s.at <= S.t) { due.push(s); return false; } return true; });
     due.forEach(function (s) { s.fn(); });
     if (!S.world) return;
+    if (S.mode === 'dive') { S.diveT += dt; if (S.diveT >= 3.5) endDive(); return; }
+    if (S.mode === 'stack' || S.mode === 'final') {
+      S.stackT += dt; var st = S.stackT;
+      setCam(ISO_YAW + 0.9 * ease(clamp(st / 10, 0, 1)) + (S.mode === 'final' ? (st - 10) * 0.03 : 0), ISO_PITCH - 0.36 * ease(clamp(st / 7, 0, 1)));
+      if (S.flash > 0) S.flash -= dt * 1.2;
+      return;
+    }
     if (S.mode === 'intro') {
       S.introT += dt / 1.8; var k = easeOut(clamp(S.introT, 0, 1)); S.ga = clamp(S.introT * 1.6, 0, 1); S.cam.intro = 90 * (1 - k);
       if (S.introT >= 1) { S.mode = 'play'; S.ga = 1; S.cam.intro = 0; after(0.5, nextHint); }
     }
     if (S.beat > 0) S.beat -= dt;
+    var sv = S.def && S.def.side;
+    if (sv && !S.camAnim && !S.sideOn && S.world.byId[sv.part].state === sv.at && !S.world.byId[sv.part].anim) { S.sideOn = 1; S.camAnim = { t: 0, dur: 2.6, y0: CAMA.yaw, p0: CAMA.pitch, y1: sv.yaw, p1: sv.pitch }; AU.turn(); C.forEach(function (c) { c.path = []; }); }
+    if (S.camAnim) { var ca = S.camAnim; ca.t += dt / ca.dur; var ke = ease(clamp(ca.t, 0, 1)); setCam(ca.y0 + (ca.y1 - ca.y0) * ke, ca.p0 + (ca.p1 - ca.p0) * ke); fitCamera(); if (ca.t >= 1) { S.camAnim = null; S.beat = 0.4; } }
+    var nv = S.def && S.def.negVase;
+    if (nv && !S.negDone && S.world.byId[nv.part].state === nv.at && !S.world.byId[nv.part].anim) { S.negDone = 1; S.negVase = { t: 0 }; AU.negVase(); }
+    if (S.negVase) { S.negVase.t += dt; if (S.negVase.t > 3.4) S.negVase = null; }
+    if (S.vz.flash > 0) S.vz.flash = Math.max(0, S.vz.flash - dt * 0.45);
     if (S.flash > 0) S.flash -= dt * 1.5;
     if (S.fire > 0) S.fire = Math.max(0, S.fire - dt * 0.4);
     if (S.kilnAnim) { S.kilnAnim.t += dt; S.kilnLit = Math.min(1.6, 0.25 + S.kilnAnim.t * 0.6); if (S.kilnAnim.t > 0.4 && S.kilnAnim.t < 3 && Math.random() < 0.5 && S.kiln) burst(S.kiln.p, 2, '#ff9a4a', 1.4, 1.6, -0.8); }
@@ -948,15 +1123,24 @@
     }
     if (c.i === 1 && c.wave > 0) { /* 挥手由身体轻点头表现 */ }
   }
+  function renderStack() {
+    var pal = S.pal, st = S.stackT || 0, ppu = Math.min(H * 0.72 / (SH + 1.2), W * 0.86 / 6.4) * (1.25 - 0.25 * ease(clamp(st / 8, 0, 1)));
+    var c = [0, SH * 0.5, 0], up = (S.mode === 'final' ? -H * 0.1 : 0);
+    var ls = [{ p: [2.6, SH * 0.66, 3], c: [0.9, 0.6, 0.3], r: 9 }, { p: [-3, SH * 0.3, 2], c: [0.3, 0.5, 0.9], r: 8 }, { p: [0, SH + 1.5, 0], c: [1, 0.85, 0.5], r: 7 }];
+    R.frame({ cam: [RX, UY, VZ], center: c, sx: 2 * ppu / W, sy: 2 * ppu / H, offY: -2 * up / H, key: [-0.45, 0.8, 0.4], keyC: hex(pal.keyC), sky: mulc(hex(pal.mist), 0.75), gnd: [0.28, 0.2, 0.16],
+      fogC: hex(pal.fog), fog: [-2, 1.2, -4, -0.6], lights: ls, time: S.t, ga: 1, ext: 9, shadows: true }, stackList(st));
+    if (S.flash > 0) { fx.fillStyle = 'rgba(255,240,210,' + S.flash * 0.4 + ')'; fx.fillRect(0, 0, W, H); }
+  }
   function render() {
     if (!S.world) return;
+    if (S.mode === 'stack' || S.mode === 'final') { renderStack(); return; }
     var cam = S.cam, pal = S.pal, list = [], t = S.t;
     S.parts.forEach(function (m) {
       var p = m.part, model = partModel(p);
       list.push({ m: m.main, model: model, o: {} });
       if (p.glaze) {
-        if (p.fillK > 0) { var f = S.fills.filter(function (q) { return q.part === p; })[0]; list.push({ m: m.en, model: model, o: f ? { dis: { p: f.o, k: easeOut(p.fillK) } } : {} }); }
-        if (!p.filled) list.push({ m: m.wire, model: model, o: { emis: L.canFill(S.world, p) ? 0.25 + 0.15 * Math.sin(t * 3) : 0 } });
+        if (p.fillK > 0) { var f = S.fills.filter(function (q) { return q.part === p; })[0] || S.drains.filter(function (q) { return q.part === p; })[0]; list.push({ m: m.en, model: model, o: f ? { dis: { p: f.o, k: easeOut(p.fillK) } } : {} }); }
+        if (!p.filled || p.fillK < 1) list.push({ m: m.wire, model: model, o: { emis: L.canFill(S.world, p) ? 0.25 + 0.15 * Math.sin(t * 3) : 0 } });
       } else if (p.rough) {
         list.push({ m: m.en, model: model, o: {} });
         if (!p.polished) list.push({ m: m.rough, model: model, o: p.polish > 0 ? { dis: { k: p.polish } } : {} });
@@ -967,11 +1151,12 @@
       if (h.v < 0.99) list.push({ m: h.ghost, model: model, o: { alpha: (1 - h.v) * (0.45 + 0.25 * Math.sin(t * 2.4 + h.n.c[0])), noShadow: true, late: true } });
       if (h.v > 0.01) list.push({ m: h.solid, model: M.chain(model, M.tr(h.n.c[0], h.n.c[1] + 0.5, h.n.c[2]), M.sc(1, Math.max(0.02, h.v), 1), M.tr(-h.n.c[0], -h.n.c[1] - 0.5, -h.n.c[2])), o: { alpha: Math.min(1, h.v * 1.4) } });
     });
+    if (CM.rail) list.push({ m: CM.rail, model: M.id(), o: { noShadow: true } });
     if (CM.door) list.push({ m: CM.door, model: M.id(), o: { alpha: 0.42 + 0.06 * Math.sin(t * 1.7) + (S.won ? 0.3 : 0), noShadow: true, late: true, noDepth: true } });
     if (!S.tokenTaken) { var gn = S.world.nodes.filter(function (n) { return n.goal; })[0]; if (gn) { var gp = standNow(gn); list.push({ m: CM.token, model: M.chain(M.tr(gp[0], gp[1] + 0.95 + 0.06 * Math.sin(t * 1.8), gp[2]), M.rot('y', t * 0.9)), o: { noShadow: true } }); } }
     charList(list, C[0]); charList(list, C[1]);
     var key = pal.key, keyC = hex(pal.keyC), amb = pal.amb || 0.32;
-    R.frame({ center: cam.c, sx: 2 * cam.ppu / W, sy: 2 * cam.ppu / H, offY: -2 * (cam.base + cam.intro) / H,
+    R.frame({ cam: [RX, UY, VZ], center: cam.c, sx: 2 * cam.ppu / W, sy: 2 * cam.ppu / H, offY: -2 * (cam.base + cam.intro) / H,
       key: key, keyC: mulc(keyC, 1.05), sky: mulc(hex(pal.mist), amb * 1.6), gnd: mixc(mulc(hex(pal.sky[1]), amb * 1.4), [0.25, 0.17, 0.12], 0.3), fogC: hex(pal.fog),
       fog: [-4.6, -0.4, -6.4, -3.0], lights: lights(), time: t, ga: S.ga, ext: S.ext }, list);
   }
@@ -983,8 +1168,8 @@
   }
   function resize() {
     DPR = CAP ? 1 : Math.min(window.devicePixelRatio || 1, 2); W = Math.max(1, window.innerWidth); H = Math.max(1, window.innerHeight);
-    [bgc, glc, fxc].forEach(function (c) { c.width = (W * DPR) | 0; c.height = (H * DPR) | 0; });
-    bg.setTransform(DPR, 0, 0, DPR, 0, 0); fx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    [bgc, vzc, glc, fxc].forEach(function (c) { c.width = (W * DPR) | 0; c.height = (H * DPR) | 0; });
+    bg.setTransform(DPR, 0, 0, DPR, 0, 0); fx.setTransform(DPR, 0, 0, DPR, 0, 0); vzx.setTransform(DPR, 0, 0, DPR, 0, 0);
     if (S.world) { fitCamera(); } if (S.pal) drawBG();
   }
 
@@ -1001,14 +1186,14 @@
     });
   }
   function setMuteUI() { $('bmu').classList.toggle('off', save.mute); $('bmu').setAttribute('aria-pressed', save.mute ? 'true' : 'false'); }
-  $('title').addEventListener('click', function () { if (S.mode !== 'title') return; AU.init(); AU.ui(); start(Math.min(save.done, LEVELS.length - 1), true); });
+  $('title').addEventListener('click', function () { if (S.mode !== 'title') return; AU.init(); AU.ui(); var i0 = save.done >= LEVELS.length ? 0 : save.done; start(i0, true, i0 === 0); });
   $('blv').addEventListener('click', function () { AU.ui(); buildLevelList(); $('levels').classList.add('on'); });
   $('lvclose').addEventListener('click', function () { AU.ui(); $('levels').classList.remove('on'); });
   $('bre').addEventListener('click', function () { if (S.mode === 'play' || S.mode === 'end') { AU.ui(); start(S.idx, false); } });
   $('bmu').addEventListener('click', function () { save.mute = !save.mute; AU.setMute(save.mute); persist(); setMuteUI(); AU.ui(); });
   $('w0').addEventListener('click', function () { if (S.mode === 'play') select(0); });
   $('w1').addEventListener('click', function () { if (S.mode === 'play') select(1); });
-  $('again').addEventListener('click', function () { AU.ui(); start(0, true); });
+  $('again').addEventListener('click', function () { AU.ui(); start(0, true, true); });
   $('pick').addEventListener('click', function () { AU.ui(); buildLevelList(); $('levels').classList.add('on'); });
   window.addEventListener('keydown', function (e) {
     if (e.key === 'r' || e.key === 'R') $('bre').click(); else if (e.key === 'm' || e.key === 'M') $('bmu').click();
@@ -1042,5 +1227,6 @@
     cont: function () { if (S.canContinue) nextLevel(); return S.mode; },
     state: function () { return { mode: S.mode, idx: S.idx, won: S.won, chars: C.map(function (c) { return c.on ? c.node.cell.join(',') : null; }), parts: S.world.parts.map(function (p) { return p.id + ':' + p.state + (p.filled ? 'F' : '') + (p.polished ? 'P' : ''); }) }; },
     title: function () { S.mode = 'title'; }, resize: resize, drawVase: drawVase, AU: AU,
-    busy: function () { return C.some(function (c) { return c.on && (c.step || c.path.length || c.fade); }) || S.world.parts.some(function (p) { return p.anim; }) || S.fills.length > 0 || S.beat > 0; } };
+    stack: function () { startStack(); return 'ok'; }, dive: function () { start(0, true, true); return 'ok'; }, mode: function () { return S.mode; },
+    busy: function () { return !!S.camAnim || C.some(function (c) { return c.on && (c.step || c.path.length || c.fade); }) || S.world.parts.some(function (p) { return p.anim; }) || S.fills.length > 0 || S.beat > 0; } };
 })();
