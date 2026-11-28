@@ -203,6 +203,12 @@
     card: function (b, t, ch) { var S = SONGS[ch], o = out(b, 1, 1); qing(b, deg(S.mode, S.root, 5), t, o, 0.1); bell(b, deg(S.mode, S.root - 12, 0), t + 0.05, o, 0.12, 4); },
     finale: function (b, t) { var o = out(b, 1, 1); [0, 2, 4, 5, 7, 9, 10].forEach(function (d, i) { bell(b, deg('gong', 55, d), t + i * 0.42, o, 0.12, 4); qin(b, deg('gong', 43, d), t + i * 0.42, 2, o, 0.16); }); pad(b, [43, 50, 55, 59], t, 6, o, 0.012); },
     ui: function (b, t) { var o = out(b, 1, 0.4); osc(b, 'sine', 1320, t, 0.12, o, 0.03); },
+    titleForm: function (b, t) { var o = out(b, 1, 0.9); for (var i = 0; i < 12; i++) { var x = b.ctx.createOscillator(), g = b.ctx.createGain(), tt = t + 0.4 + i * 0.13; x.type = 'sine'; x.frequency.setValueAtTime(1600 + i * 90, tt); x.frequency.exponentialRampToValueAtTime(3400 + i * 120, tt + 0.16); env(g, tt, 0.004, 0.022, 0.3); x.connect(g); g.connect(o); x.start(tt); x.stop(tt + 0.4); }
+      [0, 2, 4, 7, 9].forEach(function (d, i) { qing(b, deg('gong', 67, d), t + 1.9 + i * 0.16, o, 0.05); }); var w = noiseSrc(b, t + 2.7, 1.0, o, 0.05, 'lowpass', 300, 0.6, 0.4); w.f.frequency.linearRampToValueAtTime(1200, t + 3.5); bell(b, 43, t + 3.7, o, 0.2, 5); bell(b, deg('gong', 67, 4), t + 4.0, o, 0.06, 3); },
+    emblem: function (b, t, k) { var S2 = SONGS[cur.ch], o = out(b, 1, 1); for (var i = 0; i < 8; i++) bell(b, deg(S2.mode, S2.root + 12, i + (k % 3)), t + 0.7 + i * 0.2, o, 0.05, 2.6); pad(b, [S2.root - 12, S2.root - 5, S2.root], t + 0.5, 3.2, o, 0.008); qing(b, deg(S2.mode, S2.root + 24, 0), t + 2.9, o, 0.07); },
+    iris: function (b, t) { var o = out(b, 1, 0.8); var w = noiseSrc(b, t + 2.9, 1.0, o, 0.05, 'bandpass', 500, 1, 0.5); w.f.frequency.exponentialRampToValueAtTime(2400, t + 3.8); [0, 4, 7].forEach(function (d, i) { bell(b, 55 + d, t + 2.95 + i * 0.14, o, 0.06, 2.4); }); },
+    assemble: function (b, t) { var S2 = SONGS[cur.ch], o = out(b, 1, 0.7); for (var i = 0; i < 6; i++) qin(b, deg(S2.mode, S2.root, i + 3), t + i * 0.12, 1.2, o, 0.1); },
+    finaleRise: function (b, t) { var o = out(b, 1, 1); pad(b, [43, 50, 55], t, 9, o, 0.01); [0, 2, 4, 5, 7, 9, 10].forEach(function (d, i) { bell(b, deg('gong', 55, d), t + 1.4 + i * 1.15, o, 0.08, 4); qin(b, deg('gong', 43, d + 2), t + 1.4 + i * 1.15, 2, o, 0.12); }); drum(b, t + 5.2, o, 0.2, 70); },
     drain: function (b, t) { var o = out(b, 1, 0.5); for (var i = 0; i < 5; i++) { var tt = t + i * 0.07, f = 900 - i * 110; var x = b.ctx.createOscillator(), g = b.ctx.createGain(); x.type = 'sine'; x.frequency.setValueAtTime(f, tt); x.frequency.exponentialRampToValueAtTime(f * 0.55, tt + 0.12); env(g, tt, 0.002, 0.03, 0.14); x.connect(g); g.connect(o); x.start(tt); x.stop(tt + 0.2); } noiseSrc(b, t, 0.5, o, 0.02, 'lowpass', 700, 0.7, 0.05); },
     dive: function (b, t) { var o = out(b, 1, 0.9); pad(b, [38, 45, 50], t, 3.2, o, 0.01); var w = noiseSrc(b, t + 0.6, 2.2, o, 0.05, 'bandpass', 300, 0.8, 1.6); w.f.frequency.exponentialRampToValueAtTime(120, t + 2.8); bell(b, 50, t + 2.7, o, 0.14, 4.5); qing(b, 74, t + 2.75, o, 0.05); },
     turn: function (b, t) { var o = out(b, 1, 0.8); var w = noiseSrc(b, t, 2.4, o, 0.04, 'bandpass', 400, 1.2, 1.1); w.f.frequency.exponentialRampToValueAtTime(1600, t + 2.2); pad(b, [40, 47, 52, 59], t + 0.2, 2.4, o, 0.008); bell(b, 52, t + 2.3, o, 0.12, 4); },
@@ -268,7 +274,15 @@
       var bb = { ctx: oc, cache: b.cache, noise: b.noise, mus: g, musRev: rv, sfx: b.sfx, sfxRev: b.sfxRev, revIn: b.revIn };
       notesFor(m[1], 0, (t1 - t0) / spb).forEach(function (n) { var t = t0 + n[0] * spb; if (t < dur) playNote(bb, n, t, spb, 1); });
     });
-    var chAt = function (t) { var c = 0; mus.forEach(function (m) { if (m[0] <= t) c = m[1]; }); return c; };
+    if (opts.notes) { // 宣传片专用总谱：[秒, 乐器, 音高, 时值(秒), 力度, 附加]
+      var pg = oc.createGain(), pr = oc.createGain(); pg.connect(b.mus); pr.connect(b.musRev);
+      (opts.musAuto || [[0, 1]]).forEach(function (a, i) { [pg, pr].forEach(function (x) { if (i === 0) x.gain.setValueAtTime(a[1], a[0]); else x.gain.linearRampToValueAtTime(a[1], a[0]); }); });
+      var pb = { ctx: oc, cache: b.cache, noise: b.noise, mus: pg, musRev: pr, sfx: b.sfx, sfxRev: b.sfxRev, revIn: b.revIn };
+      opts.notes.forEach(function (n) { if (n[0] < dur) playNote(pb, n, n[0], 1, 1); });
+    }
+    if (opts.sfxAuto) opts.sfxAuto.forEach(function (a, i) { [b.sfx, b.sfxRev].forEach(function (x) { if (i === 0) x.gain.setValueAtTime(a[1], a[0]); else x.gain.linearRampToValueAtTime(a[1], a[0]); }); });
+    var chList = opts.fxCh || mus;
+    var chAt = function (t) { var c = 0; chList.forEach(function (m) { if (m[0] <= t) c = m[1]; }); return c; };
     var sc = null;
     events.forEach(function (e) {
       if (e.name === 'music' || e.t >= dur) return;

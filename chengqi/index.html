@@ -15,6 +15,7 @@ html,body{height:100%;overflow:hidden;background:var(--paper);font-family:var(--
 #app{position:fixed;inset:0;overflow:hidden}
 canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #fx{touch-action:none;cursor:pointer}
+#tr{pointer-events:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 button:focus-visible{outline:1px solid var(--gold);outline-offset:3px}
 svg{display:block}
@@ -38,6 +39,12 @@ svg{display:block}
 #who button span{position:absolute;left:58px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;letter-spacing:.3em;white-space:nowrap;opacity:0;transition:opacity .3s;text-shadow:var(--ts)}
 #who button.sel span{opacity:.9}
 #who svg{width:34px;height:34px}
+#say{position:absolute;left:50%;top:max(66px,calc(env(safe-area-inset-top) + 54px));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;pointer-events:none;width:max-content;max-width:calc(100% - 40px);text-align:center;text-shadow:var(--ts);color:var(--ink);padding:10px 26px;background:radial-gradient(closest-side,var(--scrim,rgba(6,8,16,.42)),rgba(0,0,0,0))}
+#say.on{animation:sayin 2.8s ease forwards}
+#say b{font-size:11px;font-weight:700;letter-spacing:.5em;padding-left:.5em;color:var(--gold)}
+#say span{font-size:clamp(15px,2.2vw,19px);font-weight:500;letter-spacing:.22em;padding-left:.22em;line-height:1.6}
+@keyframes sayin{0%{opacity:0;transform:translate(-50%,6px)}14%{opacity:1;transform:translate(-50%,0)}82%{opacity:1}100%{opacity:0}}
+body.opening #chapter,body.opening #bre,body.opening #who,body.opening #hint{display:none}
 #hint{left:50%;bottom:max(30px,calc(env(safe-area-inset-bottom) + 16px));transform:translateX(-50%);font-size:15px;font-weight:600;letter-spacing:.22em;text-align:center;width:max-content;max-width:calc(100% - 140px);line-height:1.7;text-shadow:var(--ts)}
 #hint.on{opacity:.9}
 #endline{left:0;right:0;bottom:max(56px,calc(env(safe-area-inset-bottom) + 40px));text-align:center;text-shadow:var(--ts)}
@@ -81,15 +88,19 @@ svg{display:block}
 #lvclose{margin-top:60px;font-size:13px;font-weight:700;letter-spacing:.5em;padding:10px 18px 10px calc(18px + .5em);opacity:.7}
 
 /* 终章：文字落在叠合成形的大器下方，史实退为角标 */
-#finale{justify-content:flex-end;padding-bottom:max(64px,calc(env(safe-area-inset-bottom) + 40px));color:#4a3426}
+#finale{justify-content:flex-end;padding:0 24px max(18px,env(safe-area-inset-bottom));color:#efe8da;pointer-events:none}
+#finale.on{pointer-events:auto}
 .f-big{font-size:clamp(26px,4vw,40px);font-weight:400;letter-spacing:.5em;padding-left:.5em;text-shadow:0 0 18px rgba(255,248,236,.9);opacity:0}
-.f-sub{margin-top:16px;font-size:clamp(14px,2vw,17px);letter-spacing:.4em;padding-left:.4em;color:#8a5f2a;opacity:0;text-shadow:0 0 12px rgba(255,248,236,.9)}
+.f-sub{font-size:clamp(14px,2vw,17px);letter-spacing:.4em;padding-left:.4em;color:#e8c46a;opacity:0}
 #finale.on .f-big{animation:rise 1.6s ease .3s forwards}
-#finale.on .f-sub{animation:rise 1.6s ease 1.6s forwards}
-.f-btns{margin-top:34px;display:flex;gap:22px;opacity:0}
-#finale.on .f-btns{animation:rise 1.4s ease 3s forwards}
-.f-btns button{font-size:13px;font-weight:700;letter-spacing:.4em;padding:11px 18px 11px calc(18px + .4em);border:1px solid rgba(74,52,38,.35);background:rgba(255,248,236,.4)}
-.f-cred{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));max-width:min(30em,80%);text-align:right;font-size:10.5px;line-height:1.9;letter-spacing:.12em;opacity:.38}
+#finale.on .f-sub{animation:rise 1.4s ease .2s forwards}
+.f-btns{margin-top:18px;display:flex;gap:18px;opacity:0}
+#finale.on .f-btns{animation:rise 1.4s ease 1.2s forwards}
+.f-btns button{font-size:13px;font-weight:700;letter-spacing:.4em;padding:10px 16px 10px calc(16px + .4em);border:1px solid rgba(232,196,106,.45);color:#efe8da}
+.f-cred{margin-top:16px;max-width:min(34em,100%);text-align:center;font-size:10px;line-height:1.8;letter-spacing:.1em;opacity:0}
+#finale.on .f-cred{animation:credin 1.6s ease 2.2s forwards}
+@keyframes credin{to{opacity:.42}}
+@media (min-aspect-ratio:11/10){#finale{justify-content:flex-end;align-items:center;padding-left:42vw;padding-bottom:max(36px,env(safe-area-inset-bottom))}}
 
 #nogl{z-index:9;font-size:15px;letter-spacing:.2em;line-height:2.2;text-align:center}
 @keyframes breath{0%,100%{opacity:.35}50%{opacity:.85}}
@@ -112,6 +123,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
   <canvas id="vz"></canvas>
   <canvas id="gl"></canvas>
   <canvas id="fx"></canvas>
+  <canvas id="tr"></canvas>
 
   <div id="chapter"><i></i><span id="chname"></span></div>
   <div id="who">
@@ -123,6 +135,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     <button id="bre" aria-label="重来本章" title="重来 (R)"><svg viewBox="0 0 20 20"><path d="M16 10.5a6 6 0 1 1-2-4.5"/><path d="M14.6 2.6 14.2 6.4 10.4 6"/></svg></button>
     <button id="bmu" aria-label="声音开关" title="声音 (M)"><svg viewBox="0 0 20 20"><path d="M3 8h3l4-3.5v11L6 12H3z"/><path class="w" d="M13 7.5a3.5 3.5 0 0 1 0 5M15.2 5.3a6.6 6.6 0 0 1 0 9.4"/><path class="x" d="M13.5 7.5l4 5M17.5 7.5l-4 5"/></svg></button>
   </div>
+  <div id="say" aria-live="polite"><b id="saywho"></b><span id="saytext"></span></div>
   <div id="hint" role="status"></div>
   <div id="endline"><p id="endvase"></p><p id="endtext"></p><span id="endgo">轻触继续</span></div>
 
@@ -133,7 +146,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
     <p class="c-poem" id="cpoem"></p>
   </section>
 
-  <section id="title" class="screen on">
+  <section id="title" class="screen">
     <div class="t-row">
       <h1 class="t-name">成器</h1>
       <div class="t-side"><div class="t-gem"></div><div class="t-seal">铜胎掐丝珐琅</div></div>
@@ -144,7 +157,6 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
   </section>
 
   <section id="finale" class="screen">
-    <p class="f-big">器，成了。</p>
     <p class="f-sub">窑火重燃，一脉接续。</p>
     <div class="f-btns"><button id="again">再走一遍</button><button id="pick">选章</button></div>
     <p class="f-cred">景泰蓝，即铜胎掐丝珐琅，明代景泰年间技艺成熟，因而得名。一九五一年，梁思成、林徽因组织抢救，请回改行多年的老艺人。二〇〇六年，景泰蓝制作技艺列入第一批国家级非物质文化遗产名录。谨以此作，致敬所有守着火的人。</p>
@@ -159,6 +171,7 @@ body.cap #hud,body.cap #who,body.cap #hint,body.cap #endline{display:none}
   <div id="veil"></div>
   <section id="nogl" class="screen solid"><p>这台设备的浏览器没有开启 WebGL，<br>换一个现代浏览器再来看看这抹蓝吧。</p></section>
 </div>
+<script src="js/glyphs.js"></script>
 <script src="js/levels.js"></script>
 <script src="js/logic.js"></script>
 <script src="js/gfx.js"></script>

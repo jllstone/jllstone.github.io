@@ -27,6 +27,8 @@
     {
       name: '寻矿', gift: '色样', vase: '器，有了颜色。', no: '序', poem: '空着的地方，才好落第一笔。', end: '他把那点颜色，揣进了怀里。',
       start: [6, 0, 6], start2: [6, 0, 5], duo: 'follow', band: 0,
+      talk: [[1, '窑火要熄了。'], [0, '那我去山里，把颜色找回来。']],
+      guide: [['walk', 'node', [4, 0, 5]], ['plate', 'node', [4, 0, 4]], ['part', 'handle', 'lift']],
       hints: [['轻点地面，阿蓝会走过去', 'walk'], ['踩上发光的矿脉', 'plate'], ['拖动金珠，升起铜台', 'part']],
       pal: pal({ sky: ['#232c4a', '#454c70', '#8a7f95'], mist: '#6f7aa0', fog: '#323b5e', key: [0.55, 0.78, 0.3], keyC: '#efe8ff', amb: 0.46, fx: 'mote', stars: 0.3 }),
       music: { ch: 0 },
@@ -45,6 +47,8 @@
     {
       name: '制胎', gift: '铜胎', vase: '器，有了骨。', no: '一', poem: '屋子空了，炉还是冷的。', end: '敲了一夜，师傅没说一句话。',
       start: [-1, 0, 0], start2: [-1, 0, 1], duo: 'follow', band: 1,
+      talk: [[1, '屋里冷，手别停。'], [0, '嗯。']],
+      guide: [['part', 'handle', 'arm'], ['time', 'node', [6, 3, 5]]],
       hints: [['拖动金珠，转动铜胎', 'part'], ['看起来相连的地方，就走得过去', 'time']],
       pal: pal({ sky: ['#211d1a', '#3e342c', '#6e5a48'], mist: '#86705a', fog: '#2e2620', key: [-0.35, 0.86, 0.38], keyC: '#e6eeff', amb: 0.42, fx: 'dust', skylight: 1 }),
       music: { ch: 1 },
@@ -63,6 +67,8 @@
     {
       name: '掐丝', gift: '金丝', vase: '器，有了纹。', no: '二', poem: '师傅的手，比从前慢了。', end: '旧的样子走到头了。剩下的，得自己走。',
       start: [8, 0, 5], start2: [8, 0, 4], duo: 'follow', band: 2,
+      talk: [[0, '师傅，这根丝该往哪儿弯？'], [1, '往你要走的地方弯。']],
+      guide: [['part', 'handle', 'w'], ['fill', 'cell', 'a']],
       hints: [['沿着轨道拖动金丝，让丝格合拢', 'part'], ['丝格合拢后，轻点它灌釉', 'fill'], ['金丝一走，身后的釉就散了', 'time']],
       pal: pal({ sky: ['#122a33', '#204a54', '#4f7d7a'], mist: '#4f8a86', fog: '#183238', key: [0.45, 0.8, -0.4], keyC: '#fff4dc', amb: 0.46, fx: 'mote', en: '#3e8fd6', en2: '#3fb6a8' }),
       music: { ch: 2 },
@@ -85,6 +91,8 @@
     {
       name: '点蓝', gift: '釉', vase: '器，有了蓝。', no: '三', poem: '外面又响了一夜。', end: '师傅的手抖了一下。阿蓝装作没看见。',
       start: [7, 0, 6], start2: [7, 0, 7], duo: 'follow', band: 3,
+      talk: [[1, '外头又打起来了。'], [0, '那我点快一些。']],
+      guide: [['part', 'handle', 'w'], ['fill', 'cell', 'a']],
       hints: [['一根金丝，围得住三格，却一次只合得住一格', 'time']],
       pal: pal({ sky: ['#121a30', '#22305a', '#4a5a86'], mist: '#56679a', fog: '#1a2340', key: [0.5, 0.82, 0.25], keyC: '#e6efff', amb: 0.44, fx: 'mote', moon: 1, en: '#3fb6a8', en2: '#e0786a' }),
       music: { ch: 3 },
@@ -102,23 +110,27 @@
       ]
     },
     // ───────────────────────── 四 · 烧蓝 ─────────────────────────
-    // 两人一到窑前，来路便塌进火里；镜头转成正面剖面：下层窑房里师傅守火，上层冷光里阿蓝独行。
+    // 阿蓝一乘升降台上去、师傅一下到窑房，来路便塌进火里；镜头转成正面剖面：
+    // 下层窑房里师傅守火，上层冷光里阿蓝独行。两层不在同一高度，点按不会混。
     {
       name: '烧蓝', gift: '火', vase: '器，经了火。', no: '四', poem: '总得有人留下来。', end: '他没跟来，火还在烧。',
       start: [7, 0, 5], start2: [6, 0, 5], duo: 'ctrl', band: 4,
-      side: { part: 'path', at: -14, yaw: 0, pitch: 0.2 }, negVase: { part: 'g1', at: 0, l: [-1.5], r: [7.5], y0: -3.2, y1: 7.2 },
-      hints: [['先一起走到窑前', 'walk'], ['轻点人物，切换阿蓝和师傅', 'select'], ['师傅站到哪块炉砖上，哪段路就被金丝吊起来', 'hold']],
+      side: { part: 'path', at: -14, yaw: 0.34, pitch: 0.3 }, negVase: { part: 'g1', at: 0, l: [-1.5], r: [7.5], y0: -3.6, y1: 7.0 },
+      talk: [[1, '你先上去。火，我来守。'], [0, '……我会回来的。']],
+      guide: [['select', 'char', 1], ['walk', 'node', [5, 0, 0]], ['part', 'handle', 'lift'], ['hold', 'node', [3, -1, 0]]],
       pal: pal({ sky: ['#0b0d12', '#14161c', '#1e1a1a'], mist: '#2a2c33', fog: '#0e1015', key: [0.55, 0.75, 0.35], keyC: '#dfe8ff', amb: 0.3, fx: 'ember', beams: 1, rk: '#8a8f9c', en: '#3e8fd6', en2: '#f0c24b', kl: '#9a4532' }),
       music: { ch: 4 },
       parts: [
-        { id: 'start', collapse: { on: ['kiln', 'lift', 'upper', 'g1', 'g2'], to: -14 }, kind: 'slide', axis: 'y', min: -14, max: 0, state: 0, boxes: [[6, -6, 4, 7, 0, 5, 'cu']], walk: [[6, 0, 4, 7, 0, 5]] },
-        { id: 'path', collapse: { on: ['kiln', 'lift', 'upper', 'g1', 'g2'], to: -14 }, kind: 'slide', axis: 'y', min: -14, max: 0, state: 0, glaze: { need: [], filled: 1 }, boxes: [[6, 0, 2, 6, 0, 3, 'en']], walk: [[6, 0, 2, 6, 0, 3]] },
+        { id: 'start', collapse: { a: ['lift', 'upper', 'g1', 'g2'], m: ['kiln'], to: -14 }, kind: 'slide', axis: 'y', min: -14, max: 0, state: 0, boxes: [[6, -6, 4, 7, 0, 5, 'cu']], walk: [[6, 0, 4, 7, 0, 5]] },
+        { id: 'path', collapse: { a: ['lift', 'upper', 'g1', 'g2'], m: ['kiln'], to: -14 }, kind: 'slide', axis: 'y', min: -14, max: 0, state: 0, glaze: { need: [], filled: 1 }, boxes: [[6, 0, 1, 6, 0, 3, 'en']], walk: [[6, 0, 1, 6, 0, 3]] },
+        { id: 'landing', boxes: [[5, -6, 0, 6, 0, 0, 'kl']], walk: [[5, 0, 0, 6, 0, 0]] },
         { id: 'kiln',
-          boxes: [[0, -6, 0, 6, 0, 1, 'kl'], [-1, -6, -2, 2, 0, -1, 'kl']],
-          walk: [[0, 0, 0], [2, 0, 0, 3, 0, 0], [5, 0, 0, 6, 0, 0], [0, 0, 1, 6, 0, 1], [1, 0, 0, { hold: 'g1' }], [4, 0, 0, { hold: 'g2' }]],
-          deco: [['kiln', 0.5, 0, -1.3]] },
-        { id: 'shaft', onlyA: 1, boxes: [[8, -6, 0, 8, 4, 0, 'rk'], [-2, -6, 0, -2, 4, 0, 'rk']], walk: [] },
-        { id: 'lift', onlyA: 1, kind: 'slide', axis: 'y', min: 0, max: 4, state: 0, boxes: [[7, -8, 0, 7, 0, 0, 'cu']], walk: [[7, 0, 0]], handles: [[7.62, 0.1, 0]] },
+          boxes: [[-1, -6, 0, 4, -1, 0, 'kl'], [-1, -6, -2, 1, -1, -1, 'kl']],
+          walk: [[-1, -1, 0], [1, -1, 0, 2, -1, 0], [0, -1, 0, { hold: 'g1' }], [3, -1, 0, { hold: 'g2' }]],
+          stairs: [[4, 0, 0, '+x']],
+          deco: [['kiln', 0, -1, -1.3]] },
+        { id: 'shaft', boxes: [[8, -6, 0, 8, 4, 0, 'rk'], [-2, -6, 0, -2, 4, 0, 'rk']], walk: [], deco: [['rails', 7, 0, 0, 4.6]] },
+        { id: 'lift', onlyA: 1, kind: 'slide', axis: 'y', min: 0, max: 4, state: 0, boxes: [[7, -8, 0, 7, 0, 0, 'cu']], walk: [[7, 0, 0]], handles: [[7, 0.1, 0.66]] },
         { id: 'upper', onlyA: 1, thin: 1, boxes: [[5, 4, 0, 6, 4, 0, 'rk'], [2, 4, 0, 2, 4, 0, 'rk'], [-1, 4, 0, -1, 4, 0, 'rk']],
           walk: [[5, 4, 0, 6, 4, 0], [2, 4, 0], [-1, 4, 0, { goal: 1 }]], deco: [['door', -1, 4, 0]] },
         { id: 'g2', onlyA: 1, kind: 'slide', axis: 'y', min: -14, max: 0, state: -14, hold: { on: 0, off: -14 }, glaze: { need: [], filled: 1 }, boxes: [[3, 4, 0, 4, 4, 0, 'en']], walk: [[3, 4, 0, 4, 4, 0]] },
@@ -130,6 +142,8 @@
     {
       name: '磨光', gift: '光', vase: '器，有了光。', no: '五', poem: '四下都是灰的。', end: '磨到后来，手就不抖了。',
       start: [4, 0, 4], duo: null, band: 5,
+      talk: [[0, '一遍，再一遍。']],
+      guide: [['polish', 'rough', 'r1']],
       hints: [['在灰黑的残阶上来回划动，把它磨亮', 'polish']],
       pal: pal({ sky: ['#16191e', '#23272e', '#353a43'], mist: '#4b515c', fog: '#14161a', key: [0.5, 0.8, 0.33], keyC: '#f4f6ff', amb: 0.34, fx: 'grit', rk: '#6c7079', en: '#1f6fe8', en2: '#2b8af2', rg: '#55524f' }),
       music: { ch: 5 },
@@ -149,7 +163,9 @@
     {
       name: '镀金', gift: '金', vase: '器，镀了金。', no: '六', poem: '隔着山，也知道他在。', end: '两盏灯，朝着同一个方向。',
       start: [0, 0, 6], start2: [3, 3, 7], duo: 'ctrl', band: 6,
-      hints: [['师傅踩住金砖，阿蓝的路才亮', 'hold'], ['轻点人物切换，一前一后地让路', 'select']],
+      talk: [[0, '师傅，你看得见我的灯吗？'], [1, '看得见。往前走。']],
+      guide: [['select', 'char', 1], ['hold', 'node', [4, 3, 7]]],
+      hints: [['轻点人物，换师傅走', 'select'], ['师傅踩住金砖，阿蓝的路才亮', 'hold']],
       pal: pal({ sky: ['#0a0f26', '#172048', '#3a3c6e'], mist: '#3e4a86', fog: '#0c1330', key: [0.4, 0.85, 0.35], keyC: '#ffe6cc', amb: 0.52, fx: 'star', stars: 0.8, lamp: 1, en: '#f0c24b', en2: '#f0c24b' }),
       music: { ch: 6 },
       parts: [
@@ -171,6 +187,8 @@
     {
       name: '复磨', gift: '器', vase: '器，成了。', no: '七', poem: '火，又着了。', end: '器，成了。',
       start: [1, 1, 6], start2: [7, 1, 2], duo: 'ctrl', band: 7,
+      talk: [[1, '回来了。'], [0, '……回来了。']],
+      guide: [['part', 'handle', 'w'], ['fill', 'cell', 'g'], ['hold', 'node', [2, 1, 2]]],
       hints: [['这一次，换师傅为阿蓝托住路', 'hold']],
       pal: pal({ sky: ['#ffd9a0', '#f7b6a0', '#a9d3d6'], mist: '#f4c7a6', fog: '#f3dcc6', ink: '#4a3426', key: [-0.4, 0.8, -0.45], keyC: '#fff0d8', amb: 0.55, fx: 'ember', dark: 0, en: '#3a6fc4', en2: '#3fb6a8', kl: '#c0644a', cu: '#a8714a', cuL: '#d29466' }),
       music: { ch: 7 },

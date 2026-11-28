@@ -199,8 +199,13 @@
   function followTarget(W, p) {
     if (p.collapse) { // 一次性：所有人都到了指定处，身后的路就塌进火里
       if (p.state === p.collapse.to) return p.collapse.to;
-      for (var j = 0; j < W.chars.length; j++) if (!W.chars[j] || p.collapse.on.indexOf(W.chars[j].part.id) < 0) return p.state;
-      return p.collapse.to;
+      var cl = p.collapse;
+      if (cl.a) { // 分人条件：阿蓝在 a 列的部件上、师傅在 m 列的部件上
+        if (!W.chars[0] || !W.chars[1] || cl.a.indexOf(W.chars[0].part.id) < 0 || cl.m.indexOf(W.chars[1].part.id) < 0) return p.state;
+        return cl.to;
+      }
+      for (var j = 0; j < W.chars.length; j++) if (!W.chars[j] || cl.on.indexOf(W.chars[j].part.id) < 0) return p.state;
+      return cl.to;
     }
     if (p.hold) {
       for (var i = 0; i < W.nodes.length; i++) { var n = W.nodes[i]; if (n.holdOf === p.id && occupied(W, n)) return p.hold.on; }
